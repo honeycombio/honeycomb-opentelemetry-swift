@@ -2,6 +2,10 @@
 import Foundation
 
 internal let runtimeVersion = ProcessInfo().operatingSystemVersionString
+// TODO: This can't be set programmatically for now, because it is incorrect upstream.
+// We should fix this here:
+// https://github.com/open-telemetry/opentelemetry-swift/blob/32ea291d791f5a0652630fc176b73d1639074046/Sources/OpenTelemetrySdk/Version.swift#L9
+internal let otlpVersion = "1.10.1"
 
 // Constants for keys and defaults in HoneycombOptions.
 
@@ -106,9 +110,6 @@ private func getHeaders(
     generalHeaders: [String: String],
     signalHeaders: [String: String]
 ) -> [String: String] {
-    // TODO: Is this actually correct?
-    let otlpVersion = honeycombLibraryVersion
-
     var headers = ["x-otlp-version": otlpVersion]
     headers.merge(generalHeaders, uniquingKeysWith: takeSecond)
 
@@ -266,10 +267,21 @@ class HoneycombOptions {
         private var metricsProtocol: OTLPProtocol? = nil
         private var logsProtocol: OTLPProtocol? = nil
         
-        init(source: HoneycombOptionsSource) throws {
+        /** Creates a builder with default options. */
+        init() {}
+        
+        internal convenience init(source: HoneycombOptionsSource) throws {
+            self.init()
             try configureFromSource(source: source)
         }
-        
+
+        /** Creates a build with options pre-propulated from a plist file. */
+        convenience init(contentsOfFile path: URL) throws {
+            let data = try Data(contentsOf: path)
+            let info = try PropertyListSerialization.propertyList(from: data, options: .mutableContainers, format: nil) as? [String: Any]
+            try self.init(source: HoneycombOptionsSource(info: info))
+        }
+
         private func configureFromSource(source: HoneycombOptionsSource) throws {
             // Make sure the exporters aren't set to anything other than OTLP.
             try verifyExporter(source: source, key: otelTracesExporterKey)
@@ -307,147 +319,147 @@ class HoneycombOptions {
             logsProtocol = try source.getOTLPProtocol(otlpLogsProtocolKey)
         }
 
-        func setAPIKey(apiKey: String) -> Builder {
+        func setAPIKey(_ apiKey: String) -> Builder {
             self.apiKey = apiKey
             return self
         }
 
-        func setTracesApiKey(apiKey: String) -> Builder {
+        func setTracesApiKey(_ apiKey: String) -> Builder {
             tracesApiKey = apiKey
             return self
         }
 
-        func setMetricsApiKey(apiKey: String) -> Builder {
+        func setMetricsApiKey(_ apiKey: String) -> Builder {
             metricsApiKey = apiKey
             return self
         }
 
-        func setLogsApiKey(apiKey: String) -> Builder {
+        func setLogsApiKey(_ apiKey: String) -> Builder {
             logsApiKey = apiKey
             return self
         }
 
-        func setDataset(dataset: String) -> Builder {
+        func setDataset(_ dataset: String) -> Builder {
             self.dataset = dataset
             return self
         }
 
-        func setMetricsDataset(dataset: String) -> Builder {
+        func setMetricsDataset(_ dataset: String) -> Builder {
             metricsDataset = dataset
             return self
         }
 
-        func setApiEndpoint(endpoint: String) -> Builder {
+        func setApiEndpoint(_ endpoint: String) -> Builder {
             apiEndpoint = endpoint
             return self
         }
 
-        func setTracesApiEndpoint(endpoint: String) -> Builder {
+        func setTracesApiEndpoint(_ endpoint: String) -> Builder {
             tracesEndpoint = endpoint
             return self
         }
 
-        func setMetricsApiEndpoint(endpoint: String) -> Builder {
+        func setMetricsApiEndpoint(_ endpoint: String) -> Builder {
             metricsEndpoint = endpoint
             return self
         }
 
-        func setLogsApiEndpoint(endpoint: String) -> Builder {
+        func setLogsApiEndpoint(_ endpoint: String) -> Builder {
             logsEndpoint = endpoint
             return self
         }
 
-        func setSampleRate(sampleRate: Int) -> Builder {
+        func setSampleRate(_ sampleRate: Int) -> Builder {
             self.sampleRate = sampleRate
             return self
         }
 
-        func setDebug(debug: Bool) -> Builder {
+        func setDebug(_ debug: Bool) -> Builder {
             self.debug = debug
             return self
         }
 
-        func setServiceName(serviceName: String) -> Builder {
+        func setServiceName(_ serviceName: String) -> Builder {
             self.serviceName = serviceName
             return self
         }
 
-        func setResourceAttributes(resources: [String: String]) -> Builder {
+        func setResourceAttributes(_ resources: [String: String]) -> Builder {
             resourceAttributes = resources
             return self
         }
 
-        func setTracesSampler(sampler: String) -> Builder {
+        func setTracesSampler(_ sampler: String) -> Builder {
             tracesSampler = sampler
             return self
         }
 
-        func setTracesSamplerArg(arg: String?) -> Builder {
+        func setTracesSamplerArg(_ arg: String?) -> Builder {
             tracesSamplerArg = arg
             return self
         }
 
-        func setPropagators(propagators: String) -> Builder {
+        func setPropagators(_ propagators: String) -> Builder {
             self.propagators = propagators
             return self
         }
 
-        func setHeaders(headers: [String: String]) -> Builder {
+        func setHeaders(_ headers: [String: String]) -> Builder {
             self.headers = headers
             return self
         }
 
-        func setTracesHeaders(headers: [String: String]) -> Builder {
+        func setTracesHeaders(_ headers: [String: String]) -> Builder {
             tracesHeaders = headers
             return self
         }
 
-        func setMetricsHeaders(headers: [String: String]) -> Builder {
+        func setMetricsHeaders(_ headers: [String: String]) -> Builder {
             metricsHeaders = headers
             return self
         }
 
-        func setLogsHeaders(headers: [String: String]) -> Builder {
+        func setLogsHeaders(_ headers: [String: String]) -> Builder {
             logsHeaders = headers
             return self
         }
 
-        func setTimeout(timeout: TimeInterval) -> Builder {
+        func setTimeout(_ timeout: TimeInterval) -> Builder {
             self.timeout = timeout
             return self
         }
 
-        func setTracesTimeout(timeout: TimeInterval) -> Builder {
+        func setTracesTimeout(_ timeout: TimeInterval) -> Builder {
             tracesTimeout = timeout
             return self
         }
 
-        func setMetricsTimeout(timeout: TimeInterval) -> Builder {
+        func setMetricsTimeout(_ timeout: TimeInterval) -> Builder {
             metricsTimeout = timeout
             return self
         }
 
-        func setLogsTimeout(timeout: TimeInterval) -> Builder {
+        func setLogsTimeout(_ timeout: TimeInterval) -> Builder {
             logsTimeout = timeout
             return self
         }
 
-        func setProtocol(protocol: OTLPProtocol) -> Builder {
+        func setProtocol(_ protocol: OTLPProtocol) -> Builder {
             self.`protocol` = `protocol`
             return self
         }
 
-        func setTracesProtocol(protocol: OTLPProtocol) -> Builder {
+        func setTracesProtocol(_ protocol: OTLPProtocol) -> Builder {
             tracesProtocol = `protocol`
             return self
         }
 
-        func setMetricsProtocol(protocol: OTLPProtocol) -> Builder {
+        func setMetricsProtocol(_ protocol: OTLPProtocol) -> Builder {
             metricsProtocol = `protocol`
             return self
         }
 
-        func setLogsProtocol(protocol: OTLPProtocol) -> Builder {
+        func setLogsProtocol(_ protocol: OTLPProtocol) -> Builder {
             logsProtocol = `protocol`
             return self
         }
