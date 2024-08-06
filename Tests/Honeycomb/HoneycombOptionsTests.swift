@@ -221,9 +221,9 @@ final class HoneycombOptionsTests: XCTestCase {
             "HONEYCOMB_API_KEY": "key",
             "HONEYCOMB_DATASET": "dataset",
             "HONEYCOMB_METRICS_DATASET": "metrics",
-            "HONEYCOMB_TRACES_APIKEY": "traces_key",
-            "HONEYCOMB_METRICS_APIKEY": "metrics_key",
-            "HONEYCOMB_LOGS_APIKEY": "logs_key",
+            "HONEYCOMB_TRACES_APIKEY": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "HONEYCOMB_METRICS_APIKEY": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "HONEYCOMB_LOGS_APIKEY": "cccccccccccccccccccccccccccccccc",
             "HONEYCOMB_TRACES_ENDPOINT": "http://traces.example.com:1234",
             "HONEYCOMB_METRICS_ENDPOINT": "http://metrics.example.com:1234",
             "HONEYCOMB_LOGS_ENDPOINT": "http://logs.example.com:1234",
@@ -269,19 +269,19 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual([
             "header": "ttt",
             "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "traces_key",
+            "x-honeycomb-team": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "x-otlp-version": otlpVersion
         ], options.tracesHeaders)
         XCTAssertEqual([
             "header": "mmm",
             "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": "metrics_key",
+            "x-honeycomb-team": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
             "x-otlp-version": otlpVersion
         ], options.metricsHeaders)
         XCTAssertEqual([
             "header": "lll",
             "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "logs_key",
+            "x-honeycomb-team": "cccccccccccccccccccccccccccccccc",
             "x-otlp-version": otlpVersion
         ], options.logsHeaders)
 
@@ -301,9 +301,9 @@ final class HoneycombOptionsTests: XCTestCase {
         let options = try HoneycombOptions.Builder()
             .setDataset("dataset")
             .setMetricsDataset("metrics")
-            .setTracesApiKey("traces_key")
-            .setMetricsApiKey("metrics_key")
-            .setLogsApiKey("logs_key")
+            .setTracesApiKey("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            .setMetricsApiKey("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+            .setLogsApiKey("cccccccccccccccccccccccccccccccc")
             .setTracesApiEndpoint("http://traces.example.com:1234")
             .setMetricsApiEndpoint("http://metrics.example.com:1234")
             .setLogsApiEndpoint("http://logs.example.com:1234")
@@ -345,19 +345,19 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual([
             "header": "ttt",
             "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "traces_key",
+            "x-honeycomb-team": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "x-otlp-version": otlpVersion
         ], options.tracesHeaders)
         XCTAssertEqual([
             "header": "mmm",
             "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": "metrics_key",
+            "x-honeycomb-team": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
             "x-otlp-version": otlpVersion
         ], options.metricsHeaders)
         XCTAssertEqual([
             "header": "lll",
             "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "logs_key",
+            "x-honeycomb-team": "cccccccccccccccccccccccccccccccc",
             "x-otlp-version": otlpVersion
         ], options.logsHeaders)
 
@@ -371,6 +371,82 @@ final class HoneycombOptionsTests: XCTestCase {
         
         XCTAssertTrue(options.debug)
         XCTAssertEqual(42, options.sampleRate)
+    }
+
+    func testDatasetSetWithClassicKey() throws {
+        let key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        
+        let options = try HoneycombOptions.Builder()
+            .setDataset("dataset")
+            .setMetricsDataset("metrics")
+            .setAPIKey(key)
+            .build()
+
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "dataset",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.tracesHeaders)
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "metrics",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.metricsHeaders)
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "dataset",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.logsHeaders)
+    }
+
+    func testDatasetSetWithIngestClassicKey() throws {
+        let key = "hcaic_7890123456789012345678901234567890123456789012345678901234"
+        
+        let options = try HoneycombOptions.Builder()
+            .setDataset("dataset")
+            .setMetricsDataset("metrics")
+            .setAPIKey(key)
+            .build()
+
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "dataset",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.tracesHeaders)
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "metrics",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.metricsHeaders)
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "dataset",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.logsHeaders)
+    }
+
+    func testDatasetNotSetWithNewKey() throws {
+        let key = "not_classic"
+        
+        let options = try HoneycombOptions.Builder()
+            .setDataset("dataset")
+            .setMetricsDataset("metrics")
+            .setAPIKey(key)
+            .build()
+
+        XCTAssertEqual([
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.tracesHeaders)
+        XCTAssertEqual([
+            "x-honeycomb-dataset": "metrics",
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.metricsHeaders)
+        XCTAssertEqual([
+            "x-honeycomb-team": key,
+            "x-otlp-version": otlpVersion
+        ], options.logsHeaders)
     }
 
     func testHeaderParsing() throws {

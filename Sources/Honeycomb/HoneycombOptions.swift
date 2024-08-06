@@ -63,6 +63,25 @@ public enum OTLPProtocol {
     case httpJSON
 }
 
+private let classicKeyRegex = #"^[a-f0-9]*$"#
+private let ingestClassicKeyRegex = #"^hc[a-z]ic_[a-z0-9]*$"#
+
+private func matchesRegex(pattern: String, string: String) -> Bool {
+    return string.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil
+}
+
+/**
+ * Returns whether the passed in API key is classic or not.
+ */
+private func isClassic(key: String) -> Bool {
+    return switch key.count {
+    case 0: false
+    case 32: matchesRegex(pattern: classicKeyRegex, string: key)
+    case 64: matchesRegex(pattern: ingestClassicKeyRegex, string: key)
+    default: false
+    }
+}
+
 /**
  * Gets the endpoint to use for a particular signal.
  *
@@ -497,27 +516,30 @@ class HoneycombOptions {
             resourceAttributes.putIfAbsent(
                 "honeycomb.distro.runtime_version",
                 runtimeVersion
-                
             )
+
+            let tracesApiKey: String = try self.tracesApiKey ?? defaultApiKey()
+            let metricsApiKey: String = try self.metricsApiKey ?? defaultApiKey()
+            let logsApiKey: String = try self.logsApiKey ?? defaultApiKey()
 
             let tracesHeaders =
                 getHeaders(
-                    apiKey: try tracesApiKey ?? defaultApiKey(),
-                    dataset: dataset,
+                    apiKey: tracesApiKey,
+                    dataset: isClassic(key:tracesApiKey) ? dataset : nil,
                     generalHeaders: headers,
                     signalHeaders: self.tracesHeaders
                 )
             let metricsHeaders =
                 getHeaders(
-                    apiKey: try metricsApiKey ?? defaultApiKey(),
+                    apiKey: metricsApiKey,
                     dataset: metricsDataset,
                     generalHeaders: headers,
                     signalHeaders: self.metricsHeaders
                 )
             let logsHeaders =
                 getHeaders(
-                    apiKey: try logsApiKey ?? defaultApiKey(),
-                    dataset: dataset,
+                    apiKey: logsApiKey,
+                    dataset: isClassic(key:tracesApiKey) ? dataset : nil,
                     generalHeaders: headers,
                     signalHeaders: self.logsHeaders
                 )
@@ -542,9 +564,9 @@ class HoneycombOptions {
             )
 
             return HoneycombOptions(
-                tracesApiKey: try tracesApiKey ?? defaultApiKey(),
-                metricsApiKey: try metricsApiKey ?? defaultApiKey(),
-                logsApiKey: try logsApiKey ?? defaultApiKey(),
+                tracesApiKey: tracesApiKey,
+                metricsApiKey: metricsApiKey,
+                logsApiKey: logsApiKey,
                 dataset: dataset,
                 metricsDataset: metricsDataset,
                 tracesEndpoint: tracesEndpoint,
