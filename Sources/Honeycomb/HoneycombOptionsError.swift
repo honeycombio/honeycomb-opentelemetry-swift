@@ -7,6 +7,7 @@ import Foundation
 public enum HoneycombOptionsError: Error, Equatable {
     case incorrectType(String)
     case malformedKeyValueString(String)
+    case malformedURL(String)
     case missingAPIKey(String)
     case unsupportedExporter(String)
     case unsupportedProtocol(String)
