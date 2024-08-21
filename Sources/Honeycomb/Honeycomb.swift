@@ -37,8 +37,6 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 
 class Honeycomb {
     static public func configure(options: HoneycombOptions) throws {
-        // TODO: Throw if JSON.
-        
         guard let tracesEndpoint = URL(string:options.tracesEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.tracesEndpoint)
         }
@@ -73,6 +71,8 @@ class Honeycomb {
                 .connect(host: host, port: port)
             
             traceExporter = OtlpTraceExporter(channel: channel, config: otlpTracesConfig)
+        } else if options.tracesProtocol == .httpJSON {
+            throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             traceExporter = OtlpHttpTraceExporter(endpoint: tracesEndpoint, config: otlpTracesConfig)
         }
@@ -101,6 +101,8 @@ class Honeycomb {
                 .connect(host: host, port: port)
             
             metricExporter = OtlpMetricExporter(channel: channel, config: otlpMetricsConfig)
+        } else if options.metricsProtocol == .httpJSON {
+            throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             metricExporter = OtlpHttpMetricExporter(endpoint: metricsEndpoint, config: otlpMetricsConfig)
         }
@@ -123,6 +125,8 @@ class Honeycomb {
                 .connect(host: host, port: port)
             
             logExporter = OtlpLogExporter(channel: channel, config: otlpLogsConfig)
+        } else if options.logsProtocol == .httpJSON {
+            throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             logExporter = OtlpHttpLogExporter(endpoint: logsEndpoint, config: otlpLogsConfig)
         }
