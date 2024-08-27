@@ -4,7 +4,7 @@
 
 **Required:**
 
-- Xcode (from the App Store)
+- Xcode (from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835))
 
 Development and unit tests are done within Xcode. Hoever, there is also a smoke-test, which must be run using the included Makefile.
 
