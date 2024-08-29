@@ -1,6 +1,7 @@
 
 import Foundation
 import GRPC
+import MetricKit
 import NIO
 import OpenTelemetryApi
 import OpenTelemetrySdk
@@ -35,7 +36,9 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
     return result
 }
 
-class Honeycomb {
+public class Honeycomb {
+  static private let metricKitSubscriber = MetricKitSubscriber()
+  
     static public func configure(options: HoneycombOptions) throws {
         guard let tracesEndpoint = URL(string:options.tracesEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.tracesEndpoint)
@@ -143,5 +146,7 @@ class Honeycomb {
         OpenTelemetry.registerTracerProvider(tracerProvider: tracerProvider)
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
+
+      MXMetricManager.shared.add(self.metricKitSubscriber)
     }
 }
