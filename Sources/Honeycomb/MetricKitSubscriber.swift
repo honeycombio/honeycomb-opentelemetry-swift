@@ -2,6 +2,8 @@ import Foundation
 import MetricKit
 import OpenTelemetryApi
 
+private let metricKitInstrumentationName = "@honeycombio/instrumentation-metric-kit"
+
 class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber {
   func didReceive(_ payloads: [MXMetricPayload]) {
     for payload in payloads {
@@ -54,15 +56,14 @@ extension Measurement: AttributeValueConvertable {
 
 // TODO: Figure out how to set OTel Metrics as well.
 
+func getMetricKitTracer() -> Tracer {
+  return OpenTelemetry.instance.tracerProvider.get(
+    instrumentationName: metricKitInstrumentationName,
+    instrumentationVersion: honeycombLibraryVersion)
+}
+
 func reportMetrics(payload: MXMetricPayload) {
-  // TODO: Use the correct version.
-  let version = "0.0.1"
-
-  let tracer = OpenTelemetry.instance.tracerProvider.get(
-    instrumentationName: "@honeycombio/instrumentation-metric-kit-metrics",
-    instrumentationVersion: version)
-
-  let span = tracer.spanBuilder(spanName: "metric-kit-metrics")
+  let span = getMetricKitTracer().spanBuilder(spanName: "MXMetricPayload")
     .setStartTime(time: payload.timeStampBegin)
     .startSpan()
   defer { span.end(time: payload.timeStampEnd) }
@@ -219,7 +220,7 @@ func reportMetrics(payload: MXMetricPayload) {
   // Signpost metrics are a little different from the other metrics, since they can have arbitrary names.
   if let signpostMetrics = payload.signpostMetrics {
     for signpostMetric in signpostMetrics {
-      let span = tracer.spanBuilder(spanName: "signpost-metric").startSpan()
+      let span = getMetricKitTracer().spanBuilder(spanName: "MXSignpostMetric").startSpan()
       span.setAttribute(key: "name", value: signpostMetric.signpostName)
       span.setAttribute(key: "category", value: signpostMetric.signpostCategory)
       span.setAttribute(key: "count", value: signpostMetric.totalCount)
@@ -230,14 +231,7 @@ func reportMetrics(payload: MXMetricPayload) {
 
 @available(iOS 14.0, *)
 func reportDiagnostics(payload: MXDiagnosticPayload) {
-  // TODO: Use the correct version.
-  let version = "0.0.1"
-
-  let tracer = OpenTelemetry.instance.tracerProvider.get(
-    instrumentationName: "@honeycombio/instrumentation-metric-kit-diagnostics",
-    instrumentationVersion: version)
-
-  let span = tracer.spanBuilder(spanName: "metric-kit-diagnostics")
+  let span = getMetricKitTracer().spanBuilder(spanName: "MXDiagnosticPayload")
     .setStartTime(time: payload.timeStampBegin)
     .startSpan()
   defer { span.end() }
