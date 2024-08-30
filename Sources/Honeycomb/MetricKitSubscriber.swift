@@ -345,7 +345,9 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
   ) {
     if let arr = parent {
       for item in arr {
-        var attributes: [String: AttributeValue] = [:]
+        var attributes: [String: AttributeValue] = [
+          "name" : "metrickit.diagnostic.\(namespace)".attributeValue()
+        ]
         for (key, value) in closure(item) {
           let namespacedKey = "metrickit.diagnostic.\(namespace).\(key)"
           attributes[namespacedKey] = value.attributeValue()
@@ -362,32 +364,28 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
   if #available(iOS 16.0, *) {
     logForEach(payload.appLaunchDiagnostics, "app_launch") {
       [
-        "name": "app_launch",
         "launch_duration": $0.launchDuration,
       ]
     }
   }
   logForEach(payload.diskWriteExceptionDiagnostics, "disk_write_exception") {
     [
-      "name": "disk_write_exception",
       "total_writes_caused": $0.totalWritesCaused,
     ]
   }
   logForEach(payload.hangDiagnostics, "hang") {
     [
-      "name": "hang",
       "hang_duration": $0.hangDuration,
     ]
   }
   logForEach(payload.cpuExceptionDiagnostics, "cpu_exception") {
     [
-      "name": "cpu_exception",
       "total_cpu_time": $0.totalCPUTime,
       "total_sampled_time": $0.totalSampledTime,
     ]
   }
   logForEach(payload.crashDiagnostics, "crash") {
-    var attrs: [String: AttributeValueConvertable] = ["name": "crash"]
+    var attrs: [String: AttributeValueConvertable] = [:]
     if let exceptionCode = $0.exceptionCode {
       attrs["exception.code"] = exceptionCode.intValue
     }
