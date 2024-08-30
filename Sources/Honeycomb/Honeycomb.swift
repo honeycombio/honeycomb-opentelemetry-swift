@@ -147,6 +147,6 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-      MXMetricManager.shared.add(self.metricKitSubscriber)
+       MXMetricManager.shared.add(self.metricKitSubscriber)
     }
 }

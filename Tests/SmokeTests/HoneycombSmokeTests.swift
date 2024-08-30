@@ -40,4 +40,11 @@ final class HoneycombSmokeTests: XCTestCase {
         let span = tracerProvider.spanBuilder(spanName: "test-span").startSpan()
         span.end()
     }
+  
+    func testMetricKit() throws {
+        reportMetrics(payload: FakeMetricPayload())
+        if #available(iOS 14.0, *) {
+            reportDiagnostics(payload: FakeDiagnosticPayload())
+        }
+    }
 }
