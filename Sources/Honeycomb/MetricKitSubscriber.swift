@@ -170,7 +170,8 @@ func reportMetrics(payload: MXMetricPayload) {
   }
   withCategory(payload.locationActivityMetrics, "location_activity") {
     captureMetric(key: "best_accuracy_time", value: $0.cumulativeBestAccuracyTime)
-    captureMetric(key: "best_accuracy_for_nav_time", value: $0.cumulativeBestAccuracyForNavigationTime)
+    captureMetric(
+      key: "best_accuracy_for_nav_time", value: $0.cumulativeBestAccuracyForNavigationTime)
     captureMetric(key: "accuracy_10m_time", value: $0.cumulativeNearestTenMetersAccuracyTime)
     captureMetric(key: "accuracy_100m_time", value: $0.cumulativeHundredMetersAccuracyTime)
     captureMetric(key: "accuracy_1km_time", value: $0.cumulativeKilometerAccuracyTime)
@@ -346,7 +347,7 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
     if let arr = parent {
       for item in arr {
         var attributes: [String: AttributeValue] = [
-          "name" : "metrickit.diagnostic.\(namespace)".attributeValue()
+          "name": "metrickit.diagnostic.\(namespace)".attributeValue()
         ]
         for (key, value) in closure(item) {
           let namespacedKey = "metrickit.diagnostic.\(namespace).\(key)"
@@ -364,18 +365,18 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
   if #available(iOS 16.0, *) {
     logForEach(payload.appLaunchDiagnostics, "app_launch") {
       [
-        "launch_duration": $0.launchDuration,
+        "launch_duration": $0.launchDuration
       ]
     }
   }
   logForEach(payload.diskWriteExceptionDiagnostics, "disk_write_exception") {
     [
-      "total_writes_caused": $0.totalWritesCaused,
+      "total_writes_caused": $0.totalWritesCaused
     ]
   }
   logForEach(payload.hangDiagnostics, "hang") {
     [
-      "hang_duration": $0.hangDuration,
+      "hang_duration": $0.hangDuration
     ]
   }
   logForEach(payload.cpuExceptionDiagnostics, "cpu_exception") {
