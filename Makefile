@@ -1,3 +1,10 @@
+
+lint:
+	swift-format lint --strict --recursive Sources/ Tests/
+
+format:
+	swift-format format --in-place --recursive Sources/ Tests/
+
 #: cleans up smoke test output
 clean-smoke-tests:
 	rm -rf ./smoke-tests/collector/data.json
