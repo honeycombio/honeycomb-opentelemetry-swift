@@ -104,7 +104,7 @@ mk_attr() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_diag_attr() {
-  scope="@honeycombio/instrumentation-metric-kit-diagnostics"
+  scope="@honeycombio/instrumentation-metric-kit"
   attribute_for_log_key $scope $1 $2
 }
 

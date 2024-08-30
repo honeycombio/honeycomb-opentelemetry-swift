@@ -336,7 +336,7 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
   defer { span.end() }
 
   let logger = OpenTelemetry.instance.loggerProvider.get(
-    instrumentationScopeName: "@honeycombio/instrumentation-metric-kit-diagnostics")
+    instrumentationScopeName: metricKitInstrumentationName)
 
   let now = Date()
 
