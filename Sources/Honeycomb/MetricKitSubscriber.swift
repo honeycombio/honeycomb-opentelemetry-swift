@@ -130,7 +130,7 @@ func reportMetrics(payload: MXMetricPayload) {
   captureMetric(
     key: "includes_multiple_application_versions",
     value: payload.includesMultipleApplicationVersions)
-  captureMetric(key: "latest_application-version", value: payload.latestApplicationVersion)
+  captureMetric(key: "latest_application_version", value: payload.latestApplicationVersion)
   captureMetric(key: "timestamp_begin", value: payload.timeStampBegin.timeIntervalSince1970)
   captureMetric(key: "timestamp_end", value: payload.timeStampEnd.timeIntervalSince1970)
 

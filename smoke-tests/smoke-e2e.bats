@@ -29,7 +29,7 @@ mk_attr() {
 
 @test "MetricKit values are present and units are converted" {
   assert_equal "$(mk_attr "metrickit.includes_multiple_application_versions" bool)" false
-  assert_equal "$(mk_attr "metrickit.latest_application-version" string)" '"3.14.159"'
+  assert_equal "$(mk_attr "metrickit.latest_application_version" string)" '"3.14.159"'
   assert_equal "$(mk_attr "metrickit.cpu.cpu_time" double)" 1
   assert_equal "$(mk_attr "metrickit.cpu.instruction_count" double)" 2
   assert_equal "$(mk_attr "metrickit.gpu.time" double)" 10800  # 3 hours
