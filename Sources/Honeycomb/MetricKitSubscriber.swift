@@ -81,7 +81,7 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
     let bucket = bucket as! MXHistogramBucket<UnitType>
     let estimatedValue = (bucket.bucketStart + bucket.bucketEnd) / 2.0
     let count = Double(bucket.bucketCount)
-    let estimatedSum =
+    estimatedSum =
       if let previousSum = estimatedSum {
         previousSum + estimatedValue * count
       } else {
@@ -163,7 +163,24 @@ func reportMetrics(payload: MXMetricPayload) {
     }
   }
   withCategory(payload.applicationResponsivenessMetrics, "app_responsiveness") {
-    captureMetric(key: "app_hang_time_average", value: $0.histogrammedApplicationHangTime)
+    captureMetric(key: "hang_time_average", value: $0.histogrammedApplicationHangTime)
+  }
+  withCategory(payload.cellularConditionMetrics, "cellular_condition") {
+    captureMetric(key: "bars_average", value: $0.histogrammedCellularConditionTime)
+  }
+  withCategory(payload.locationActivityMetrics, "location_activity") {
+    captureMetric(key: "best_accuracy_time", value: $0.cumulativeBestAccuracyTime)
+    captureMetric(key: "best_accuracy_for_nav_time", value: $0.cumulativeBestAccuracyForNavigationTime)
+    captureMetric(key: "accuracy_10m_time", value: $0.cumulativeNearestTenMetersAccuracyTime)
+    captureMetric(key: "accuracy_100m_time", value: $0.cumulativeHundredMetersAccuracyTime)
+    captureMetric(key: "accuracy_1km_time", value: $0.cumulativeKilometerAccuracyTime)
+    captureMetric(key: "accuracy_3km_time", value: $0.cumulativeThreeKilometersAccuracyTime)
+  }
+  withCategory(payload.networkTransferMetrics, "network_transfer") {
+    captureMetric(key: "cellular_download", value: $0.cumulativeCellularDownload)
+    captureMetric(key: "cellular_upload", value: $0.cumulativeCellularUpload)
+    captureMetric(key: "wifi_download", value: $0.cumulativeWifiDownload)
+    captureMetric(key: "wifi_upload", value: $0.cumulativeWifiUpload)
   }
   if #available(iOS 14.0, *) {
     withCategory(payload.applicationExitMetrics, "app_exit") {
@@ -346,27 +363,27 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
     logForEach(payload.appLaunchDiagnostics, "app_launch") {
       [
         "name": "app_launch",
-        "launch_duration": $0.launchDuration.value,
+        "launch_duration": $0.launchDuration,
       ]
     }
   }
   logForEach(payload.diskWriteExceptionDiagnostics, "disk_write_exception") {
     [
       "name": "disk_write_exception",
-      "total_writes_caused": $0.totalWritesCaused.value,
+      "total_writes_caused": $0.totalWritesCaused,
     ]
   }
   logForEach(payload.hangDiagnostics, "hang") {
     [
       "name": "hang",
-      "hang_duration": $0.hangDuration.value,
+      "hang_duration": $0.hangDuration,
     ]
   }
   logForEach(payload.cpuExceptionDiagnostics, "cpu_exception") {
     [
       "name": "cpu_exception",
       "total_cpu_time": $0.totalCPUTime,
-      "total_sampled_time": $0.totalSampledTime.value,
+      "total_sampled_time": $0.totalSampledTime,
     ]
   }
   logForEach(payload.crashDiagnostics, "crash") {

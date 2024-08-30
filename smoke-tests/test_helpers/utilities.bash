@@ -13,6 +13,27 @@ span_attributes_for() {
 		jq ".attributes[]"
 }
 
+# A single attribute
+# Arguments:
+#   $1 - scope
+#   $2 - span name
+#   $3 - attribute key
+#   $4 - attribute type
+attribute_for_key() {
+	attributes_from_span_named $1 $2 | \
+		jq "select (.key == \"$3\").value" | \
+		jq ".${4}Value"
+}
+
+# All attributes from a span
+# Arguments:
+#   $1 - scope
+#   $2 - span name
+attributes_from_span_named() {
+	spans_from_scope_named $1 | \
+		jq "select (.name == \"$2\").attributes[]"
+}
+
 # All resource attributes
 resource_attributes_received() {
 	spans_received | jq ".resource.attributes[]?"
