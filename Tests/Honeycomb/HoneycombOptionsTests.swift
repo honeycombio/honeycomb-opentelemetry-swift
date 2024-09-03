@@ -1,4 +1,3 @@
-
 import XCTest
 
 @testable import Honeycomb
@@ -6,18 +5,18 @@ import XCTest
 final class HoneycombOptionsTests: XCTestCase {
     func testOptionsFromPlist() throws {
         let plist = """
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-                <key>HONEYCOMB_API_KEY</key>
-                <string>plist_key</string>
-        </dict>
-        </plist>
-        """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+                    <key>HONEYCOMB_API_KEY</key>
+                    <string>plist_key</string>
+            </dict>
+            </plist>
+            """
         let plistBase64 = Data(plist.utf8).base64EncodedString()
         let dataString = "data:text/xml;base64,\(plistBase64)"
-        let dataURL = URL(string:dataString)!
+        let dataURL = URL(string: dataString)!
 
         let options = try HoneycombOptions.Builder(contentsOfFile: dataURL).build()
 
@@ -25,8 +24,8 @@ final class HoneycombOptionsTests: XCTestCase {
     }
 
     func testOptionsDefaults() throws {
-        let data: [String:String] = [
-            "HONEYCOMB_API_KEY": "key",
+        let data: [String: String] = [
+            "HONEYCOMB_API_KEY": "key"
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -35,7 +34,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedResources = [
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -49,7 +48,7 @@ final class HoneycombOptionsTests: XCTestCase {
 
         let expectedHeaders = [
             "x-honeycomb-team": "key",
-            "x-otlp-version": otlpVersion
+            "x-otlp-version": otlpVersion,
         ]
         XCTAssertEqual(expectedHeaders, options.tracesHeaders)
         XCTAssertEqual(expectedHeaders, options.metricsHeaders)
@@ -65,7 +64,7 @@ final class HoneycombOptionsTests: XCTestCase {
     }
 
     func testOptionsWithEmptyStrings() throws {
-        let data: [String:String] = [
+        let data: [String: String] = [
             "HONEYCOMB_API_KEY": "key",
             "OTEL_SERVICE_NAME": "",
             "OTEL_RESOURCE_ATTRIBUTES": "",
@@ -84,7 +83,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedResources = [
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -98,7 +97,7 @@ final class HoneycombOptionsTests: XCTestCase {
 
         let expectedHeaders = [
             "x-honeycomb-team": "key",
-            "x-otlp-version": otlpVersion
+            "x-otlp-version": otlpVersion,
         ]
         XCTAssertEqual(expectedHeaders, options.tracesHeaders)
         XCTAssertEqual(expectedHeaders, options.metricsHeaders)
@@ -114,7 +113,7 @@ final class HoneycombOptionsTests: XCTestCase {
     }
 
     func testOptionsWithFallbacks() throws {
-        let data: [String:String] = [
+        let data: [String: String] = [
             "HONEYCOMB_API_KEY": "key",
             "HONEYCOMB_API_ENDPOINT": "http://example.com:1234",
             "OTEL_SERVICE_NAME": "service",
@@ -134,7 +133,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "resource": "aaa",
             "service.name": "service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -149,7 +148,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedHeaders = [
             "header": "bbb",
             "x-honeycomb-team": "key",
-            "x-otlp-version": otlpVersion
+            "x-otlp-version": otlpVersion,
         ]
         XCTAssertEqual(expectedHeaders, options.tracesHeaders)
         XCTAssertEqual(expectedHeaders, options.metricsHeaders)
@@ -163,7 +162,7 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(OTLPProtocol.httpJSON, options.metricsProtocol)
         XCTAssertEqual(OTLPProtocol.httpJSON, options.logsProtocol)
     }
-    
+
     func testOptionsSetWithFallbacks() throws {
         let options = try HoneycombOptions.Builder()
             .setAPIKey("key")
@@ -185,7 +184,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "resource": "aaa",
             "service.name": "service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -200,7 +199,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedHeaders = [
             "header": "hhh",
             "x-honeycomb-team": "key",
-            "x-otlp-version": otlpVersion
+            "x-otlp-version": otlpVersion,
         ]
         XCTAssertEqual(expectedHeaders, options.tracesHeaders)
         XCTAssertEqual(expectedHeaders, options.metricsHeaders)
@@ -216,7 +215,7 @@ final class HoneycombOptionsTests: XCTestCase {
     }
 
     func testOptionsFullySpecified() throws {
-        let data: [String:String] = [
+        let data: [String: String] = [
             "DEBUG": "true",
             "HONEYCOMB_API_KEY": "key",
             "HONEYCOMB_DATASET": "dataset",
@@ -244,7 +243,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "OTEL_EXPORTER_OTLP_LOGS_HEADERS": "header=lll",
             "OTEL_EXPORTER_OTLP_LOGS_TIMEOUT": "60000",
             "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL": "grpc",
-            "SAMPLE_RATE": "42"
+            "SAMPLE_RATE": "42",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -254,7 +253,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "resource": "aaa",
             "service.name": "service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -266,24 +265,33 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual("http://metrics.example.com:1234", options.metricsEndpoint)
         XCTAssertEqual("http://logs.example.com:1234", options.logsEndpoint)
 
-        XCTAssertEqual([
-            "header": "ttt",
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "x-otlp-version": otlpVersion
-        ], options.tracesHeaders)
-        XCTAssertEqual([
-            "header": "mmm",
-            "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-            "x-otlp-version": otlpVersion
-        ], options.metricsHeaders)
-        XCTAssertEqual([
-            "header": "lll",
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "cccccccccccccccccccccccccccccccc",
-            "x-otlp-version": otlpVersion
-        ], options.logsHeaders)
+        XCTAssertEqual(
+            [
+                "header": "ttt",
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "x-otlp-version": otlpVersion,
+            ],
+            options.tracesHeaders
+        )
+        XCTAssertEqual(
+            [
+                "header": "mmm",
+                "x-honeycomb-dataset": "metrics",
+                "x-honeycomb-team": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "x-otlp-version": otlpVersion,
+            ],
+            options.metricsHeaders
+        )
+        XCTAssertEqual(
+            [
+                "header": "lll",
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": "cccccccccccccccccccccccccccccccc",
+                "x-otlp-version": otlpVersion,
+            ],
+            options.logsHeaders
+        )
 
         XCTAssertEqual(40.0, options.tracesTimeout)
         XCTAssertEqual(50.0, options.metricsTimeout)
@@ -292,7 +300,7 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(OTLPProtocol.grpc, options.tracesProtocol)
         XCTAssertEqual(OTLPProtocol.grpc, options.metricsProtocol)
         XCTAssertEqual(OTLPProtocol.grpc, options.logsProtocol)
-        
+
         XCTAssertTrue(options.debug)
         XCTAssertEqual(42, options.sampleRate)
     }
@@ -330,7 +338,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "resource": "aaa",
             "service.name": "service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -342,24 +350,33 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual("http://metrics.example.com:1234", options.metricsEndpoint)
         XCTAssertEqual("http://logs.example.com:1234", options.logsEndpoint)
 
-        XCTAssertEqual([
-            "header": "ttt",
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "x-otlp-version": otlpVersion
-        ], options.tracesHeaders)
-        XCTAssertEqual([
-            "header": "mmm",
-            "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-            "x-otlp-version": otlpVersion
-        ], options.metricsHeaders)
-        XCTAssertEqual([
-            "header": "lll",
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": "cccccccccccccccccccccccccccccccc",
-            "x-otlp-version": otlpVersion
-        ], options.logsHeaders)
+        XCTAssertEqual(
+            [
+                "header": "ttt",
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "x-otlp-version": otlpVersion,
+            ],
+            options.tracesHeaders
+        )
+        XCTAssertEqual(
+            [
+                "header": "mmm",
+                "x-honeycomb-dataset": "metrics",
+                "x-honeycomb-team": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "x-otlp-version": otlpVersion,
+            ],
+            options.metricsHeaders
+        )
+        XCTAssertEqual(
+            [
+                "header": "lll",
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": "cccccccccccccccccccccccccccccccc",
+                "x-otlp-version": otlpVersion,
+            ],
+            options.logsHeaders
+        )
 
         XCTAssertEqual(40.0, options.tracesTimeout)
         XCTAssertEqual(50.0, options.metricsTimeout)
@@ -368,85 +385,112 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(OTLPProtocol.grpc, options.tracesProtocol)
         XCTAssertEqual(OTLPProtocol.grpc, options.metricsProtocol)
         XCTAssertEqual(OTLPProtocol.grpc, options.logsProtocol)
-        
+
         XCTAssertTrue(options.debug)
         XCTAssertEqual(42, options.sampleRate)
     }
 
     func testDatasetSetWithClassicKey() throws {
         let key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        
+
         let options = try HoneycombOptions.Builder()
             .setDataset("dataset")
             .setMetricsDataset("metrics")
             .setAPIKey(key)
             .build()
 
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.tracesHeaders)
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.metricsHeaders)
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.logsHeaders)
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.tracesHeaders
+        )
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "metrics",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.metricsHeaders
+        )
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.logsHeaders
+        )
     }
 
     func testDatasetSetWithIngestClassicKey() throws {
         let key = "hcaic_7890123456789012345678901234567890123456789012345678901234"
-        
+
         let options = try HoneycombOptions.Builder()
             .setDataset("dataset")
             .setMetricsDataset("metrics")
             .setAPIKey(key)
             .build()
 
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.tracesHeaders)
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.metricsHeaders)
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "dataset",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.logsHeaders)
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.tracesHeaders
+        )
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "metrics",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.metricsHeaders
+        )
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "dataset",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.logsHeaders
+        )
     }
 
     func testDatasetNotSetWithNewKey() throws {
         let key = "not_classic"
-        
+
         let options = try HoneycombOptions.Builder()
             .setDataset("dataset")
             .setMetricsDataset("metrics")
             .setAPIKey(key)
             .build()
 
-        XCTAssertEqual([
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.tracesHeaders)
-        XCTAssertEqual([
-            "x-honeycomb-dataset": "metrics",
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.metricsHeaders)
-        XCTAssertEqual([
-            "x-honeycomb-team": key,
-            "x-otlp-version": otlpVersion
-        ], options.logsHeaders)
+        XCTAssertEqual(
+            [
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.tracesHeaders
+        )
+        XCTAssertEqual(
+            [
+                "x-honeycomb-dataset": "metrics",
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.metricsHeaders
+        )
+        XCTAssertEqual(
+            [
+                "x-honeycomb-team": key,
+                "x-otlp-version": otlpVersion,
+            ],
+            options.logsHeaders
+        )
     }
 
     func testHeaderParsing() throws {
@@ -455,12 +499,12 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual("bar", dict["foo"])
         XCTAssertEqual("123 456", dict["baz"])
     }
-    
+
     func testHeaderMerging() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
             "OTEL_EXPORTER_OTLP_HEADERS": "foo=bar,baz=qux",
-            "OTEL_EXPORTER_OTLP_TRACES_HEADERS": "foo=bar2,merged=yes"
+            "OTEL_EXPORTER_OTLP_TRACES_HEADERS": "foo=bar2,merged=yes",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -470,7 +514,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "foo": "bar2",
             "merged": "yes",
             "x-honeycomb-team": "key",
-            "x-otlp-version": otlpVersion
+            "x-otlp-version": otlpVersion,
         ]
         XCTAssertEqual(expected, options.tracesHeaders)
     }
@@ -479,7 +523,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let data = [
             "HONEYCOMB_API_KEY": "key",
             "OTEL_SERVICE_NAME": "explicit",
-            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource"
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -488,15 +532,15 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedResources = [
             "service.name": "resource",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
-    
+
     func testServiceNameFromResourceAttributes() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
-            "OTEL_RESOURCE_ATTRIBUTES": "service.name=better"
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=better",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -505,13 +549,13 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedResources = [
             "service.name": "better",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
-    
+
     func testServiceNameDefault() throws {
-        let data: [String:String] = [
+        let data: [String: String] = [
             "HONEYCOMB_API_KEY": "key"
         ]
         let source = HoneycombOptionsSource(info: data)
@@ -521,28 +565,31 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedResources = [
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
-            "honeycomb.distro.runtime_version": runtimeVersion
+            "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
-    
+
     func testMalformedKeyValueString() throws {
         XCTAssertThrowsError(try parseKeyValueList("foo=bar,baz")) { e in
             XCTAssert(e is HoneycombOptionsError)
             XCTAssertEqual(e as? HoneycombOptionsError, .malformedKeyValueString("baz"))
         }
     }
-    
+
     func testMissingAPIKey() throws {
-        let data: [String:String] = [:]
+        let data: [String: String] = [:]
         let source = HoneycombOptionsSource(info: data)
 
         XCTAssertThrowsError(try HoneycombOptions.Builder(source: source).build()) { e in
             XCTAssert(e is HoneycombOptionsError)
-            XCTAssertEqual(e as? HoneycombOptionsError, .missingAPIKey("missing API key: call setAPIKey()"))
+            XCTAssertEqual(
+                e as? HoneycombOptionsError,
+                .missingAPIKey("missing API key: call setAPIKey()")
+            )
         }
     }
-    
+
     func testIncorrectType() throws {
         let data = [
             "OTEL_EXPORTER_OTLP_TIMEOUT": "not a number"
@@ -551,7 +598,10 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertThrowsError(try HoneycombOptions.Builder(source: source).build()) { e in
             XCTAssert(e is HoneycombOptionsError)
-            XCTAssertEqual(e as? HoneycombOptionsError, .incorrectType("OTEL_EXPORTER_OTLP_TIMEOUT"))
+            XCTAssertEqual(
+                e as? HoneycombOptionsError,
+                .incorrectType("OTEL_EXPORTER_OTLP_TIMEOUT")
+            )
         }
     }
 
@@ -563,8 +613,12 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertThrowsError(try HoneycombOptions.Builder(source: source).build()) { e in
             XCTAssert(e is HoneycombOptionsError)
-            XCTAssertEqual(e as? HoneycombOptionsError,
-                           .unsupportedExporter("unsupported exporter invalid-exporter for OTEL_TRACES_EXPORTER"))
+            XCTAssertEqual(
+                e as? HoneycombOptionsError,
+                .unsupportedExporter(
+                    "unsupported exporter invalid-exporter for OTEL_TRACES_EXPORTER"
+                )
+            )
         }
     }
 
@@ -576,7 +630,10 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertThrowsError(try HoneycombOptions.Builder(source: source).build()) { e in
             XCTAssert(e is HoneycombOptionsError)
-            XCTAssertEqual(e as? HoneycombOptionsError, .unsupportedProtocol("invalid protocol invalid-protocol"))
+            XCTAssertEqual(
+                e as? HoneycombOptionsError,
+                .unsupportedProtocol("invalid protocol invalid-protocol")
+            )
         }
     }
 }

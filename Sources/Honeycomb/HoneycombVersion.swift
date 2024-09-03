@@ -1,4 +1,3 @@
-
 import Foundation
 
 // TODO: Make a build script that injects this.

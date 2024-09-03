@@ -1,9 +1,6 @@
-
 import Foundation
 
-/**
- * Parses a string representing an OTLPProtocol.
- */
+/// Parses a string representing an OTLPProtocol.
 private func parseOTLPProtocol(_ s: String) throws -> OTLPProtocol? {
     return switch s {
     case "": nil
@@ -14,29 +11,29 @@ private func parseOTLPProtocol(_ s: String) throws -> OTLPProtocol? {
     }
 }
 
-/**
- * Parses a list of key-value pairs, as used in specifying resources and headers.
- *
- * Headers are comma-separated pairs with equals, such as:
- *     key1=value1,key2=value2
- * See the format specified here:
- * https://opentelemetry.io/docs/specs/otel/resource/sdk/#specifying-resource-information-via-an-environment-variable
- */
+/// Parses a list of key-value pairs, as used in specifying resources and headers.
+///
+/// Headers are comma-separated pairs with equals, such as:
+///     key1=value1,key2=value2
+/// See the format specified here:
+/// https://opentelemetry.io/docs/specs/otel/resource/sdk/#specifying-resource-information-via-an-environment-variable
 internal func parseKeyValueList(_ maybeKeyValueString: String?) throws -> [String: String] {
     var result: [String: String] = [:]
     guard let keyValueString = maybeKeyValueString else {
         return result
     }
-    let parts: [String] = keyValueString.split(separator: ",").map {
-        String($0).trimmingCharacters(in: .whitespaces)
-    }
+    let parts: [String] = keyValueString.split(separator: ",")
+        .map {
+            String($0).trimmingCharacters(in: .whitespaces)
+        }
     for part: String in parts {
         if part == "" {
             continue
         }
-        let keyAndVal: [String] = part.split(separator: "=", maxSplits: 1).map {
-            String($0).trimmingCharacters(in: .whitespaces)
-        }
+        let keyAndVal: [String] = part.split(separator: "=", maxSplits: 1)
+            .map {
+                String($0).trimmingCharacters(in: .whitespaces)
+            }
         guard keyAndVal.count == 2 else {
             throw HoneycombOptionsError.malformedKeyValueString(part)
         }
@@ -51,17 +48,15 @@ internal func parseKeyValueList(_ maybeKeyValueString: String?) throws -> [Strin
     return result
 }
 
-/**
- * A dictionary with keys and values for configuring Honeycomb.
- * Provides getters that enforce type safety.
- */
+/// A dictionary with keys and values for configuring Honeycomb.
+/// Provides getters that enforce type safety.
 internal class HoneycombOptionsSource {
     let info: [String: Any]?
-    
+
     init(info: [String: Any]?) {
         self.info = info
     }
-    
+
     func getString(_ key: String) throws -> String? {
         return switch info?[key] {
         case nil:
@@ -146,15 +141,16 @@ internal class HoneycombOptionsSource {
             throw HoneycombOptionsError.incorrectType(key)
         }
     }
-    
+
     func getKeyValueList(_ key: String) throws -> [String: String] {
         let raw = try self.getString(key)
         return try parseKeyValueList(raw)
     }
-    
+
     func getOTLPProtocol(_ key: String) throws -> OTLPProtocol? {
-        return try getString(key).flatMap { s in
-            try parseOTLPProtocol(s)
-        }
+        return try getString(key)
+            .flatMap { s in
+                try parseOTLPProtocol(s)
+            }
     }
 }

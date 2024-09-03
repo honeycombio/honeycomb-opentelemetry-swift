@@ -1,12 +1,11 @@
-
 import Foundation
 import GRPC
 import NIO
 import OpenTelemetryApi
-import OpenTelemetrySdk
 import OpenTelemetryProtocolExporterCommon
-import OpenTelemetryProtocolExporterHttp
 import OpenTelemetryProtocolExporterGrpc
+import OpenTelemetryProtocolExporterHttp
+import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 
@@ -37,109 +36,128 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 
 class Honeycomb {
     static public func configure(options: HoneycombOptions) throws {
-        guard let tracesEndpoint = URL(string:options.tracesEndpoint) else {
+        guard let tracesEndpoint = URL(string: options.tracesEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.tracesEndpoint)
         }
-        guard let metricsEndpoint = URL(string:options.metricsEndpoint) else {
+        guard let metricsEndpoint = URL(string: options.metricsEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.metricsEndpoint)
         }
-        guard let logsEndpoint = URL(string:options.logsEndpoint) else {
+        guard let logsEndpoint = URL(string: options.logsEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.logsEndpoint)
         }
-        
+
         let otlpTracesConfig = OtlpConfiguration(
             timeout: options.tracesTimeout,
-            headers: createKeyValueList(options.tracesHeaders))
+            headers: createKeyValueList(options.tracesHeaders)
+        )
         let otlpMetricsConfig = OtlpConfiguration(
             timeout: options.metricsTimeout,
-            headers: createKeyValueList(options.metricsHeaders))
+            headers: createKeyValueList(options.metricsHeaders)
+        )
         let otlpLogsConfig = OtlpConfiguration(
             timeout: options.logsTimeout,
-            headers: createKeyValueList(options.logsHeaders))
-        
+            headers: createKeyValueList(options.logsHeaders)
+        )
+
         let resource = Resource.init(attributes: createAttributeDict(options.resourceAttributes))
-        
+
         // Traces
-        
+
         var traceExporter: SpanExporter
         if options.tracesProtocol == .grpc {
             // Break down the URL into host and port, or use defaults from the spec.
             let host = tracesEndpoint.host ?? "api.honeycomb.io"
             let port = tracesEndpoint.port ?? 4317
-            
-            let channel = ClientConnection.usingPlatformAppropriateTLS(for: MultiThreadedEventLoopGroup(numberOfThreads:1))
+
+            let channel =
+                ClientConnection.usingPlatformAppropriateTLS(
+                    for: MultiThreadedEventLoopGroup(numberOfThreads: 1)
+                )
                 .connect(host: host, port: port)
-            
+
             traceExporter = OtlpTraceExporter(channel: channel, config: otlpTracesConfig)
         } else if options.tracesProtocol == .httpJSON {
             throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
-            traceExporter = OtlpHttpTraceExporter(endpoint: tracesEndpoint, config: otlpTracesConfig)
+            traceExporter = OtlpHttpTraceExporter(
+                endpoint: tracesEndpoint,
+                config: otlpTracesConfig
+            )
         }
-        
-        let spanExporter = if options.debug {
-            MultiSpanExporter(spanExporters: [traceExporter, StdoutSpanExporter()])
-        } else {
-            traceExporter
-        }
+
+        let spanExporter =
+            if options.debug {
+                MultiSpanExporter(spanExporters: [traceExporter, StdoutSpanExporter()])
+            } else {
+                traceExporter
+            }
         let spanProcessor = SimpleSpanProcessor(spanExporter: spanExporter)
-        
+
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .with(resource: resource)
             .build()
-        
+
         // Metrics
-        
+
         var metricExporter: MetricExporter
         if options.metricsProtocol == .grpc {
             // Break down the URL into host and port, or use defaults from the spec.
             let host = metricsEndpoint.host ?? "api.honeycomb.io"
             let port = metricsEndpoint.port ?? 4317
-            
-            let channel = ClientConnection.usingPlatformAppropriateTLS(for: MultiThreadedEventLoopGroup(numberOfThreads:1))
+
+            let channel =
+                ClientConnection.usingPlatformAppropriateTLS(
+                    for: MultiThreadedEventLoopGroup(numberOfThreads: 1)
+                )
                 .connect(host: host, port: port)
-            
+
             metricExporter = OtlpMetricExporter(channel: channel, config: otlpMetricsConfig)
         } else if options.metricsProtocol == .httpJSON {
             throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
-            metricExporter = OtlpHttpMetricExporter(endpoint: metricsEndpoint, config: otlpMetricsConfig)
+            metricExporter = OtlpHttpMetricExporter(
+                endpoint: metricsEndpoint,
+                config: otlpMetricsConfig
+            )
         }
-        
+
         let meterProvider = MeterProviderBuilder()
             .with(processor: MetricProcessorSdk())
             .with(exporter: metricExporter)
             .with(resource: Resource())
             .build()
-        
+
         // Logs
-        
+
         var logExporter: LogRecordExporter
         if options.logsProtocol == .grpc {
             // Break down the URL into host and port, or use defaults from the spec.
             let host = logsEndpoint.host ?? "api.honeycomb.io"
             let port = logsEndpoint.port ?? 4317
-            
-            let channel = ClientConnection.usingPlatformAppropriateTLS(for: MultiThreadedEventLoopGroup(numberOfThreads:1))
+
+            let channel =
+                ClientConnection.usingPlatformAppropriateTLS(
+                    for: MultiThreadedEventLoopGroup(numberOfThreads: 1)
+                )
                 .connect(host: host, port: port)
-            
+
             logExporter = OtlpLogExporter(channel: channel, config: otlpLogsConfig)
         } else if options.logsProtocol == .httpJSON {
             throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             logExporter = OtlpHttpLogExporter(endpoint: logsEndpoint, config: otlpLogsConfig)
         }
-        
+
         let logProcessor = SimpleLogRecordProcessor(logRecordExporter: logExporter)
-        
+
         let loggerProvider = LoggerProviderBuilder()
             .with(processors: [logProcessor])
             .with(resource: resource)
             .build()
-        
+
         // Register everything at once, so that we don't leave OTel partially initialized.
-        
+
         OpenTelemetry.registerTracerProvider(tracerProvider: tracerProvider)
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)

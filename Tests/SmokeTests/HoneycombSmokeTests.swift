@@ -1,10 +1,8 @@
-
+import OpenTelemetryApi
+import OpenTelemetrySdk
 import XCTest
 
 @testable import Honeycomb
-
-import OpenTelemetryApi
-import OpenTelemetrySdk
 
 final class HoneycombSmokeTests: XCTestCase {
     override class func setUp() {
@@ -20,7 +18,7 @@ final class HoneycombSmokeTests: XCTestCase {
             NSException(name: NSExceptionName("HoneycombOptionsError"), reason: "\(error)").raise()
         }
     }
-    
+
     override class func tearDown() {
         let tracerProvider = OpenTelemetry.instance.tracerProvider as! TracerProviderSdk
         tracerProvider.forceFlush()
@@ -36,7 +34,8 @@ final class HoneycombSmokeTests: XCTestCase {
     func testSimpleSpan() throws {
         let tracerProvider = OpenTelemetry.instance.tracerProvider.get(
             instrumentationName: "@honeycombio/smoke-test",
-            instrumentationVersion: nil)
+            instrumentationVersion: nil
+        )
         let span = tracerProvider.spanBuilder(spanName: "test-span").startSpan()
         span.end()
     }

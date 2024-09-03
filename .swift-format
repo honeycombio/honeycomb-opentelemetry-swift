@@ -5,7 +5,8 @@
         "spaces": 4
     },
     "maximumBlankLines": 1,
-    "respectsExistingLineBreaks": false,
-    "lineBreakBeforeControlFlowKeywords": true,
-    "lineBreakBeforeEachArgument": true
+    "respectsExistingLineBreaks": true,
+    "lineBreakBeforeControlFlowKeywords": false,
+    "lineBreakBeforeEachArgument": true,
+    "lineBreakAroundMultilineExpressionChainComponents": true
 }

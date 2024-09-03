@@ -1,4 +1,3 @@
-
 import Foundation
 
 internal let runtimeVersion = ProcessInfo().operatingSystemVersionString
@@ -56,7 +55,7 @@ private let otlpTracesProtocolKey = "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL"
 private let otlpMetricsProtocolKey = "OTEL_EXPORTER_OTLP_METRICS_PROTOCOL"
 private let otlpLogsProtocolKey = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL"
 
-/** The protocol for OTLP to use when talking to its backend. */
+/// The protocol for OTLP to use when talking to its backend.
 public enum OTLPProtocol {
     case grpc
     case httpProtobuf
@@ -70,9 +69,7 @@ private func matchesRegex(pattern: String, string: String) -> Bool {
     return string.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil
 }
 
-/**
- * Returns whether the passed in API key is classic or not.
- */
+/// Returns whether the passed in API key is classic or not.
 private func isClassic(key: String) -> Bool {
     return switch key.count {
     case 0: false
@@ -82,33 +79,31 @@ private func isClassic(key: String) -> Bool {
     }
 }
 
-/**
- * Gets the endpoint to use for a particular signal.
- *
- * The logic is this:
- * 1. If HONEYCOMB_signal_ENDPOINT is set, return it.
- * 2. Determine the base url:
- *    a. If HONEYCOMB_API_ENDPOINT is set, that's the base url.
- *    b. Else, use the default as the base url.
- * 3. If the protocol is GRPC, return the base url.
- * 4. If the protocol is HTTP, return the base url with a suffix based on the signal.
- *
- * Note that even though OpenTelemetry defines its own defaults for endpoints, they will never be
- * used, as the standard Honeycomb-specific logic falls back to its own default.
- */
+/// Gets the endpoint to use for a particular signal.
+///
+/// The logic is this:
+/// 1. If HONEYCOMB_signal_ENDPOINT is set, return it.
+/// 2. Determine the base url:
+///    a. If HONEYCOMB_API_ENDPOINT is set, that's the base url.
+///    b. Else, use the default as the base url.
+/// 3. If the protocol is GRPC, return the base url.
+/// 4. If the protocol is HTTP, return the base url with a suffix based on the signal.
+///
+/// Note that even though OpenTelemetry defines its own defaults for endpoints, they will never be
+/// used, as the standard Honeycomb-specific logic falls back to its own default.
 private func getHoneycombEndpoint(
     endpoint: String?,
     fallback: String,
     proto: OTLPProtocol,
     suffix: String
 ) -> String {
-    if (endpoint != nil) {
+    if endpoint != nil {
         return endpoint!
     }
-    if (proto == .grpc) {
+    if proto == .grpc {
         return fallback
     }
-    return if (fallback.hasSuffix("/")) {
+    return if fallback.hasSuffix("/") {
         "\(fallback)\(suffix)"
     } else {
         "\(fallback)/\(suffix)"
@@ -120,9 +115,7 @@ private func takeSecond(_: String, second: String) -> String {
     return second
 }
 
-/**
- * Gets the headers to use for a particular exporter.
- */
+/// Gets the headers to use for a particular exporter.
 private func getHeaders(
     apiKey: String,
     dataset: String?,
@@ -138,14 +131,16 @@ private func getHeaders(
     }
 
     headers.merge(signalHeaders, uniquingKeysWith: takeSecond)
-    
+
     return headers
 }
 
 private func verifyExporter(source: HoneycombOptionsSource, key: String) throws {
     if let exporter = try source.getString(key)?.lowercased() {
-        if (exporter != "otlp") {
-            throw HoneycombOptionsError.unsupportedExporter("unsupported exporter \(exporter) for \(key)")
+        if exporter != "otlp" {
+            throw HoneycombOptionsError.unsupportedExporter(
+                "unsupported exporter \(exporter) for \(key)"
+            )
         }
     }
 }
@@ -159,14 +154,12 @@ extension Dictionary {
     }
 }
 
-/**
- * The set of options for how to configure Honeycomb.
- *
- * These keys and defaults are defined at:
- * https://github.com/honeycombio/specs/blob/main/specs/otel-sdk-distro.md
- * https://opentelemetry.io/docs/languages/sdk-configuration/general/
- * https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/
- */
+/// The set of options for how to configure Honeycomb.
+///
+/// These keys and defaults are defined at:
+/// https://github.com/honeycombio/specs/blob/main/specs/otel-sdk-distro.md
+/// https://opentelemetry.io/docs/languages/sdk-configuration/general/
+/// https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/
 class HoneycombOptions {
     let tracesApiKey: String
     let metricsApiKey: String
@@ -178,49 +171,51 @@ class HoneycombOptions {
     let logsEndpoint: String
     let sampleRate: Int
     let debug: Bool
-    
+
     let serviceName: String
     let resourceAttributes: [String: String]
     let tracesSampler: String
     let tracesSamplerArg: String?
     let propagators: String
-    
+
     let tracesHeaders: [String: String]
     let metricsHeaders: [String: String]
     let logsHeaders: [String: String]
-    
+
     let tracesTimeout: TimeInterval
     let metricsTimeout: TimeInterval
     let logsTimeout: TimeInterval
-    
+
     let tracesProtocol: OTLPProtocol
     let metricsProtocol: OTLPProtocol
     let logsProtocol: OTLPProtocol
-    
-    init(tracesApiKey: String,
-         metricsApiKey: String,
-         logsApiKey: String,
-         dataset: String?,
-         metricsDataset: String?,
-         tracesEndpoint: String,
-         metricsEndpoint: String,
-         logsEndpoint: String,
-         sampleRate: Int,
-         debug: Bool,
-         serviceName: String,
-         resourceAttributes: [String : String],
-         tracesSampler: String,
-         tracesSamplerArg: String?,
-         propagators: String,
-         tracesHeaders: [String : String],
-         metricsHeaders: [String : String],
-         logsHeaders: [String : String],
-         tracesTimeout: TimeInterval,
-         metricsTimeout: TimeInterval,
-         logsTimeout: TimeInterval,
-         tracesProtocol: OTLPProtocol,
-         metricsProtocol: OTLPProtocol,
-         logsProtocol: OTLPProtocol) {
+
+    init(
+        tracesApiKey: String,
+        metricsApiKey: String,
+        logsApiKey: String,
+        dataset: String?,
+        metricsDataset: String?,
+        tracesEndpoint: String,
+        metricsEndpoint: String,
+        logsEndpoint: String,
+        sampleRate: Int,
+        debug: Bool,
+        serviceName: String,
+        resourceAttributes: [String: String],
+        tracesSampler: String,
+        tracesSamplerArg: String?,
+        propagators: String,
+        tracesHeaders: [String: String],
+        metricsHeaders: [String: String],
+        logsHeaders: [String: String],
+        tracesTimeout: TimeInterval,
+        metricsTimeout: TimeInterval,
+        logsTimeout: TimeInterval,
+        tracesProtocol: OTLPProtocol,
+        metricsProtocol: OTLPProtocol,
+        logsProtocol: OTLPProtocol
+    ) {
 
         self.tracesApiKey = tracesApiKey
         self.metricsApiKey = metricsApiKey
@@ -247,48 +242,48 @@ class HoneycombOptions {
         self.metricsProtocol = metricsProtocol
         self.logsProtocol = logsProtocol
     }
-    
+
     class Builder {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
         private var metricsApiKey: String? = nil
         private var logsApiKey: String? = nil
-        
+
         private var dataset: String? = nil
         private var metricsDataset: String? = nil
-        
+
         private var apiEndpoint: String = honeycombApiEndpointDefault
         private var tracesEndpoint: String? = nil
         private var metricsEndpoint: String? = nil
         private var logsEndpoint: String? = nil
-        
+
         private var sampleRate: Int = 1
         private var debug: Bool = false
-        
+
         private var serviceName: String? = nil
         private var resourceAttributes: [String: String] = [:]
         private var tracesSampler: String = otelTracesSamplerDefault
         private var tracesSamplerArg: String? = nil
         private var propagators: String = otelPropagatorsDefault
-        
+
         private var headers: [String: String] = [:]
         private var tracesHeaders: [String: String] = [:]
         private var metricsHeaders: [String: String] = [:]
         private var logsHeaders: [String: String] = [:]
-        
+
         private var timeout: TimeInterval = 10.0
         private var tracesTimeout: TimeInterval? = nil
         private var metricsTimeout: TimeInterval? = nil
         private var logsTimeout: TimeInterval? = nil
-        
+
         private var `protocol`: OTLPProtocol = .httpProtobuf
         private var tracesProtocol: OTLPProtocol? = nil
         private var metricsProtocol: OTLPProtocol? = nil
         private var logsProtocol: OTLPProtocol? = nil
-        
+
         /** Creates a builder with default options. */
         init() {}
-        
+
         internal convenience init(source: HoneycombOptionsSource) throws {
             self.init()
             try configureFromSource(source: source)
@@ -297,7 +292,12 @@ class HoneycombOptions {
         /** Creates a build with options pre-propulated from a plist file. */
         convenience init(contentsOfFile path: URL) throws {
             let data = try Data(contentsOf: path)
-            let info = try PropertyListSerialization.propertyList(from: data, options: .mutableContainers, format: nil) as? [String: Any]
+            let info =
+                try PropertyListSerialization.propertyList(
+                    from: data,
+                    options: .mutableContainers,
+                    format: nil
+                ) as? [String: Any]
             try self.init(source: HoneycombOptionsSource(info: info))
         }
 
@@ -486,7 +486,7 @@ class HoneycombOptions {
         func build() throws -> HoneycombOptions {
             // If any API key isn't set, consider it a fatal error.
             let defaultApiKey: () throws -> String = {
-                if (self.apiKey == nil) {
+                if self.apiKey == nil {
                     throw HoneycombOptionsError.missingAPIKey("missing API key: call setAPIKey()")
                 }
                 return self.apiKey!
@@ -497,8 +497,8 @@ class HoneycombOptions {
             // Any explicit service name overrides the one in the resource attributes.
             let serviceName: String =
                 self.serviceName
-                    ?? resourceAttributes["service.name"]
-                    ?? otelServiceNameDefault
+                ?? resourceAttributes["service.name"]
+                ?? otelServiceNameDefault
 
             /*
              * Add automatic entries to resource attributes. According to the Honeycomb spec,
@@ -525,7 +525,7 @@ class HoneycombOptions {
             let tracesHeaders =
                 getHeaders(
                     apiKey: tracesApiKey,
-                    dataset: isClassic(key:tracesApiKey) ? dataset : nil,
+                    dataset: isClassic(key: tracesApiKey) ? dataset : nil,
                     generalHeaders: headers,
                     signalHeaders: self.tracesHeaders
                 )
@@ -539,7 +539,7 @@ class HoneycombOptions {
             let logsHeaders =
                 getHeaders(
                     apiKey: logsApiKey,
-                    dataset: isClassic(key:tracesApiKey) ? dataset : nil,
+                    dataset: isClassic(key: tracesApiKey) ? dataset : nil,
                     generalHeaders: headers,
                     signalHeaders: self.logsHeaders
                 )
