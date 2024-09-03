@@ -5,6 +5,15 @@ orbs:
   macos: circleci/macos@2
 
 jobs:
+  lint:
+    macos:
+      xcode: 16.1.0
+    resource_class: macos.m1.medium.gen1
+
+    steps:
+      - checkout
+      - run: make lint
+
   tests:
     macos:
       xcode: 15.4.0
@@ -20,6 +29,17 @@ jobs:
       - run: xcodebuild test -scheme honeycomb-opentelemetry-swift -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
 
 workflows:
+  lint:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - lint
+
   unit-tests:
     triggers:
       - schedule:
