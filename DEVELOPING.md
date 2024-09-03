@@ -28,7 +28,8 @@ To install the Xcode Command Line Tools, first install and run Xcode. Then run:
 xcode-select --install
 ```
 
-Install `swift-format` for auto-formatting. Note: Xcode 16.0 and later will include this pre-installed.
+If you are on Xcode 16.0 or later, `swift-format` is pre-installed. But if you are on an earlier
+version, you can install it manually with brew.
 
 ```sh
 brew install swift-format
