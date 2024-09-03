@@ -281,7 +281,7 @@ class HoneycombOptions {
         private var metricsProtocol: OTLPProtocol? = nil
         private var logsProtocol: OTLPProtocol? = nil
 
-        /** Creates a builder with default options. */
+        /// Creates a builder with default options.
         init() {}
 
         internal convenience init(source: HoneycombOptionsSource) throws {
@@ -289,7 +289,7 @@ class HoneycombOptions {
             try configureFromSource(source: source)
         }
 
-        /** Creates a build with options pre-propulated from a plist file. */
+        /// Creates a build with options pre-propulated from a plist file.
         convenience init(contentsOfFile path: URL) throws {
             let data = try Data(contentsOf: path)
             let info =
@@ -500,11 +500,10 @@ class HoneycombOptions {
                 ?? resourceAttributes["service.name"]
                 ?? otelServiceNameDefault
 
-            /*
-             * Add automatic entries to resource attributes. According to the Honeycomb spec,
-             * resource attributes should never be overwritten by automatic values. So, if there are
-             * two different service names set, this will use the resource attributes version.
-             */
+            // Add automatic entries to resource attributes. According to the Honeycomb spec,
+            // resource attributes should never be overwritten by automatic values. So, if there are
+            // two different service names set, this will use the resource attributes version.
+
             // Make sure the service name is in the resource attributes.
             resourceAttributes.putIfAbsent("service.name", serviceName)
             // The SDK version is generated from build.gradle.kts.
