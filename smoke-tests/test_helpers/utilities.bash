@@ -13,6 +13,39 @@ span_attributes_for() {
 		jq ".attributes[]"
 }
 
+# A single span attribute
+# Arguments:
+#   $1 - scope
+#   $2 - span name
+#   $3 - attribute key
+#   $4 - attribute type
+attribute_for_span_key() {
+	attributes_from_span_named $1 $2 | \
+		jq "select (.key == \"$3\").value" | \
+		jq ".${4}Value"
+}
+
+# A single log attribute
+# Arguments:
+#   $1 - scope
+#   $2 - attribute key
+#   $3 - attribute type
+attribute_for_log_key() {
+	logs_from_scope_named $1 | \
+		jq ".attributes[]" | \
+		jq "select (.key == \"$2\").value" | \
+		jq ".${3}Value"
+}
+
+# All attributes from a span
+# Arguments:
+#   $1 - scope
+#   $2 - span name
+attributes_from_span_named() {
+	spans_from_scope_named $1 | \
+		jq "select (.name == \"$2\").attributes[]"
+}
+
 # All resource attributes
 resource_attributes_received() {
 	spans_received | jq ".resource.attributes[]?"
@@ -24,9 +57,20 @@ spans_from_scope_named() {
 	spans_received | jq ".scopeSpans[] | select(.scope.name == \"$1\").spans[]"
 }
 
+# Logs for a given scope
+# Arguments: $1 - scope name
+logs_from_scope_named() {
+	logs_received | jq ".scopeLogs[] | select(.scope.name == \"$1\").logRecords[]"
+}
+
 # All spans received
 spans_received() {
 	jq ".resourceSpans[]?" ./collector/data.json
+}
+
+# All logs received
+logs_received() {
+	jq ".resourceLogs[]?" ./collector/data.json
 }
 
 # ASSERTION HELPERS
