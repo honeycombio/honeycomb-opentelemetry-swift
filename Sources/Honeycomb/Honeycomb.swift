@@ -36,8 +36,8 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
-  static private let metricKitSubscriber = MetricKitSubscriber()
-  
+    static private let metricKitSubscriber = MetricKitSubscriber()
+
     static public func configure(options: HoneycombOptions) throws {
         guard let tracesEndpoint = URL(string: options.tracesEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.tracesEndpoint)
@@ -165,6 +165,6 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-       MXMetricManager.shared.add(self.metricKitSubscriber)
+        MXMetricManager.shared.add(self.metricKitSubscriber)
     }
 }
