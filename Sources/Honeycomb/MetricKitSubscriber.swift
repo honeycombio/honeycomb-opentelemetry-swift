@@ -296,7 +296,6 @@ func reportMetrics(payload: MXMetricPayload) {
       span.setAttribute(key: "signpost.category", value: signpostMetric.signpostCategory)
       span.setAttribute(key: "signpost.count", value: signpostMetric.totalCount)
       if let intervalData = signpostMetric.signpostIntervalData {
-        //override var histogrammedSignpostDuration: MXHistogram<UnitDuration> {
         if let cpuTime = intervalData.cumulativeCPUTime {
           span.setAttribute(
             key: "signpost.cpu_time",
@@ -404,7 +403,6 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
         attrs["exception.objc.type"] = exceptionReason.exceptionType
         attrs["exception.objc.message"] = exceptionReason.composedMessage
         attrs["exception.objc.classname"] = exceptionReason.className
-        attrs["exception.objc.message"] = exceptionReason.composedMessage
         attrs["exception.objc.name"] = exceptionReason.exceptionName
       }
     }
