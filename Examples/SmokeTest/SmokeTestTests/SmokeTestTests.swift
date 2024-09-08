@@ -1,5 +1,5 @@
-
 import XCTest
+
 @testable import SmokeTest
 
 /// There are no unit tests for the SmokeTest app at this time.

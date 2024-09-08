@@ -1,4 +1,3 @@
-
 import XCTest
 
 final class SmokeTestUITests: XCTestCase {
@@ -10,21 +9,21 @@ final class SmokeTestUITests: XCTestCase {
     override func tearDownWithError() throws {
     }
 
-  func testSimpleSpan() throws {
-      let app = XCUIApplication()
-      app.launch()
+    func testSimpleSpan() throws {
+        let app = XCUIApplication()
+        app.launch()
 
-    app.buttons["Send simple span"].tap()
-    app.buttons["Flush"].tap()
-  }
+        app.buttons["Send simple span"].tap()
+        app.buttons["Flush"].tap()
+    }
 
-  func testMetricKit() throws {
-      let app = XCUIApplication()
-      app.launch()
+    func testMetricKit() throws {
+        let app = XCUIApplication()
+        app.launch()
 
-    app.buttons["Send fake MetricKit data"].tap()
-    app.buttons["Flush"].tap()
-  }
+        app.buttons["Send fake MetricKit data"].tap()
+        app.buttons["Flush"].tap()
+    }
 
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {

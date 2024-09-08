@@ -13,8 +13,7 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(name: "Honeycomb", type: .static, targets: ["Honeycomb"]),
-        //.executable(name: "SmokeTest", targets: ["SmokeTest"]),
+        .library(name: "Honeycomb", type: .static, targets: ["Honeycomb"])
     ],
     dependencies: [
         // This revision is needed for now to avoid unsafe flags.
