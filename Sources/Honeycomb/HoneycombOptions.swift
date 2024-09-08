@@ -343,17 +343,17 @@ public class HoneycombOptions {
             return self
         }
 
-        public func setTracesApiKey(_ apiKey: String) -> Builder {
+        public func setTracesAPIKey(_ apiKey: String) -> Builder {
             tracesApiKey = apiKey
             return self
         }
 
-        public func setMetricsApiKey(_ apiKey: String) -> Builder {
+        public func setMetricsAPIKey(_ apiKey: String) -> Builder {
             metricsApiKey = apiKey
             return self
         }
 
-        public func setLogsApiKey(_ apiKey: String) -> Builder {
+        public func setLogsAPIKey(_ apiKey: String) -> Builder {
             logsApiKey = apiKey
             return self
         }
@@ -368,22 +368,22 @@ public class HoneycombOptions {
             return self
         }
 
-        public func setApiEndpoint(_ endpoint: String) -> Builder {
+        public func setAPIEndpoint(_ endpoint: String) -> Builder {
             apiEndpoint = endpoint
             return self
         }
 
-        public func setTracesApiEndpoint(_ endpoint: String) -> Builder {
+        public func setTracesAPIEndpoint(_ endpoint: String) -> Builder {
             tracesEndpoint = endpoint
             return self
         }
 
-        public func setMetricsApiEndpoint(_ endpoint: String) -> Builder {
+        public func setMetricsAPIEndpoint(_ endpoint: String) -> Builder {
             metricsEndpoint = endpoint
             return self
         }
 
-        public func setLogsApiEndpoint(_ endpoint: String) -> Builder {
+        public func setLogsAPIEndpoint(_ endpoint: String) -> Builder {
             logsEndpoint = endpoint
             return self
         }

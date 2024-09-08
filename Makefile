@@ -1,9 +1,11 @@
 
+SOURCES=Package.swift Examples/ Sources/ Tests/
+
 lint:
-	swift-format lint --strict --recursive Sources/ Tests/
+	swift-format lint --strict --recursive ${SOURCES}
 
 format:
-	swift-format format --in-place --recursive Sources/ Tests/
+	swift-format format --in-place --recursive ${SOURCES}
 
 #: cleans up smoke test output
 clean-smoke-tests:

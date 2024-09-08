@@ -1,8 +1,6 @@
 import Foundation
 import MetricKit
 
-@testable import Honeycomb
-
 // Most MetricKit classes are readonly, and don't have public constructors, so to make fake data,
 // we have to subclass them. Unfortunately, Swift doesn't really have any metaprogramming
 // capability, so there is a ton of boilerplate code.
