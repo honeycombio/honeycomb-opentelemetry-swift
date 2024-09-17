@@ -4,7 +4,7 @@
 
 **Required:**
 
-- Xcode (from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835))
+- Xcode 16.0 or later (from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835))
 
 Development and unit tests are done within Xcode. However, there is also a smoke-test, which must be run using the included Makefile.
 
@@ -26,13 +26,6 @@ To install the Xcode Command Line Tools, first install and run Xcode. Then run:
 
 ```sh
 xcode-select --install
-```
-
-If you are on Xcode 16.0 or later, `swift-format` is pre-installed. But if you are on an earlier
-version, you can install it manually with brew.
-
-```sh
-brew install swift-format
 ```
 
 Install `bats-core` and `jq` for local testing:
