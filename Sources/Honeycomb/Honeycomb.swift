@@ -36,6 +36,7 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
+    @available(iOS 13.0, macOS 12.0, *)
     static private let metricKitSubscriber = MetricKitSubscriber()
 
     static public func configure(options: HoneycombOptions) throws {
@@ -165,6 +166,8 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        MXMetricManager.shared.add(self.metricKitSubscriber)
+        if #available(iOS 13.0, macOS 12.0, *) {
+            MXMetricManager.shared.add(self.metricKitSubscriber)
+        }
     }
 }
