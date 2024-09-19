@@ -26,7 +26,7 @@ jobs:
           device: "iPhone 15"
       - checkout
       - run: xcodebuild -version
-      - run: xcodebuild test -scheme honeycomb-opentelemetry-swift -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
+      - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
 
 workflows:
   lint:
