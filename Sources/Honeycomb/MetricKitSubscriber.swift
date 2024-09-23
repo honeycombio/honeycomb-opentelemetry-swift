@@ -407,7 +407,7 @@ func reportDiagnostics(payload: MXDiagnosticPayload) {
         }
     }
 
-    #if os(iS)
+    #if os(iOS)
         if #available(iOS 16.0, *) {
             logForEach(payload.appLaunchDiagnostics, "app_launch") {
                 [
