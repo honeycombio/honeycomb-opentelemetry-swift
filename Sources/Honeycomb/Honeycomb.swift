@@ -15,7 +15,6 @@ import StdoutExporter
 //
 // * DeterministicSampler.
 // * BaggageSpanProcessor.
-// * BatchSpanProcessor.
 // * LoggingMetricExporter.
 // * Debug logging.
 
@@ -95,7 +94,7 @@ public class Honeycomb {
             } else {
                 traceExporter
             }
-        let spanProcessor = SimpleSpanProcessor(spanExporter: spanExporter)
+        let spanProcessor = BatchSpanProcessor(spanExporter: spanExporter)
 
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
