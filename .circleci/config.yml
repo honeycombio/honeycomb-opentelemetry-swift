@@ -7,6 +7,7 @@ filters_always: &filters_always
 
 orbs:
   macos: circleci/macos@2
+  bats: circleci/bats@1.0.0
 
 jobs:
   lint:
