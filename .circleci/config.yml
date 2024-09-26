@@ -32,6 +32,20 @@ jobs:
       - run: xcodebuild -version
       - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
 
+  smoke_tests:
+    macos:
+      xcode: 15.4.0
+    resource_class: macos.m1.medium.gen1
+
+    steps:
+      - macos/preboot-simulator:
+          version: "17.5"
+          platform: "iOS"
+          device: "iPhone 15"
+      - checkout
+      - run: xcodebuild -version
+      - run: xcodebuild test -scheme SmokeTest -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
+
 workflows:
   nightly:
     triggers:
