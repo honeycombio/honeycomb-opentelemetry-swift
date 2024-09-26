@@ -38,14 +38,23 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
+      - attach_workspace:
+          at: ./
       - macos/preboot-simulator:
           version: "17.5"
           platform: "iOS"
           device: "iPhone 15"
       - checkout
+      - bats/install
+      - run:
+          name: What's the BATS?
+          command: |
+            which bats
+            bats --version
       - run: xcodebuild -version
-      - run: xcodebuild test -scheme SmokeTest -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
-
+      - run:
+          name: Spin up and run e2e smoke tests
+          command: make smoke
 workflows:
   nightly:
     triggers:
