@@ -65,3 +65,5 @@ workflows:
           <<: *filters_always
       - tests:
           <<: *filters_always
+      - smoke_tests:
+          <<: *filters_always
