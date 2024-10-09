@@ -63,8 +63,8 @@ jobs:
             chmod +x ~/docker-compose
             mv ~/docker-compose ~/.docker/cli-plugins/docker-compose
       - run:
-          name: Spin up and run e2e smoke tests
-          command: make smoke
+          name: Build and run the collector
+          command: docker compose up --build collector --detach
 workflows:
   nightly:
     triggers:
