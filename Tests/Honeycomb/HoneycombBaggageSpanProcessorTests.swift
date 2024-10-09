@@ -31,18 +31,16 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
             instrumentationVersion: "1.0.0"
         )
 
-        if let key = EntryKey(name: "test-key") {
-            if let value = EntryValue(string: "test-value") {
-                let parent = tracer.spanBuilder(spanName: "parent").startSpan()
-                let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
-                    .put(key: key, value: value, metadata: nil).build()
-                OpenTelemetry.instance.contextProvider.setActiveBaggage(b)
+        if let key = EntryKey(name: "test-key"), let value = EntryValue(string: "test-value") {
+            let parent = tracer.spanBuilder(spanName: "parent").startSpan()
+            let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
+                .put(key: key, value: value, metadata: nil).build()
+            OpenTelemetry.instance.contextProvider.setActiveBaggage(b)
 
-                let child = tracer.spanBuilder(spanName: "child").startSpan()
+            let child = tracer.spanBuilder(spanName: "child").startSpan()
 
-                child.end()
-                parent.end()
-            }
+            child.end()
+            parent.end()
         }
 
         simple.forceFlush()
