@@ -30,21 +30,30 @@ class ReadableSpanMock: ReadableSpan {
     func end(time: Date) { end() }
 
     func toSpanData() -> SpanData {
-        return forcedReturnSpanData ?? SpanData(traceId: context.traceId,
-                                                spanId: context.spanId,
-                                                traceFlags: context.traceFlags,
-                                                traceState: TraceState(),
-                                                resource: Resource(attributes: [String: AttributeValue]()),
-                                                instrumentationScope: InstrumentationScopeInfo(),
-                                                name: "ReadableSpanMock",
-                                                kind: .client,
-                                                startTime: Date(timeIntervalSinceReferenceDate: 0),
-                                                endTime: Date(timeIntervalSinceReferenceDate: 0),
-                                                hasRemoteParent: false)
+        return forcedReturnSpanData
+            ?? SpanData(
+                traceId: context.traceId,
+                spanId: context.spanId,
+                traceFlags: context.traceFlags,
+                traceState: TraceState(),
+                resource: Resource(attributes: [String: AttributeValue]()),
+                instrumentationScope: InstrumentationScopeInfo(),
+                name: "ReadableSpanMock",
+                kind: .client,
+                startTime: Date(timeIntervalSinceReferenceDate: 0),
+                endTime: Date(timeIntervalSinceReferenceDate: 0),
+                hasRemoteParent: false
+            )
     }
 
     var context: SpanContext {
-        forcedReturnSpanContext ?? SpanContext.create(traceId: TraceId.random(), spanId: SpanId.random(), traceFlags: TraceFlags(), traceState: TraceState())
+        forcedReturnSpanContext
+            ?? SpanContext.create(
+                traceId: TraceId.random(),
+                spanId: SpanId.random(),
+                traceFlags: TraceFlags(),
+                traceState: TraceState()
+            )
     }
 
     var isRecording: Bool = false
