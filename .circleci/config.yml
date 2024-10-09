@@ -54,6 +54,15 @@ jobs:
             bats --version
       - run: xcodebuild -version
       - run:
+          name: Install Docker Compose
+          environment:
+            COMPOSE_VERSION: "v2.25.0"
+          command: |
+            curl -sSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
+            mkdir -p ~/.docker/cli-plugins
+            chmod +x ~/docker-compose
+            mv ~/docker-compose ~/.docker/cli-plugins/docker-compose
+      - run:
           name: Spin up and run e2e smoke tests
           command: make smoke
 workflows:
