@@ -10,9 +10,7 @@ class ReadableSpanMock: ReadableSpan {
     var hasEnded: Bool = false
     var latency: TimeInterval = 0
 
-    var kind: SpanKind {
-        return .client
-    }
+    var kind: SpanKind { .client }
 
     var instrumentationScopeInfo = InstrumentationScopeInfo()
 

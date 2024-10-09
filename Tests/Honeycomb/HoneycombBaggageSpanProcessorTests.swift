@@ -9,7 +9,7 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
     let readableSpan = ReadableSpanMock()
 
     func testNoCrash() {
-        let processor = HoneycombBaggageSpanProcessor(filter: { (e) in return true })
+        let processor = HoneycombBaggageSpanProcessor(filter: { _ in true })
         processor.onStart(parentContext: nil, span: readableSpan)
         XCTAssertTrue(processor.isStartRequired)
         processor.onEnd(span: readableSpan)
@@ -19,29 +19,38 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
     }
 
     func testFiltering() {
-        if let key = EntryKey(name: "test-key"), let keep = EntryKey(name: "keepme"),
-            let value = EntryValue(string: "test-value")
-        {
-            let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
-                .put(key: key, value: value, metadata: nil)
-                .put(key: keep, value: value, metadata: nil)
-                .build()
-            let processor = HoneycombBaggageSpanProcessor(
-                filter: { (e) in return e.key.name == "keepme" },
-                activeBaggage: { return b }
-            )
-
-            processor.onStart(parentContext: nil, span: readableSpan)
-
-            XCTAssert(readableSpan.attributes.count == 1)
-            XCTAssert(readableSpan.attributes.contains(where: { (k, v) in return k == "keepme" }))
-        } else {
-            XCTFail()
+        guard let key = EntryKey(name: "test-key") else {
+            XCTFail("cannot create entry key")
+            return
         }
+
+        guard let keep = EntryKey(name: "keepme") else {
+            XCTFail("cannot create entry key")
+            return
+        }
+
+        guard let value = EntryValue(string: "test-value") else {
+            XCTFail("cannot create entry value")
+            return
+        }
+
+        let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
+            .put(key: key, value: value, metadata: nil)
+            .put(key: keep, value: value, metadata: nil)
+            .build()
+        let processor = HoneycombBaggageSpanProcessor(
+            filter: { $0.key.name == "keepme" },
+            activeBaggage: { b }
+        )
+
+        processor.onStart(parentContext: nil, span: readableSpan)
+
+        XCTAssertEqual(readableSpan.attributes.count, 1)
+        XCTAssertTrue(readableSpan.attributes.contains(where: { $0.key == "keepme" }))
     }
 
     func testPropagation() {
-        let processor = HoneycombBaggageSpanProcessor(filter: { (e) in return true })
+        let processor = HoneycombBaggageSpanProcessor(filter: { _ in true })
         let exporter = InMemoryExporter()
         let simple = SimpleSpanProcessor(spanExporter: exporter)
         OpenTelemetry.registerTracerProvider(
@@ -53,34 +62,46 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
             instrumentationVersion: "1.0.0"
         )
 
-        if let key = EntryKey(name: "test-key"), let value = EntryValue(string: "test-value") {
-            let parent = tracer.spanBuilder(spanName: "parent").startSpan()
-            let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
-                .put(key: key, value: value, metadata: nil).build()
-            OpenTelemetry.instance.contextProvider.setActiveBaggage(b)
-
-            let child = tracer.spanBuilder(spanName: "child").startSpan()
-
-            child.end()
-            parent.end()
+        guard let key = EntryKey(name: "test-key") else {
+            XCTFail()
+            return
         }
+
+        guard let value = EntryValue(string: "test-value") else {
+            XCTFail()
+            return
+        }
+
+        let parent = tracer.spanBuilder(spanName: "parent").startSpan()
+        let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
+            .put(key: key, value: value, metadata: nil).build()
+        OpenTelemetry.instance.contextProvider.setActiveBaggage(b)
+
+        let child = tracer.spanBuilder(spanName: "child").startSpan()
+
+        child.end()
+        parent.end()
 
         simple.forceFlush()
 
         let spans = exporter.getFinishedSpanItems()
-        XCTAssert(spans.count == 2)
+        XCTAssertEqual(spans.count, 2)
 
-        let child = spans.first(where: { s in return s.name == "child" })
-        XCTAssert(child != nil)
+        guard let pChild = spans.first(where: { $0.name == "child" }) else {
+            XCTFail("failed to find child span")
+            return
+        }
 
-        let parent = spans.first(where: { s in return s.name == "parent" })
-        XCTAssert(parent != nil)
+        XCTAssertTrue(spans.contains(where: { $0.name == "parent" }))
 
-        XCTAssert(child?.attributes.count == 1)
+        XCTAssertEqual(pChild.attributes.count, 1)
 
-        let attr = child?.attributes.first
+        guard let attr = pChild.attributes.first else {
+            XCTFail("failed to get span attributes")
+            return
+        }
 
-        XCTAssert(attr?.key == "test-key")
-        XCTAssert(attr?.value.description == "test-value")
+        XCTAssertEqual(attr.key, "test-key")
+        XCTAssertEqual(attr.value.description, "test-value")
     }
 }
