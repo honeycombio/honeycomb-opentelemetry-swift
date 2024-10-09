@@ -62,7 +62,11 @@ class ReadableSpanMock: ReadableSpan {
 
     func updateName(name: String) {}
 
-    func setAttribute(key: String, value: AttributeValue?) {}
+    var attributes: [String: AttributeValue?] = [:]
+
+    func setAttribute(key: String, value: AttributeValue?) {
+        attributes[key] = value
+    }
 
     func addEvent(name: String) {}
 

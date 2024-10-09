@@ -6,12 +6,15 @@ public struct HoneycombBaggageSpanProcessor: SpanProcessor {
     public let isStartRequired = true
     public let isEndRequired = false
     public let filter: (Entry) -> Bool
+    public var activeBaggage: () -> Baggage? = {
+        return OpenTelemetry.instance.contextProvider.activeBaggage
+    }
 
     public func onStart(
         parentContext: OpenTelemetryApi.SpanContext?,
         span: any OpenTelemetrySdk.ReadableSpan
     ) {
-        if let baggage = OpenTelemetry.instance.contextProvider.activeBaggage {
+        if let baggage = activeBaggage() {
             let filteredEntries = baggage.getEntries().filter(self.filter)
             for entry in filteredEntries {
                 span.setAttribute(key: entry.key.name, value: entry.value.string)

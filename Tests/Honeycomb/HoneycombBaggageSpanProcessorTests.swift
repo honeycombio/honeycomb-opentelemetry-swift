@@ -18,6 +18,28 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
         processor.shutdown()
     }
 
+    func testFiltering() {
+        if let key = EntryKey(name: "test-key"), let keep = EntryKey(name: "keepme"),
+            let value = EntryValue(string: "test-value")
+        {
+            let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
+                .put(key: key, value: value, metadata: nil)
+                .put(key: keep, value: value, metadata: nil)
+                .build()
+            let processor = HoneycombBaggageSpanProcessor(
+                filter: { (e) in return e.key.name == "keepme" },
+                activeBaggage: { return b }
+            )
+
+            processor.onStart(parentContext: nil, span: readableSpan)
+
+            XCTAssert(readableSpan.attributes.count == 1)
+            XCTAssert(readableSpan.attributes.contains(where: { (k, v) in return k == "keepme" }))
+        } else {
+            XCTFail()
+        }
+    }
+
     func testPropagation() {
         let processor = HoneycombBaggageSpanProcessor(filter: { (e) in return true })
         let exporter = InMemoryExporter()
