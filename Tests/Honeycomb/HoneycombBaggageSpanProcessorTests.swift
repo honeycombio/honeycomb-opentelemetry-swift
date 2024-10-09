@@ -23,7 +23,7 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         guard let keep = EntryKey(name: "keepme") else {
             XCTFail("cannot create entry key")
             return
@@ -35,7 +35,7 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
         }
 
         let parent = tracer.spanBuilder(spanName: "parent").startSpan()
-        
+
         // create two baggage items, one we will keep and one will
         // be filtered out by the processor
         let b = OpenTelemetry.instance.baggageManager.baggageBuilder()

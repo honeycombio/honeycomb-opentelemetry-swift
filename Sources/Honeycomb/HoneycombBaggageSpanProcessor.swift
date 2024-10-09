@@ -11,8 +11,8 @@ public struct HoneycombBaggageSpanProcessor: SpanProcessor {
     }
 
     public func onStart(
-        parentContext: OpenTelemetryApi.SpanContext?,
-        span: any OpenTelemetrySdk.ReadableSpan
+        parentContext: SpanContext?,
+        span: any ReadableSpan
     ) {
         if let baggage = activeBaggage() {
             let filteredEntries = baggage.getEntries().filter(self.filter)
@@ -22,7 +22,7 @@ public struct HoneycombBaggageSpanProcessor: SpanProcessor {
         }
     }
 
-    public func onEnd(span: any OpenTelemetrySdk.ReadableSpan) {}
+    public func onEnd(span: any ReadableSpan) {}
 
     public func shutdown(explicitTimeout: TimeInterval? = nil) {}
 
