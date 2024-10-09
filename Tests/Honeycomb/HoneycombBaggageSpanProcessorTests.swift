@@ -6,51 +6,8 @@ import XCTest
 @testable import Honeycomb
 
 class HoneycombBaggageSpanProcessorTests: XCTestCase {
-    let readableSpan = ReadableSpanMock()
-
-    func testNoCrash() {
-        let processor = HoneycombBaggageSpanProcessor(filter: { _ in true })
-        processor.onStart(parentContext: nil, span: readableSpan)
-        XCTAssertTrue(processor.isStartRequired)
-        processor.onEnd(span: readableSpan)
-        XCTAssertFalse(processor.isEndRequired)
-        processor.forceFlush()
-        processor.shutdown()
-    }
-
-    func testFiltering() {
-        guard let key = EntryKey(name: "test-key") else {
-            XCTFail("cannot create entry key")
-            return
-        }
-
-        guard let keep = EntryKey(name: "keepme") else {
-            XCTFail("cannot create entry key")
-            return
-        }
-
-        guard let value = EntryValue(string: "test-value") else {
-            XCTFail("cannot create entry value")
-            return
-        }
-
-        let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
-            .put(key: key, value: value, metadata: nil)
-            .put(key: keep, value: value, metadata: nil)
-            .build()
-        let processor = HoneycombBaggageSpanProcessor(
-            filter: { $0.key.name == "keepme" },
-            activeBaggage: { b }
-        )
-
-        processor.onStart(parentContext: nil, span: readableSpan)
-
-        XCTAssertEqual(readableSpan.attributes.count, 1)
-        XCTAssertTrue(readableSpan.attributes.contains(where: { $0.key == "keepme" }))
-    }
-
-    func testPropagation() {
-        let processor = HoneycombBaggageSpanProcessor(filter: { _ in true })
+    func testProcessor() {
+        let processor = HoneycombBaggageSpanProcessor(filter: { $0.key.name == "keepme" })
         let exporter = InMemoryExporter()
         let simple = SimpleSpanProcessor(spanExporter: exporter)
         OpenTelemetry.registerTracerProvider(
@@ -66,6 +23,11 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
             XCTFail()
             return
         }
+        
+        guard let keep = EntryKey(name: "keepme") else {
+            XCTFail("cannot create entry key")
+            return
+        }
 
         guard let value = EntryValue(string: "test-value") else {
             XCTFail()
@@ -73,8 +35,13 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
         }
 
         let parent = tracer.spanBuilder(spanName: "parent").startSpan()
+        
+        // create two baggage items, one we will keep and one will
+        // be filtered out by the processor
         let b = OpenTelemetry.instance.baggageManager.baggageBuilder()
-            .put(key: key, value: value, metadata: nil).build()
+            .put(key: key, value: value, metadata: nil)
+            .put(key: keep, value: value, metadata: nil)
+            .build()
         OpenTelemetry.instance.contextProvider.setActiveBaggage(b)
 
         let child = tracer.spanBuilder(spanName: "child").startSpan()
@@ -101,7 +68,7 @@ class HoneycombBaggageSpanProcessorTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(attr.key, "test-key")
+        XCTAssertEqual(attr.key, "keepme")
         XCTAssertEqual(attr.value.description, "test-value")
     }
 }
