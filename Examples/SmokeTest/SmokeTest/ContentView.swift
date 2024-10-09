@@ -11,6 +11,7 @@ private func sendSimpleSpan() {
     )
     let span = tracerProvider.spanBuilder(spanName: "test-span").startSpan()
     span.end()
+    print("STDOUT!!SIMPLE!!SPAN")
 }
 
 private func sendFakeMetrics() {
