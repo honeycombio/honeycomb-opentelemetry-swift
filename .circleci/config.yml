@@ -64,6 +64,12 @@ jobs:
           name: Start OTel Collector
           command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
           background: true
+      - run:
+          name: Run iOS App
+          command: ./run-ios-tests.sh
+      - run:
+          name: Run Smoke Tests
+          command: cd smoke-tests && bats ./smoke-e2e.bats --report-formatter junit --output ./
 workflows:
   nightly:
     triggers:
