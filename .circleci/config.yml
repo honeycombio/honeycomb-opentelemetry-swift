@@ -62,7 +62,7 @@ jobs:
             tar -xvf otelcol_0.111.0_darwin_arm64.tar.gz
       - run:
           name: Start OTel Collector
-          command: ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
+          command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
 workflows:
   nightly:
     triggers:
