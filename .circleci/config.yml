@@ -54,17 +54,15 @@ jobs:
             bats --version
       - run: xcodebuild -version
       - run:
-          name: Install Docker Compose
-          environment:
-            COMPOSE_VERSION: "v2.25.0"
+          name: Install OTel Collector
+          # environment:
+          #   COMPOSE_VERSION: "v2.25.0"
           command: |
-            curl -sSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
-            mkdir -p ~/.docker/cli-plugins
-            chmod +x ~/docker-compose
-            mv ~/docker-compose ~/.docker/cli-plugins/docker-compose
+            curl --proto '=https' --tlsv1.2 -fOL https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.111.0/otelcol_0.111.0_darwin_arm64.tar.gz
+            tar -xvf otelcol_0.111.0_darwin_arm64.tar.gz
       - run:
-          name: Build and run the collector
-          command: docker compose up --build collector --detach
+          name: Start OTel Collector
+          command: ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
 workflows:
   nightly:
     triggers:
