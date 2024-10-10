@@ -55,11 +55,11 @@ jobs:
       - run: xcodebuild -version
       - run:
           name: Install OTel Collector
-          # environment:
-          #   COMPOSE_VERSION: "v2.25.0"
+          environment:
+            COLLECTOR_VERSION: "0.111.0"
           command: |
-            curl --proto '=https' --tlsv1.2 -fOL https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.111.0/otelcol_0.111.0_darwin_arm64.tar.gz
-            tar -xvf otelcol_0.111.0_darwin_arm64.tar.gz
+            curl --proto '=https' --tlsv1.2 -fOL https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${COLLECTOR_VERSION}/otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
+            tar -xvf otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
       - run:
           name: Start OTel Collector
           command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
