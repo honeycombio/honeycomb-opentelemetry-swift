@@ -62,7 +62,7 @@ jobs:
             tar -xvf otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
       - run:
           name: Start OTel Collector
-          command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
+          command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml --set="exporters::file::path=./smoke-tests/collector/data.json"
           background: true
       - run:
           name: Run iOS App
