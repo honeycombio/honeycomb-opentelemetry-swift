@@ -10,7 +10,7 @@ processors:
 exporters:
   file:
     path: /var/lib/data.json
-  logging:
+  debug:
     verbosity: detailed
 
 service:
