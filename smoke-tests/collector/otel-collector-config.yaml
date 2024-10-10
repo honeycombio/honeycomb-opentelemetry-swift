@@ -9,7 +9,7 @@ processors:
 
 exporters:
   file:
-    path: /var/lib/data.json
+    path: ./smoke-test/collector/data.json
   debug:
     verbosity: detailed
 
