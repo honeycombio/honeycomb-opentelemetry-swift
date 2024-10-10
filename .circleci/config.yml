@@ -82,6 +82,7 @@ workflows:
     jobs:
       - lint
       - tests
+      - smoke_tests
 
   build:
     jobs:
