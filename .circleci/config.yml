@@ -63,6 +63,7 @@ jobs:
       - run:
           name: Start OTel Collector
           command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml
+          background: true
 workflows:
   nightly:
     triggers:
