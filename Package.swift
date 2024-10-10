@@ -35,7 +35,10 @@ let package = Package(
         ),
         .testTarget(
             name: "HoneycombTests",
-            dependencies: ["Honeycomb"],
+            dependencies: [
+                "Honeycomb",
+                .product(name: "InMemoryExporter", package: "opentelemetry-swift"),
+            ],
             path: "Tests/Honeycomb"
         ),
     ]
