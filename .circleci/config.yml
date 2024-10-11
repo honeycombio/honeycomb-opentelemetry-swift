@@ -66,10 +66,10 @@ jobs:
           background: true
       - run:
           name: Run iOS App
-          command: bash ./run-ios-tests.sh
+          command: make ios-tests
       - run:
           name: Run Smoke Tests
-          command: cd smoke-tests && bats ./smoke-e2e.bats --report-formatter junit --output ./
+          command: make smoke-bats
 workflows:
   nightly:
     triggers:
