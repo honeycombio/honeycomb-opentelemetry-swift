@@ -20,6 +20,34 @@ private func sendFakeMetrics() {
     }
 }
 
+private func doNetworkRequest() {
+    let url = URL(string: "http://localhost:3000/slow")!
+    let request = URLRequest(url: url)
+    let session = URLSession(configuration: URLSessionConfiguration.default)
+    Task {
+        do {
+            // TODO: Show the response in the UI or something.
+            let (data, response) = try await session.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("response is not an http response")
+                return
+            }
+            if httpResponse.statusCode != 200 {
+                print("http response: \(httpResponse.statusCode)")
+                return
+            }
+            guard let dataString = String(data: data, encoding: .utf8) else {
+                print("data is not UTF-8")
+                return
+            }
+            let text = dataString.trimmingCharacters(in: .whitespacesAndNewlines)
+            print("network request was successful: \(text)")
+        } catch {
+            print("error in network request: \(error)")
+        }
+    }
+}
+
 private func flush() {
     let tracerProvider = OpenTelemetry.instance.tracerProvider as! TracerProviderSdk
     tracerProvider.forceFlush()
@@ -50,6 +78,11 @@ struct ContentView: View {
 
             Button(action: sendFakeMetrics) {
                 Text("Send fake MetricKit data")
+            }
+            .buttonStyle(.bordered)
+
+            Button(action: doNetworkRequest) {
+                Text("Do a network request")
             }
             .buttonStyle(.bordered)
 
