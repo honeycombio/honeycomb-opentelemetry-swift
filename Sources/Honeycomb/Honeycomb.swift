@@ -168,5 +168,9 @@ public class Honeycomb {
         if #available(iOS 13.0, macOS 12.0, *) {
             MXMetricManager.shared.add(self.metricKitSubscriber)
         }
+
+        if options.debug {
+            debugOptions(options: options)
+        }
     }
 }
