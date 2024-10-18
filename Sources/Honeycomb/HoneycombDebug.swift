@@ -1,6 +1,6 @@
 import os;
 
-public func debugOptions(options: HoneycombOptions) {
+internal func debugOptions(options: HoneycombOptions) {
 
     if !options.debug {
         return;
