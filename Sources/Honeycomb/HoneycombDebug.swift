@@ -1,4 +1,4 @@
-import Foundation;
+import Foundation
 
 internal func debugOptions(options: HoneycombOptions) {
     
