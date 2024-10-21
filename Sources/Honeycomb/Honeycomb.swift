@@ -39,6 +39,11 @@ public class Honeycomb {
     static private let metricKitSubscriber = MetricKitSubscriber()
 
     static public func configure(options: HoneycombOptions) throws {
+
+        if options.debug {
+            configureDebug(options: options)
+        }
+
         guard let tracesEndpoint = URL(string: options.tracesEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.tracesEndpoint)
         }
@@ -167,10 +172,6 @@ public class Honeycomb {
 
         if #available(iOS 13.0, macOS 12.0, *) {
             MXMetricManager.shared.add(self.metricKitSubscriber)
-        }
-
-        if options.debug {
-            debugOptions(options: options)
         }
     }
 }
