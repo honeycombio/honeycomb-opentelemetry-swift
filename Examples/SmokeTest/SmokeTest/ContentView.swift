@@ -40,6 +40,7 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
+                .honeycombInstrumentedView(name: "home icon")
 
             Text("This is a sample app.")
 
@@ -57,8 +58,18 @@ struct ContentView: View {
                 Text("Flush")
             }
             .buttonStyle(.bordered)
+
+            Text(String(timeConsumingCalculation()))
+                .honeycombInstrumentedView(name: "expensive text")
+
         }
         .padding()
+        .honeycombInstrumentedView(name: "main view")
+    }
+
+    private func timeConsumingCalculation() -> Int {
+        print("starting time consuming calculation")
+        return (1...100_000_000).reduce(0, +)
     }
 }
 
