@@ -33,38 +33,41 @@ private func flush() {
 
 struct ContentView: View {
     var body: some View {
-        VStack(
-            alignment: .center,
-            spacing: 20.0
-        ) {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-                .honeycombInstrumentedView(name: "home icon")
+        HoneycombInstrumentedView(name: "main view") {
+            VStack(
+                alignment: .center,
+                spacing: 20.0
+            ) {
+                HoneycombInstrumentedView(name: "home icon") {
+                    Image(systemName: "globe")
+                        .imageScale(.large)
+                        .foregroundStyle(.tint)
+                }
 
-            Text("This is a sample app.")
+                Text("This is a sample app.")
 
-            Button(action: sendSimpleSpan) {
-                Text("Send simple span")
+                Button(action: sendSimpleSpan) {
+                    Text("Send simple span")
+                }
+                .buttonStyle(.bordered)
+
+                Button(action: sendFakeMetrics) {
+                    Text("Send fake MetricKit data")
+                }
+                .buttonStyle(.bordered)
+
+                Button(action: flush) {
+                    Text("Flush")
+                }
+                .buttonStyle(.bordered)
+
+                HoneycombInstrumentedView(name: "expensive text") {
+                    Text(String(timeConsumingCalculation()))
+                }
+
             }
-            .buttonStyle(.bordered)
-
-            Button(action: sendFakeMetrics) {
-                Text("Send fake MetricKit data")
-            }
-            .buttonStyle(.bordered)
-
-            Button(action: flush) {
-                Text("Flush")
-            }
-            .buttonStyle(.bordered)
-
-            Text(String(timeConsumingCalculation()))
-                .honeycombInstrumentedView(name: "expensive text")
-
+            .padding()
         }
-        .padding()
-        .honeycombInstrumentedView(name: "main view")
     }
 
     private func timeConsumingCalculation() -> Int {

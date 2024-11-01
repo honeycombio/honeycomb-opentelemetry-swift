@@ -4,12 +4,14 @@ import SwiftUI
 
 private let honeycombInstrumentedViewName = "@honeycombio/instrumentation-view"
 
-struct HoneycombInstrumentedView: ViewModifier {
+struct HoneycombInstrumentedView<Content: View>: View {
     private let span: Span
+    private let content: () -> Content
     private let name: String
 
-    init(name: String) {
+    init(name: String, @SwiftUICore.ViewBuilder _ content: @escaping () -> Content) {
         self.name = name
+        self.content = content
 
         span = getMetricKitTracer().spanBuilder(spanName: "ViewInstrumentation")
             .setStartTime(time: Date())
@@ -19,9 +21,11 @@ struct HoneycombInstrumentedView: ViewModifier {
         print("\(name) init")
     }
 
-    func body(content: Content) -> some View {
+    var body: some View {
         print("\(name) started rendering")
         let start = Date()
+
+        let c = content()
 
         print("\(name) finished rendering")
         span.setAttribute(
@@ -29,15 +33,9 @@ struct HoneycombInstrumentedView: ViewModifier {
             value: Int(Date().timeIntervalSince(start).toMicroseconds)
         )
 
-        return content.onAppear {
+        return c.onAppear {
             span.end(time: Date())
         }
-    }
-}
-
-extension View {
-    func honeycombInstrumentedView(name: String) -> some View {
-        modifier(HoneycombInstrumentedView(name: name))
     }
 }
 
