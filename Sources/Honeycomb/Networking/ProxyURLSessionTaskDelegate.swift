@@ -1,4 +1,3 @@
-
 import Foundation
 import OpenTelemetryApi
 
@@ -20,16 +19,21 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
     init(_ wrapped: URLSessionTaskDelegate?) {
         self.wrapped = wrapped
     }
-    
+
     // Gets the span for a particular task. We have to use an "associated object" because we can't extend URLSessionTask.
     static func getSpan(for task: URLSessionTask) -> Span? {
         return objc_getAssociatedObject(task, &spanKey) as? Span
     }
 
     static func setSpan(_ span: Span, for task: URLSessionTask) {
-        objc_setAssociatedObject(task, &spanKey, span, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        objc_setAssociatedObject(
+            task,
+            &spanKey,
+            span,
+            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN
+        )
     }
-    
+
     // Because the protocol is full of optional methods, we have to forward requests about which
     // methods are actually implemented.
     override func responds(to aSelector: Selector!) -> Bool {
@@ -39,7 +43,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         if aSelector == #selector(URLSessionTaskDelegate.urlSession(_:task:didFinishCollecting:)) {
             return true
         }
-        
+
         guard let wrapped = self.wrapped else {
             return false
         }
@@ -51,7 +55,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
         return self.wrapped
     }
-    
+
     // Called whenever a request completes.
     @available(iOS 10.0, *)
     func urlSession(
@@ -71,4 +75,3 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         wrapped?.urlSession?(session, task: task, didFinishCollecting: metrics)
     }
 }
-

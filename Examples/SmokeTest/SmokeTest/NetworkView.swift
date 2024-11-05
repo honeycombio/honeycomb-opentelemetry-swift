@@ -1,4 +1,3 @@
-
 import Foundation
 import OpenTelemetryApi
 import SwiftUI
@@ -23,29 +22,30 @@ private class NetworkRequestSpec: ObservableObject, CustomStringConvertible {
 
     /// Whether to pass in a URLRequest, rather than a URL.
     @Published var useRequestObject: Bool = false
-    
+
     /// Whether to use a delegate attacked directly to the URLSessionTask.
     @Published var useTaskDelegate: Bool = false
 
     /// Whether to attach a delegate to the URLSession.
     @Published var useSessionDelegate: Bool = false
-    
+
     /// A descriptor to help us verify we are testing the config we intend to.
     var description: String {
-        let typeStr = switch requestType {
-        case .dataTask:
-            "data"
-        case .uploadTask:
-            "upload"
-        case .downloadTask:
-            "download"
-        }
-        
+        let typeStr =
+            switch requestType {
+            case .dataTask:
+                "data"
+            case .uploadTask:
+                "upload"
+            case .downloadTask:
+                "download"
+            }
+
         let asyncStr = useAsync ? "async" : "callback"
         let requestStr = useRequestObject ? "obj" : "url"
         let taskStr = useTaskDelegate ? "-task" : ""
         let sessionStr = useSessionDelegate ? "-session" : ""
-        
+
         return "\(typeStr)-\(asyncStr)-\(requestStr)\(taskStr)\(sessionStr)"
     }
 }
@@ -100,7 +100,7 @@ private func summarize(response: URLResponse?, error: (any Error)?) -> String {
 /// Method to do a network request with the given spec and return a summary of the response.
 private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String {
     // TODO: Add something to the traces???
-    
+
     guard let url = URL(string: requestSpec.address) else {
         return "invalid url"
     }
@@ -112,35 +112,38 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
         case .dataTask:
             switch requestSpec.useAsync {
             case true:
-                let (_, response) = switch requestSpec.useRequestObject {
-                case true:
-                    switch requestSpec.useTaskDelegate {
+                let (_, response) =
+                    switch requestSpec.useRequestObject {
                     case true:
-                        try await session.data(for: request, delegate: taskDelegate)
+                        switch requestSpec.useTaskDelegate {
+                        case true:
+                            try await session.data(for: request, delegate: taskDelegate)
+                        case false:
+                            try await session.data(for: request)
+                        }
                     case false:
-                        try await session.data(for: request)
+                        switch requestSpec.useTaskDelegate {
+                        case true:
+                            try await session.data(from: url, delegate: taskDelegate)
+                        case false:
+                            try await session.data(from: url)
+                        }
                     }
-                case false:
-                    switch requestSpec.useTaskDelegate {
-                    case true:
-                        try await session.data(from: url, delegate: taskDelegate)
-                    case false:
-                        try await session.data(from: url)
-                    }
-                }
                 return summarize(response: response, error: nil)
             case false:
                 return await withCheckedContinuation { continuation in
-                    let callback = { @Sendable (data: Data?, response: URLResponse?, error: Error?) in
+                    let callback = {
+                        @Sendable (data: Data?, response: URLResponse?, error: Error?) in
                         let summary = summarize(response: response, error: error)
                         continuation.resume(returning: summary)
-                    };
-                    let task = switch requestSpec.useRequestObject {
-                    case true:
-                        session.dataTask(with: request, completionHandler: callback)
-                    case false:
-                        session.dataTask(with: url, completionHandler: callback)
                     }
+                    let task =
+                        switch requestSpec.useRequestObject {
+                        case true:
+                            session.dataTask(with: request, completionHandler: callback)
+                        case false:
+                            session.dataTask(with: url, completionHandler: callback)
+                        }
                     if requestSpec.useTaskDelegate {
                         task.delegate = taskDelegate
                     }
@@ -150,42 +153,44 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
         case .downloadTask:
             switch requestSpec.useAsync {
             case true:
-                let (_, response) = switch requestSpec.useRequestObject {
-                case true:
-                    switch requestSpec.useTaskDelegate {
+                let (_, response) =
+                    switch requestSpec.useRequestObject {
                     case true:
-                        try await session.download(for: request, delegate: taskDelegate)
+                        switch requestSpec.useTaskDelegate {
+                        case true:
+                            try await session.download(for: request, delegate: taskDelegate)
+                        case false:
+                            try await session.download(for: request)
+                        }
                     case false:
-                        try await session.download(for: request)
+                        switch requestSpec.useTaskDelegate {
+                        case true:
+                            try await session.download(from: url, delegate: taskDelegate)
+                        case false:
+                            try await session.download(from: url)
+                        }
                     }
-                case false:
-                    switch requestSpec.useTaskDelegate {
-                    case true:
-                        try await session.download(from: url, delegate: taskDelegate)
-                    case false:
-                        try await session.download(from: url)
-                    }
-                }
                 return summarize(response: response, error: nil)
             case false:
                 return await withCheckedContinuation { continuation in
                     let callback = { @Sendable (url: URL?, response: URLResponse?, error: Error?) in
                         let summary = summarize(response: response, error: error)
                         continuation.resume(returning: summary)
-                    };
-                    let task = switch requestSpec.useRequestObject {
-                    case true:
-                        session.downloadTask(with: request, completionHandler: callback)
-                    case false:
-                        session.downloadTask(with: url, completionHandler: callback)
                     }
+                    let task =
+                        switch requestSpec.useRequestObject {
+                        case true:
+                            session.downloadTask(with: request, completionHandler: callback)
+                        case false:
+                            session.downloadTask(with: url, completionHandler: callback)
+                        }
                     if requestSpec.useTaskDelegate {
                         task.delegate = taskDelegate
                     }
                     task.resume()
                 }
             }
-            
+
         case .uploadTask:
             switch requestSpec.useRequestObject {
             case false:
@@ -194,20 +199,30 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
                 let dataToUpload = Data()
                 switch requestSpec.useAsync {
                 case true:
-                    let (_, response) = switch requestSpec.useTaskDelegate {
-                    case true:
-                        try await session.upload(for: request, from: dataToUpload, delegate: taskDelegate)
-                    case false:
-                        try await session.upload(for: request, from: dataToUpload)
-                    }
+                    let (_, response) =
+                        switch requestSpec.useTaskDelegate {
+                        case true:
+                            try await session.upload(
+                                for: request,
+                                from: dataToUpload,
+                                delegate: taskDelegate
+                            )
+                        case false:
+                            try await session.upload(for: request, from: dataToUpload)
+                        }
                     return summarize(response: response, error: nil)
                 case false:
                     return await withCheckedContinuation { continuation in
-                        let callback = { @Sendable (data: Data?, response: URLResponse?, error: Error?) in
+                        let callback = {
+                            @Sendable (data: Data?, response: URLResponse?, error: Error?) in
                             let summary = summarize(response: response, error: error)
                             continuation.resume(returning: summary)
-                        };
-                        let task = session.uploadTask(with: request, from: dataToUpload, completionHandler: callback)
+                        }
+                        let task = session.uploadTask(
+                            with: request,
+                            from: dataToUpload,
+                            completionHandler: callback
+                        )
                         if requestSpec.useTaskDelegate {
                             task.delegate = taskDelegate
                         }
@@ -239,7 +254,7 @@ struct NetworkView: View {
             Text("Network Playground")
 
             TextField("address", text: $request.address)
-            
+
             Picker("Request type", selection: $request.requestType) {
                 Text("Data").tag(RequestType.dataTask)
                 Text("Upload").tag(RequestType.uploadTask)
@@ -247,19 +262,23 @@ struct NetworkView: View {
             }
             .pickerStyle(.segmented)
             .accessibilityIdentifier("requestType")
-            
+
             Toggle(isOn: $request.useAsync) {
                 Text("Use async function")
-            }.accessibilityIdentifier("useAsync")
+            }
+            .accessibilityIdentifier("useAsync")
             Toggle(isOn: $request.useRequestObject) {
                 Text("Use URLRequest object")
-            }.accessibilityIdentifier("useRequestObject")
+            }
+            .accessibilityIdentifier("useRequestObject")
             Toggle(isOn: $request.useTaskDelegate) {
                 Text("Use a task delegate")
-            }.accessibilityIdentifier("useTaskDelegate")
+            }
+            .accessibilityIdentifier("useTaskDelegate")
             Toggle(isOn: $request.useSessionDelegate) {
                 Text("Use a session delegate")
-            }.accessibilityIdentifier("useSessionDelegate")
+            }
+            .accessibilityIdentifier("useSessionDelegate")
 
             Button(action: {
                 responseSummary = "..."
@@ -275,12 +294,14 @@ struct NetworkView: View {
                     let baggage = OpenTelemetry.instance.baggageManager.baggageBuilder()
                         .put(
                             key: EntryKey(name: "request-id")!,
-                            value: EntryValue(string:request.description)!,
-                            metadata: nil)
+                            value: EntryValue(string: request.description)!,
+                            metadata: nil
+                        )
                         .build()
-                    responseSummary = await OpenTelemetry.instance.contextProvider.withActiveBaggage(baggage) {
-                        await doNetworkRequest(request)
-                    }
+                    responseSummary = await OpenTelemetry.instance.contextProvider
+                        .withActiveBaggage(baggage) {
+                            await doNetworkRequest(request)
+                        }
                     taskDelegateCalled = taskDelegate.wasCalled
                     sessionDelegateCalled = sessionDelegate.wasCalled
                 }

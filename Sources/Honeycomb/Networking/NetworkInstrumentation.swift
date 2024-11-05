@@ -1,4 +1,3 @@
-
 import Foundation
 import OpenTelemetryApi
 import SwiftUI
@@ -12,7 +11,7 @@ internal func createSpan(from request: URLRequest) -> any Span {
         instrumentationName: urlSessionInstrumentationName,
         instrumentationVersion: honeycombLibraryVersion
     )
-    
+
     var builder = tracer.spanBuilder(spanName: request.httpMethod ?? "UNKNOWN")
     builder.setSpanKind(spanKind: SpanKind.client)
     if let method = request.httpMethod {

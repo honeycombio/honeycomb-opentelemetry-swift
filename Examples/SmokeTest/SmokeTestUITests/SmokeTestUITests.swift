@@ -9,16 +9,16 @@ extension XCUIApplication {
     func getToggle(_ name: String) -> Bool {
         let toggle = self.switches[name]
         XCTAssertTrue(toggle.waitForExistence(timeout: uiUpdateTimeout), "missing toggle: \(name)")
-        
+
         return toggle.value as? String == "1"
     }
-    
+
     /// Helper to set the state of a SwiftUI Toggle control.
     func setToggle(_ name: String, to value: Bool) {
         if getToggle(name) == value {
             return
         }
-        
+
         let toggle = self.switches[name]
         XCTAssertTrue(toggle.exists, "missing toggle: \(name)")
         toggle.switches.firstMatch.tap()
@@ -48,7 +48,7 @@ final class SmokeTestUITests: XCTestCase {
         app.buttons["Send fake MetricKit data"].tap()
         app.buttons["Flush"].tap()
     }
-    
+
     func testNetworking() throws {
         let app = XCUIApplication()
         app.launch()
@@ -56,7 +56,9 @@ final class SmokeTestUITests: XCTestCase {
         XCTAssert(app.staticTexts["Network Playground"].waitForExistence(timeout: uiUpdateTimeout))
 
         // Test all combinations of networking options.
-        for (requestType, typeStr) in [("Data", "data"), ("Download", "download"), ("Upload", "upload")] {
+        for (requestType, typeStr) in [
+            ("Data", "data"), ("Download", "download"), ("Upload", "upload"),
+        ] {
             for (useAsync, asyncStr) in [(true, "async"), (false, "callback")] {
                 for (useRequestObject, requestStr) in [(true, "obj"), (false, "url")] {
                     for (useTaskDelegate, taskStr) in [(true, "-task"), (false, "")] {
@@ -73,13 +75,18 @@ final class SmokeTestUITests: XCTestCase {
                             // Configure the request.
                             app.segmentedControls.buttons[requestType].tap()
                             app.setToggle("useAsync", to: useAsync)
-                            app.setToggle("useRequestObject", to:useRequestObject)
+                            app.setToggle("useRequestObject", to: useRequestObject)
                             app.setToggle("useTaskDelegate", to: useTaskDelegate)
-                            app.setToggle("useSessionDelegate", to:useSessionDelegate)
+                            app.setToggle("useSessionDelegate", to: useSessionDelegate)
 
                             // Make sure that the request is configured correctly.
-                            let requestID = "\(typeStr)-\(asyncStr)-\(requestStr)\(taskStr)\(sessionStr)"
-                            XCTAssert(app.staticTexts[requestID].waitForExistence(timeout: uiUpdateTimeout), requestID)
+                            let requestID =
+                                "\(typeStr)-\(asyncStr)-\(requestStr)\(taskStr)\(sessionStr)"
+                            XCTAssert(
+                                app.staticTexts[requestID]
+                                    .waitForExistence(timeout: uiUpdateTimeout),
+                                requestID
+                            )
 
                             // Do the request.
                             app.buttons["Clear"].tap()
@@ -87,16 +94,30 @@ final class SmokeTestUITests: XCTestCase {
 
                             // Wait for the request to finish.
                             let status = app.staticTexts["200"]
-                            XCTAssert(status.waitForExistence(timeout: networkRequestTimeout), requestID)
+                            XCTAssert(
+                                status.waitForExistence(timeout: networkRequestTimeout),
+                                requestID
+                            )
 
                             // Verify that the callbacks we called correctly.
                             let expectTaskDelegateCalled = useTaskDelegate ? "✅" : "❌"
-                            let actualTaskDelegateCalled = app.staticTexts["taskDelegateCalled"].label
-                            XCTAssertEqual(expectTaskDelegateCalled, actualTaskDelegateCalled, requestID)
+                            let actualTaskDelegateCalled = app.staticTexts["taskDelegateCalled"]
+                                .label
+                            XCTAssertEqual(
+                                expectTaskDelegateCalled,
+                                actualTaskDelegateCalled,
+                                requestID
+                            )
 
-                            let expectSessionDelegateCalled = (useSessionDelegate && !useTaskDelegate) ? "✅" : "❌"
-                            let actualSessionDelegateCalled = app.staticTexts["sessionDelegateCalled"].label
-                            XCTAssertEqual(expectSessionDelegateCalled, actualSessionDelegateCalled, requestID)
+                            let expectSessionDelegateCalled =
+                                (useSessionDelegate && !useTaskDelegate) ? "✅" : "❌"
+                            let actualSessionDelegateCalled =
+                                app.staticTexts["sessionDelegateCalled"].label
+                            XCTAssertEqual(
+                                expectSessionDelegateCalled,
+                                actualSessionDelegateCalled,
+                                requestID
+                            )
 
                         }
                     }
@@ -104,7 +125,7 @@ final class SmokeTestUITests: XCTestCase {
             }
         }
     }
-    
+
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
             // This measures how long it takes to launch your application.
