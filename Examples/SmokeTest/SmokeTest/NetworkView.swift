@@ -99,8 +99,6 @@ private func summarize(response: URLResponse?, error: (any Error)?) -> String {
 
 /// Method to do a network request with the given spec and return a summary of the response.
 private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String {
-    // TODO: Add something to the traces???
-
     guard let url = URL(string: requestSpec.address) else {
         return "invalid url"
     }
@@ -286,18 +284,15 @@ struct NetworkView: View {
                 sessionDelegate.wasCalled = false
                 taskDelegateCalled = false
                 sessionDelegateCalled = false
-                Task {
-                    let tracer = OpenTelemetry.instance.tracerProvider.get(
-                        instrumentationName: "smoke-test-network",
-                        instrumentationVersion: "1.0"
+                // Add an attribute with the request-id, so we can find it in the collector's output.
+                let baggage = OpenTelemetry.instance.baggageManager.baggageBuilder()
+                    .put(
+                        key: EntryKey(name: "request-id")!,
+                        value: EntryValue(string: request.description)!,
+                        metadata: nil
                     )
-                    let baggage = OpenTelemetry.instance.baggageManager.baggageBuilder()
-                        .put(
-                            key: EntryKey(name: "request-id")!,
-                            value: EntryValue(string: request.description)!,
-                            metadata: nil
-                        )
-                        .build()
+                    .build()
+                Task {
                     responseSummary = await OpenTelemetry.instance.contextProvider
                         .withActiveBaggage(baggage) {
                             await doNetworkRequest(request)
