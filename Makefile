@@ -20,7 +20,7 @@ smoke-docker: smoke-tests/collector/data.json
 	@echo ""
 	@echo "+++ Spinning up the smokers."
 	@echo ""
-	docker compose up --build collector --detach
+	docker compose up --build collector --build mock-server --detach
 
 ios-tests: smoke-tests/collector/data.json
 	@echo ""

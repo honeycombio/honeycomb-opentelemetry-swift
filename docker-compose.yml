@@ -7,4 +7,9 @@ services:
       - './smoke-tests/collector:/var/lib'
     ports:
       - '4318:4318'
-
+  mock-server:
+    image: mockserver/mockserver
+    volumes:
+      - './smoke-tests/mock-server:/config'
+    ports:
+      - '1080:1080'

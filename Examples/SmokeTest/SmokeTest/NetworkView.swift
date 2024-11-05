@@ -12,7 +12,7 @@ private enum RequestType {
 
 // To fully test network auto-instrumentation, there are several different parameters to adjust.
 private class NetworkRequestSpec: ObservableObject, CustomStringConvertible {
-    @Published var address: String = "http://localhost:3000/get"
+    @Published var address: String = "http://localhost:1080/simple-api"
 
     /// The subtype of URLSessionTask to use.
     @Published var requestType: RequestType = .dataTask

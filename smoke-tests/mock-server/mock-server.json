@@ -1,0 +1,10 @@
+[
+  {
+    "httpRequest": {
+      "path": "/simple-api"
+    },
+    "httpResponse": {
+      "body": "this is the api response"
+    }
+  }
+]
