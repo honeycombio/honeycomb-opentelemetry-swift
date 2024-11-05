@@ -25,7 +25,7 @@ extension URLSessionTask {
 
                 ProxyURLSessionTaskDelegate.setSpan(span, for: self)
 
-                // See the comment below about why this function is only called on iOS 15+.
+                // In iOS 15+, it's possible to set a delegate for the task that overrides the delegate for the session.
                 if #available(iOS 15.0, *) {
                     if self.delegate != nil {
                         self.delegate = ProxyURLSessionTaskDelegate(self.delegate)
@@ -38,7 +38,6 @@ extension URLSessionTask {
         return _instrumented_resume()
     }
 
-    // A helper method to swizzle in our replacement for resume.
     static func swizzle() {
         let resumeSelector = #selector(URLSessionTask.resume)
         let instrumentedResumeSelector = #selector(URLSessionTask._instrumented_resume)

@@ -1,14 +1,14 @@
 
 import Foundation
 
+// Swizzle the constructor of URLSession to wrap the provided delegate with our own.
 extension URLSession {
     @objc class func _init(
         configuration: URLSessionConfiguration,
         delegate originalDelegate: (any URLSessionDelegate)?,
         delegateQueue queue: OperationQueue?
     ) -> URLSession {
-        // TODO: Add a comment.
-        // Wharrrgggrrrble
+        // Proxy the delegate if it's a URLSessionTaskDelegate.
         let delegate = if originalDelegate == nil {
             ProxyURLSessionTaskDelegate(nil)
         } else if let originalTaskDelegate = originalDelegate as? URLSessionTaskDelegate {
@@ -16,7 +16,7 @@ extension URLSession {
         } else {
             originalDelegate
         }
-        
+
         // Because the methods were swapped, this calls the original method.
         return URLSession._init(configuration: configuration, delegate: delegate, delegateQueue: queue)
     }

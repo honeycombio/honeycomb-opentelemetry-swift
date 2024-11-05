@@ -5,25 +5,23 @@ import OpenTelemetryApi
 // A key for associating a span with a task.
 private var spanKey: UInt8 = 0
 
-// TODO: Update this comment.
-
-// A proxy for the URLSessionTask's delegate, so that we can intercept calls to it.
-//
-// The only reliable way to know if a URLSession is finished is to attack a delegate to it.
-// But the app may have already attached a delegate to it. So, we need to wrap it and forward
-// messages.
-//
-// This proxy is created and attached during the "resume" call below.
-//
-// https://embrace.io/blog/always-implement-these-four-methods-when-proxying-in-ios/
-//
+/// A proxy for the URLSession or URLSessionTask's delegate, so that we can intercept calls to it.
+///
+/// The only reliable way to know if a URLSession is finished is to attach a delegate to it.
+/// But the app may have already attached a delegate to it. So, we need to wrap it and forward
+/// messages.
+///
+/// This proxy is attached to the URLSession and possibly also the URLSessionTask using swizzled methods.
+///
 internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
+    // The original delegate that this proxy replaces.
     private let wrapped: URLSessionTaskDelegate?
 
     init(_ wrapped: URLSessionTaskDelegate?) {
         self.wrapped = wrapped
     }
     
+    // Gets the span for a particular task. We have to use an "associated object" because we can't extend URLSessionTask.
     static func getSpan(for task: URLSessionTask) -> Span? {
         return objc_getAssociatedObject(task, &spanKey) as? Span
     }
@@ -49,6 +47,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         return answer
     }
 
+    // Forward any unhandled methods to the underlying delegate.
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
         return self.wrapped
     }
