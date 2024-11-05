@@ -96,8 +96,11 @@ public class Honeycomb {
             }
         let spanProcessor = BatchSpanProcessor(spanExporter: spanExporter)
 
+        let baggageSpanProcessor = HoneycombBaggageSpanProcessor(filter: { _ in true })
+
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
+            .add(spanProcessor: baggageSpanProcessor)
             .with(resource: resource)
             .build()
 

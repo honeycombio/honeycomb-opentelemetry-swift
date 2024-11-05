@@ -60,7 +60,7 @@ struct ContentView: View {
                 .buttonStyle(.bordered)
             }
             .padding()
-            .tabItem { Label("Basic", systemImage: "uiwindow.split.2x1") }
+            .tabItem { Label("Core", systemImage: "house") }
 
             NetworkView()
                 .padding()

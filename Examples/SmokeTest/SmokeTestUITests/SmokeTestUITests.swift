@@ -1,13 +1,14 @@
 import XCTest
 
-@testable import SmokeTest
+private let uiUpdateTimeout = 0.200
+private let networkRequestTimeout = 5.0
 
 extension XCUIApplication {
 
     /// Helper to get the state of a SwiftUI Toggle control.
     func getToggle(_ name: String) -> Bool {
         let toggle = self.switches[name]
-        XCTAssertTrue(toggle.exists, "missing toggle: \(name)")
+        XCTAssertTrue(toggle.waitForExistence(timeout: uiUpdateTimeout), "missing toggle: \(name)")
         
         return toggle.value as? String == "1"
     }
@@ -46,23 +47,62 @@ final class SmokeTestUITests: XCTestCase {
         app.launch()
 
         app.buttons["Send fake MetricKit data"].tap()
-        app.but/Users/beeklimt/src/honeycomb-opentelemetry-swift/Examples/SmokeTest/SmokeTestUITests/SmokeTestUITests.swifttons["Flush"].tap()
+        app.buttons["Flush"].tap()
     }
     
-    func testAsyncNetworking() throws {
+    func testNetworking() throws {
         let app = XCUIApplication()
         app.launch()
         app.buttons["Network"].tap()
-        app.setToggle("useAsync", to: true)
+        XCTAssert(app.staticTexts["Network Playground"].waitForExistence(timeout: uiUpdateTimeout))
 
-        let requestTypes: [NetworkRequestSpec] = [.data, .download, .upload]
-        for requestType in requestTypes {            
-            app.setToggle("useSessionDelegate", to:true)
+        // Test all combinations of networking options.
+        for (requestType, typeStr) in [("Data", "data"), ("Download", "download"), ("Upload", "upload")] {
+            for (useAsync, asyncStr) in [(true, "async"), (false, "callback")] {
+                for (useRequestObject, requestStr) in [(true, "obj"), (false, "url")] {
+                    for (useTaskDelegate, taskStr) in [(true, "-task"), (false, "")] {
+                        for (useSessionDelegate, sessionStr) in [(true, "-session"), (false, "")] {
+                            if useAsync && useTaskDelegate {
+                                // The await/async API doesn't allow passing in a delegate.
+                                continue
+                            }
+                            if requestType == "Upload" && !useRequestObject {
+                                // Using only a URL with an upload request doesn't really make sense.
+                                continue
+                            }
 
-            app.buttons["Clear"].tap()
-            app.buttons["Do a network request"].tap()
-            let status = app.staticTexts["success[session]: success!"]
-            XCTAssert(status.waitForExistence(timeout: 5.0))
+                            // Configure the request.
+                            app.segmentedControls.buttons[requestType].tap()
+                            app.setToggle("useAsync", to: useAsync)
+                            app.setToggle("useRequestObject", to:useRequestObject)
+                            app.setToggle("useTaskDelegate", to: useTaskDelegate)
+                            app.setToggle("useSessionDelegate", to:useSessionDelegate)
+
+                            // Make sure that the request is configured correctly.
+                            let requestID = "\(typeStr)-\(asyncStr)-\(requestStr)\(taskStr)\(sessionStr)"
+                            XCTAssert(app.staticTexts[requestID].waitForExistence(timeout: uiUpdateTimeout), requestID)
+
+                            // Do the request.
+                            app.buttons["Clear"].tap()
+                            app.buttons["Do a network request"].tap()
+
+                            // Wait for the request to finish.
+                            let status = app.staticTexts["200"]
+                            XCTAssert(status.waitForExistence(timeout: networkRequestTimeout), requestID)
+
+                            // Verify that the callbacks we called correctly.
+                            let expectTaskDelegateCalled = useTaskDelegate ? "✅" : "❌"
+                            let actualTaskDelegateCalled = app.staticTexts["taskDelegateCalled"].label
+                            XCTAssertEqual(expectTaskDelegateCalled, actualTaskDelegateCalled, requestID)
+
+                            let expectSessionDelegateCalled = (useSessionDelegate && !useTaskDelegate) ? "✅" : "❌"
+                            let actualSessionDelegateCalled = app.staticTexts["sessionDelegateCalled"].label
+                            XCTAssertEqual(expectSessionDelegateCalled, actualSessionDelegateCalled, requestID)
+
+                        }
+                    }
+                }
+            }
         }
     }
     

@@ -1,8 +1,10 @@
+
 import Foundation
+import OpenTelemetryApi
 import SwiftUI
 import UIKit
 
-internal enum RequestType {
+private enum RequestType {
     case dataTask
     case uploadTask
     case downloadTask
@@ -28,6 +30,7 @@ private class NetworkRequestSpec: ObservableObject, CustomStringConvertible {
     /// Whether to attach a delegate to the URLSession.
     @Published var useSessionDelegate: Bool = false
     
+    /// A descriptor to help us verify we are testing the config we intend to.
     var description: String {
         let typeStr = switch requestType {
         case .dataTask:
@@ -49,36 +52,17 @@ private class NetworkRequestSpec: ObservableObject, CustomStringConvertible {
 
 // Our instrumention futzes with the request delegates, so it's good to test that delegates set by
 // the app developer still work.
-var taskDelegate = SmokeTestSessionTaskDelegate(name: "task")
-var sessionDelegate = SmokeTestSessionTaskDelegate(name: "session")
+var taskDelegate = SmokeTestSessionTaskDelegate()
+var sessionDelegate = SmokeTestSessionTaskDelegate()
 
 // A simple delegate that just records whether it got called.
 class SmokeTestSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
-    let name: String
     var wasCalled: Bool = false
 
-    init(name: String) {
-        self.name = name
-    }
-
-    // TODO: Delete this.
-    /*
+    /// This method is implemented to test the proxy forwarding a method it doesn't override.
     @available(iOS 16.0, *)
     func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
-        let now = Date.now
-        print("[\(name):\(now)] URLSession:didCreateTask:")
-
-        // TODO: Add a comment here.
-        // TODO: No, this doesn't work at all; what was I thinking?
-        /*
-        if task.delegate == nil {
-            if let delegate = session.delegate as? URLSessionTaskDelegate {
-                task.delegate = delegate
-            }
-        }
-        */
     }
-    */
 
     @available(iOS 10.0, *)
     func urlSession(
@@ -87,14 +71,6 @@ class SmokeTestSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         didFinishCollecting metrics: URLSessionTaskMetrics
     ) {
         self.wasCalled = true
-    }
-
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        didCompleteWithError error: (any Error)?
-    ) {
-        print("[\(name)] URLSession:task:didCompleteWithError")
     }
 }
 
@@ -121,7 +97,10 @@ private func summarize(response: URLResponse?, error: (any Error)?) -> String {
     return summary
 }
 
+/// Method to do a network request with the given spec and return a summary of the response.
 private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String {
+    // TODO: Add something to the traces???
+    
     guard let url = URL(string: requestSpec.address) else {
         return "invalid url"
     }
@@ -162,6 +141,9 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
                     case false:
                         session.dataTask(with: url, completionHandler: callback)
                     }
+                    if requestSpec.useTaskDelegate {
+                        task.delegate = taskDelegate
+                    }
                     task.resume()
                 }
             }
@@ -197,6 +179,9 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
                     case false:
                         session.downloadTask(with: url, completionHandler: callback)
                     }
+                    if requestSpec.useTaskDelegate {
+                        task.delegate = taskDelegate
+                    }
                     task.resume()
                 }
             }
@@ -223,6 +208,9 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
                             continuation.resume(returning: summary)
                         };
                         let task = session.uploadTask(with: request, from: dataToUpload, completionHandler: callback)
+                        if requestSpec.useTaskDelegate {
+                            task.delegate = taskDelegate
+                        }
                         task.resume()
                     }
                 }
@@ -232,62 +220,6 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
         return summarize(response: nil, error: error)
     }
 }
-
-/*
-private func doNetworkRequestAsync(_ requestSpec: NetworkRequestSpec) async -> String {
-    guard let url = URL(string: requestSpec.address) else {
-        return "invalid url"
-    }
-    let session = createSession(useSessionDelegate: requestSpec.useSessionDelegate)
-    let request = URLRequest(url: url)
-    do {
-        let (data, response) =
-        if requestSpec.useRequestObject {
-            if requestSpec.useTaskDelegate {
-                try await session.data(for: request, delegate: taskDelegate)
-            } else {
-                try await session.data(for: request)
-            }
-        } else {
-            if requestSpec.useTaskDelegate {
-                try await session.data(from: url, delegate: taskDelegate)
-            } else {
-                try await session.data(from: url)
-            }
-        }
-        return summarizeResponse(data: data, response: response, error: nil)
-    } catch {
-        return summarizeResponse(data: nil, response: nil, error: error)
-    }
-}
-
-private func doNetworkRequestCallback(_ requestSpec: NetworkRequestSpec) async -> String {
-    guard let url = URL(string: requestSpec.address) else {
-        return "invalid url"
-    }
-    let request = URLRequest(url: url)
-    let session = createSession(useSessionDelegate: requestSpec.useSessionDelegate)
-    return await withCheckedContinuation { continuation in
-        let task = session.dataTask(with: request) { (data, response, error) in
-            let summary = summarizeResponse(data: data, response: response, error: error)
-            continuation.resume(returning: summary)
-        }
-        task.resume()
-    }
-}
-
-private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async
--> String {
-    taskDelegate.wasCalled = false
-    sessionDelegate.wasCalled = false
-
-    if requestSpec.useAsync {
-        return await doNetworkRequestAsync(requestSpec)
-    } else {
-        return await doNetworkRequestCallback(requestSpec)
-    }
-}
-*/
 
 struct NetworkView: View {
     @StateObject private var request = NetworkRequestSpec()
@@ -314,18 +246,17 @@ struct NetworkView: View {
                 Text("Download").tag(RequestType.downloadTask)
             }
             .pickerStyle(.segmented)
+            .accessibilityIdentifier("requestType")
             
             Toggle(isOn: $request.useAsync) {
                 Text("Use async function")
-            }
+            }.accessibilityIdentifier("useAsync")
             Toggle(isOn: $request.useRequestObject) {
                 Text("Use URLRequest object")
-            }
-            if request.useAsync {
-                Toggle(isOn: $request.useTaskDelegate) {
-                    Text("Use a task delegate")
-                }
-            }
+            }.accessibilityIdentifier("useRequestObject")
+            Toggle(isOn: $request.useTaskDelegate) {
+                Text("Use a task delegate")
+            }.accessibilityIdentifier("useTaskDelegate")
             Toggle(isOn: $request.useSessionDelegate) {
                 Text("Use a session delegate")
             }.accessibilityIdentifier("useSessionDelegate")
@@ -337,7 +268,19 @@ struct NetworkView: View {
                 taskDelegateCalled = false
                 sessionDelegateCalled = false
                 Task {
-                    responseSummary = await doNetworkRequest(request)
+                    let tracer = OpenTelemetry.instance.tracerProvider.get(
+                        instrumentationName: "smoke-test-network",
+                        instrumentationVersion: "1.0"
+                    )
+                    let baggage = OpenTelemetry.instance.baggageManager.baggageBuilder()
+                        .put(
+                            key: EntryKey(name: "request-id")!,
+                            value: EntryValue(string:request.description)!,
+                            metadata: nil)
+                        .build()
+                    responseSummary = await OpenTelemetry.instance.contextProvider.withActiveBaggage(baggage) {
+                        await doNetworkRequest(request)
+                    }
                     taskDelegateCalled = taskDelegate.wasCalled
                     sessionDelegateCalled = sessionDelegate.wasCalled
                 }
@@ -351,7 +294,6 @@ struct NetworkView: View {
                 Spacer()
                 Text(request.description)
             }
-
             HStack {
                 Text("Response Status Code")
                 Spacer()
@@ -361,12 +303,15 @@ struct NetworkView: View {
                 Text("Task Delegate Called")
                 Spacer()
                 Text(taskDelegateCalled ? "✅" : "❌")
+                    .accessibilityIdentifier("taskDelegateCalled")
             }
             HStack {
                 Text("Session Delegate Called")
                 Spacer()
                 Text(sessionDelegateCalled ? "✅" : "❌")
+                    .accessibilityIdentifier("sessionDelegateCalled")
             }
+
             Button(action: { responseSummary = "" }) {
                 Text("Clear")
             }
