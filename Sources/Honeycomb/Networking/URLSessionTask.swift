@@ -17,6 +17,7 @@ private func isOTLPRequest(_ request: URLRequest) -> Bool {
 
 extension URLSessionTask {
     // A replacement for URLSessionTask.resume(), which captures the start of any network request.
+    // swift-format-ignore
     @objc func _instrumented_resume() {
         if let request = self.originalRequest {
             if !isOTLPRequest(request) {
