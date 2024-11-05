@@ -2,8 +2,6 @@
 import Foundation
 import OpenTelemetryApi
 
-// TODO: Match the task to the span. Delete setting wasCalled to false.
-
 // A key for associating a span with a task.
 private var spanKey: UInt8 = 0
 
@@ -65,8 +63,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         if let span = ProxyURLSessionTaskDelegate.getSpan(for: task) {
             if let response = task.response {
                 if let httpResponse = response as? HTTPURLResponse {
-                    let code = httpResponse.statusCode
-                    span.setAttribute(key: "http.response.status_code", value: .int(code))
+                    updateSpan(span, with: httpResponse)
                 }
             }
             span.end()

@@ -4,18 +4,39 @@ import OpenTelemetryApi
 import SwiftUI
 import UIKit
 
-// TODO: Test a failed request (404).
-// TODO: Test a request that fails to find the host.
-// TODO: Test with both URL and URLRequest methods.
-// TODO: Test with download and upload tasks.
-// TODO: 
-// TODO: Sync up the fields with the semconv
-// TODO: Write smoke tests.
+private let urlSessionInstrumentationName = "@honeycombio/instrumentation-urlsession"
 
-// TODO: Why don't these match?
-// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client
-// https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/opentelemetry-instrumentation-xml-http-request
+// Creates a span with attributes for the given http request.
+internal func createSpan(from request: URLRequest) -> any Span {
+    let tracer = OpenTelemetry.instance.tracerProvider.get(
+        instrumentationName: urlSessionInstrumentationName,
+        instrumentationVersion: honeycombLibraryVersion
+    )
+    
+    var builder = tracer.spanBuilder(spanName: request.httpMethod ?? "UNKNOWN")
+    builder.setSpanKind(spanKind: SpanKind.client)
+    if let method = request.httpMethod {
+        builder = builder.setAttribute(key: "http.request.method", value: method)
+    }
+    if let url = request.url {
+        builder = builder.setAttribute(key: "url.full", value: url.absoluteString)
+        if let host = url.host {
+            builder = builder.setAttribute(key: "server.address", value: host)
+        }
+        if let port = url.port {
+            builder = builder.setAttribute(key: "server.port", value: port)
+        }
+        if let scheme = url.scheme {
+            builder = builder.setAttribute(key: "http.scheme", value: scheme)
+        }
+    }
+    return builder.startSpan()
+}
 
+internal func updateSpan(_ span: Span, with response: HTTPURLResponse) {
+    let code = response.statusCode
+    span.setAttribute(key: "http.response.status_code", value: .int(code))
+}
 
 /// Installs the auto-instrumentation for URLSession.
 ///

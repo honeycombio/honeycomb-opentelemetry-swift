@@ -161,7 +161,7 @@ mk_diag_attr() {
   result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET http.response.status_code int | uniq -c)
   assert_equal "$result" '  29 "200"'
 
-  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET http.host string | uniq -c)
+  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET server.address string | uniq -c)
   assert_equal "$result" '  29 "localhost"'
 }
 

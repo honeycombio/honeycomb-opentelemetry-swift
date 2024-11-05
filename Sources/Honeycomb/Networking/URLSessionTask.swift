@@ -2,8 +2,6 @@
 import Foundation
 import OpenTelemetryApi
 
-private let urlSessionInstrumentationName = "@honeycombio/instrumentation-urlsession"
-
 /// Returns true if this HTTP request is from our SDK itself, so that we don't recursively capture
 /// our own requests.
 private func isOTLPRequest(_ request: URLRequest) -> Bool {
@@ -16,29 +14,6 @@ private func isOTLPRequest(_ request: URLRequest) -> Bool {
         }
     }
     return false
-}
-
-// Creates a span with attributes for the given http request.
-private func createSpan(from request: URLRequest) -> any Span {
-    let tracer = OpenTelemetry.instance.tracerProvider.get(
-        instrumentationName: urlSessionInstrumentationName,
-        instrumentationVersion: honeycombLibraryVersion
-    )
-    var builder = tracer.spanBuilder(spanName: request.httpMethod ?? "UNKNOWN")
-    if let method = request.httpMethod {
-        builder = builder.setAttribute(key: "http.method", value: method)
-        builder = builder.setAttribute(key: "http.request.method", value: method)
-    }
-    if let url = request.url {
-        builder = builder.setAttribute(key: "http.url", value: url.absoluteString)
-        if let host = url.host {
-            builder = builder.setAttribute(key: "http.host", value: host)
-        }
-        if let scheme = url.scheme {
-            builder = builder.setAttribute(key: "http.scheme", value: scheme)
-        }
-    }
-    return builder.startSpan()
 }
 
 extension URLSessionTask {
