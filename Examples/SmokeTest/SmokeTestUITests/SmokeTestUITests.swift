@@ -26,7 +26,6 @@ extension XCUIApplication {
 }
 
 final class SmokeTestUITests: XCTestCase {
-
     override func setUpWithError() throws {
         continueAfterFailure = false
     }

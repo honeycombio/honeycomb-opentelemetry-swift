@@ -1,0 +1,36 @@
+{
+  "configurations" : [
+    {
+      "id" : "D927447B-A096-4F78-9689-8FD90B36FADB",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:SmokeTest.xcodeproj",
+      "identifier" : "AF6DEFE52C8D3CE000363027",
+      "name" : "SmokeTest"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:SmokeTest.xcodeproj",
+        "identifier" : "AF6DEFF52C8D3CE100363027",
+        "name" : "SmokeTestTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:SmokeTest.xcodeproj",
+        "identifier" : "AF6DEFFF2C8D3CE100363027",
+        "name" : "SmokeTestUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
