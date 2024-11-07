@@ -24,7 +24,7 @@ extension UIViewController {
         trace_viewDidDisappear(animated)
     }
     
-    public static func InitializeUIAutoInstriumentation() {
+    public static func swizzle() {
         let originalAppearSelector = #selector(UIViewController.viewDidAppear(_:))
         let swizzledAppearSelector = #selector(UIViewController.trace_viewDidAppear(_:))
         let originalDisappearSelector = #selector(UIViewController.viewDidDisappear(_:))
@@ -44,6 +44,10 @@ extension UIViewController {
         
         method_exchangeImplementations(originalDisappearMethod, swizzledDisappearMethod)
     }
+}
+
+public func InstallUINavigationInstrumentation() {
+    UIViewController.swizzle();
 }
 
 internal func getViewTracer() -> Tracer {
