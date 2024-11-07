@@ -2,8 +2,6 @@
 import Foundation
 import OpenTelemetryApi
 import UIKit
-private let honeycombInstrumentationView = "@honeycombio/instrumented-view";
-
 
 extension UIViewController {
     @objc func trace_viewDidAppear(_ animated: Bool) {
@@ -44,17 +42,6 @@ extension UIViewController {
         
         method_exchangeImplementations(originalDisappearMethod, swizzledDisappearMethod)
     }
-}
-
-public func InstallUINavigationInstrumentation() {
-    UIViewController.swizzle();
-}
-
-internal func getViewTracer() -> Tracer {
-    return OpenTelemetry.instance.tracerProvider.get(
-        instrumentationName: honeycombInstrumentationView, 
-        instrumentationVersion: honeycombLibraryVersion
-    )
 }
 
 #endif
