@@ -7,6 +7,7 @@ filters_always: &filters_always
 
 orbs:
   macos: circleci/macos@2
+  bats: circleci/bats@1.0.0
 
 jobs:
   lint:
@@ -32,6 +33,43 @@ jobs:
       - run: xcodebuild -version
       - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
 
+  smoke_tests:
+    macos:
+      xcode: 15.4.0
+    resource_class: macos.m1.medium.gen1
+
+    steps:
+      - attach_workspace:
+          at: ./
+      - macos/preboot-simulator:
+          version: "17.5"
+          platform: "iOS"
+          device: "iPhone 15"
+      - checkout
+      - bats/install
+      - run:
+          name: What's the BATS?
+          command: |
+            which bats
+            bats --version
+      - run: xcodebuild -version
+      - run:
+          name: Install OTel Collector
+          environment:
+            COLLECTOR_VERSION: "0.111.0"
+          command: |
+            curl --proto '=https' --tlsv1.2 -fOL https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${COLLECTOR_VERSION}/otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
+            tar -xvf otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
+      - run:
+          name: Start OTel Collector
+          command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml --set="exporters::file::path=./smoke-tests/collector/data.json"
+          background: true
+      - run:
+          name: Run iOS App
+          command: make ios-tests
+      - run:
+          name: Run Smoke Tests
+          command: make smoke-bats
 workflows:
   nightly:
     triggers:
@@ -44,10 +82,13 @@ workflows:
     jobs:
       - lint
       - tests
+      - smoke_tests
 
   build:
     jobs:
       - lint:
           <<: *filters_always
       - tests:
+          <<: *filters_always
+      - smoke_tests:
           <<: *filters_always
