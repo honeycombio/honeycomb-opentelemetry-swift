@@ -12,30 +12,31 @@ internal func createSpan(from request: URLRequest) -> any Span {
         instrumentationVersion: honeycombLibraryVersion
     )
 
-    var builder = tracer.spanBuilder(spanName: request.httpMethod ?? "UNKNOWN")
-    builder.setSpanKind(spanKind: SpanKind.client)
+    var span = tracer.spanBuilder(spanName: request.httpMethod ?? "UNKNOWN")
+        .setSpanKind(spanKind: SpanKind.client)
+        .startSpan()
     if let method = request.httpMethod {
-        builder = builder.setAttribute(key: "http.request.method", value: method)
+        span.setAttribute(key: SemanticAttributes.httpRequestMethod, value: method)
     }
     if let url = request.url {
-        builder = builder.setAttribute(key: "url.full", value: url.absoluteString)
+        span.setAttribute(key: SemanticAttributes.urlFull, value: url.absoluteString)
         if let host = url.host {
-            builder = builder.setAttribute(key: "server.address", value: host)
+            span.setAttribute(key: SemanticAttributes.serverAddress, value: host)
         }
         if let port = url.port {
-            builder = builder.setAttribute(key: "server.port", value: port)
+            span.setAttribute(key: SemanticAttributes.serverPort, value: port)
         }
         if let scheme = url.scheme {
-            builder = builder.setAttribute(key: "http.scheme", value: scheme)
+            span.setAttribute(key: SemanticAttributes.httpScheme, value: scheme)
         }
     }
-    return builder.startSpan()
+    return span
 }
 
 /// Updates the given span with the given http response.
 internal func updateSpan(_ span: Span, with response: HTTPURLResponse) {
     let code = response.statusCode
-    span.setAttribute(key: "http.response.status_code", value: .int(code))
+    span.setAttribute(key: SemanticAttributes.httpResponseStatusCode, value: code)
 }
 
 /// Installs the auto-instrumentation for URLSession.
