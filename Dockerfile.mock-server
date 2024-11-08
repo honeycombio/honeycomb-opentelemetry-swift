@@ -1,0 +1,11 @@
+FROM node:18-bullseye
+
+WORKDIR /usr/src/mock-server
+
+COPY smoke-tests/mock-server/ .
+
+RUN npm install
+
+EXPOSE 1080
+CMD [ "npm", "start" ]
+

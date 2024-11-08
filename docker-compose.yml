@@ -8,8 +8,9 @@ services:
     ports:
       - '4318:4318'
   mock-server:
-    image: mockserver/mockserver
-    volumes:
-      - './smoke-tests/mock-server:/config'
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mock-server
+    image: hny/custom-ios-mock-server
     ports:
       - '1080:1080'
