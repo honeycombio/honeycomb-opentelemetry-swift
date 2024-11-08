@@ -39,6 +39,11 @@ public class Honeycomb {
     static private let metricKitSubscriber = MetricKitSubscriber()
 
     static public func configure(options: HoneycombOptions) throws {
+
+        if options.debug {
+            configureDebug(options: options)
+        }
+
         guard let tracesEndpoint = URL(string: options.tracesEndpoint) else {
             throw HoneycombOptionsError.malformedURL(options.tracesEndpoint)
         }
