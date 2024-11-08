@@ -152,6 +152,7 @@ mk_diag_attr() {
 "download-callback-url-task-session"
 "upload-async-obj"
 "upload-async-obj-session"
+"upload-callback-obj"
 "upload-callback-obj-session"
 "upload-callback-obj-task"
 "upload-callback-obj-task-session"'
@@ -159,9 +160,9 @@ mk_diag_attr() {
 
 @test "URLSession attributes are correct" {
   result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET http.response.status_code int | uniq -c)
-  assert_equal "$result" '  29 "200"'
+  assert_equal "$result" '  30 "200"'
 
   result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET server.address string | uniq -c)
-  assert_equal "$result" '  29 "localhost"'
+  assert_equal "$result" '  30 "localhost"'
 }
 

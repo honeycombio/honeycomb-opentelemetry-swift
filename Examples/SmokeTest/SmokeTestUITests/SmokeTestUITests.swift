@@ -88,12 +88,35 @@ final class SmokeTestUITests: XCTestCase {
                                 requestID
                             )
 
-                            // Do the request.
+                            // Clear the status fields.
                             app.buttons["Clear"].tap()
+                            let clearStatus = app.staticTexts
+                                .matching(
+                                    NSPredicate(
+                                        format: "identifier=%@ && label=%@",
+                                        "responseStatusCode",
+                                        ""
+                                    )
+                                )
+                                .firstMatch
+                            XCTAssert(
+                                clearStatus.waitForExistence(timeout: uiUpdateTimeout),
+                                requestID
+                            )
+
+                            // Do the request.
                             app.buttons["Do a network request"].tap()
 
                             // Wait for the request to finish.
-                            let status = app.staticTexts["200"]
+                            let status = app.staticTexts
+                                .matching(
+                                    NSPredicate(
+                                        format: "identifier=%@ && label=%@",
+                                        "responseStatusCode",
+                                        "200"
+                                    )
+                                )
+                                .firstMatch
                             XCTAssert(
                                 status.waitForExistence(timeout: networkRequestTimeout),
                                 requestID
@@ -124,6 +147,10 @@ final class SmokeTestUITests: XCTestCase {
                 }
             }
         }
+
+        app.buttons["Core"].tap()
+        XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Flush"].tap()
     }
 
     func testLaunchPerformance() throws {

@@ -314,6 +314,7 @@ struct NetworkView: View {
                 Text("Response Status Code")
                 Spacer()
                 Text(responseSummary)
+                    .accessibilityIdentifier("responseStatusCode")
             }
             HStack {
                 Text("Task Delegate Called")
