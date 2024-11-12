@@ -66,7 +66,8 @@ jobs:
           background: true
       - run:
           name: Start Mock Server
-          command: cd smoke-tests/mock-server && npm install && npm start
+          working_directory: smoke-tests/mock-server
+          command: npm install && npm start
           background: true
       - run:
           name: Run iOS App
