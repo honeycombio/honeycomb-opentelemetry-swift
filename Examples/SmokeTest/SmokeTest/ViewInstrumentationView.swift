@@ -5,49 +5,92 @@ import UIKit
 
 @testable import Honeycomb
 
-private struct ExpensiveView: View {
+private struct NestedExpensiveView: View {
+    let delay: Double
+
     var body: some View {
         HStack {
-            Text("test:")
             HoneycombInstrumentedView(name: "nested expensive text") {
-                Text(String(timeConsumingCalculation()))
+                Text(String(timeConsumingCalculation(delay)))
+            }
+        }
+    }
+}
+
+private struct ExpensiveView: View {
+    @State private var delay = 0.0
+    @State private var sliderDelay = 0.0
+    @State private var isEditing = false
+
+    var body: some View {
+        HoneycombInstrumentedView(name: "main view") {
+            VStack {
+                Spacer()
+
+                Slider(
+                    value: $sliderDelay,
+                    in: 0...4,
+                    step: 0.5
+                ) {
+                    Text("Delay")
+                } minimumValueLabel: {
+                    Text("0")
+                } maximumValueLabel: {
+                    Text("4")
+                } onEditingChanged: { editing in
+                    isEditing = editing
+                    if !editing {
+                        delay = sliderDelay
+                    }
+                }
+
+                HoneycombInstrumentedView(name: "expensive text 1") {
+                    Text(timeConsumingCalculation(delay))
+                }
+
+                HoneycombInstrumentedView(name: "expensive text 2") {
+                    Text(timeConsumingCalculation(delay))
+                }
+
+                HoneycombInstrumentedView(name: "expensive text 3") {
+                    Text(timeConsumingCalculation(delay))
+                }
+
+                HoneycombInstrumentedView(name: "nested expensive view") {
+                    NestedExpensiveView(delay: delay)
+                }
+
+                HoneycombInstrumentedView(name: "expensive text 4") {
+                    Text(timeConsumingCalculation(delay))
+                }
+                
+                Spacer()
             }
         }
     }
 }
 
 struct ViewInstrumentationView: View {
+    @State private var isEnabled = false
+
     var body: some View {
-        HoneycombInstrumentedView(name: "main view") {
-            VStack {
-
-                HoneycombInstrumentedView(name: "expensive text 1") {
-                    Text(String(timeConsumingCalculation()))
-                }
-
-                HoneycombInstrumentedView(name: "expensive text 2") {
-                    Text(String(timeConsumingCalculation()))
-                }
-
-                HoneycombInstrumentedView(name: "expensive text 3") {
-                    Text(String(timeConsumingCalculation()))
-                }
-
-                HoneycombInstrumentedView(name: "nested expensive view") {
-                    ExpensiveView()
-                }
-
-                HoneycombInstrumentedView(name: "expensive text 4") {
-                    Text(String(timeConsumingCalculation()))
-                }
+        VStack {
+            Toggle(isOn: $isEnabled) { Text("enable slow render") }
+            Spacer()
+            if isEnabled {
+                ExpensiveView()
             }
+        }
+        .onDisappear {
+            isEnabled = false
         }
     }
 }
 
-private func timeConsumingCalculation() -> Int {
+private func timeConsumingCalculation(_ delay: Double) -> String {
     print("starting time consuming calculation")
-    return (1...10_000_000).reduce(0, +)
+    sleep(UInt32(delay))
+    return "slow text: \(round(delay * 100) / 100)"
 }
 
 #Preview {
