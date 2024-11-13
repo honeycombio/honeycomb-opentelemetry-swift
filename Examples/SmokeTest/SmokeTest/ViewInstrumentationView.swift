@@ -18,8 +18,8 @@ private struct NestedExpensiveView: View {
 }
 
 private struct ExpensiveView: View {
-    @State private var delay = 0.0
-    @State private var sliderDelay = 0.0
+    @State private var delay = 2.0
+    @State private var sliderDelay = 2.0
     @State private var isEditing = false
 
     var body: some View {
