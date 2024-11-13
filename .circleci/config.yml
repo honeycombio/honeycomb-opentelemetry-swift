@@ -65,6 +65,11 @@ jobs:
           command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml --set="exporters::file::path=./smoke-tests/collector/data.json"
           background: true
       - run:
+          name: Start Mock Server
+          working_directory: smoke-tests/mock-server
+          command: npm install && npm start
+          background: true
+      - run:
           name: Run iOS App
           command: make ios-tests
       - run:

@@ -123,3 +123,46 @@ mk_diag_attr() {
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.classname" string)" '"MyClass"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.app_launch.launch_duration" double)" 60
 }
+
+@test "URLSession all requests are present" {
+  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET request-id string | sort)
+  assert_equal "$result" '"data-async-obj"
+"data-async-obj-session"
+"data-async-url"
+"data-async-url-session"
+"data-callback-obj"
+"data-callback-obj-session"
+"data-callback-obj-task"
+"data-callback-obj-task-session"
+"data-callback-url"
+"data-callback-url-session"
+"data-callback-url-task"
+"data-callback-url-task-session"
+"download-async-obj"
+"download-async-obj-session"
+"download-async-url"
+"download-async-url-session"
+"download-callback-obj"
+"download-callback-obj-session"
+"download-callback-obj-task"
+"download-callback-obj-task-session"
+"download-callback-url"
+"download-callback-url-session"
+"download-callback-url-task"
+"download-callback-url-task-session"
+"upload-async-obj"
+"upload-async-obj-session"
+"upload-callback-obj"
+"upload-callback-obj-session"
+"upload-callback-obj-task"
+"upload-callback-obj-task-session"'
+}
+
+@test "URLSession attributes are correct" {
+  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET http.response.status_code int | uniq -c)
+  assert_equal "$result" '  30 "200"'
+
+  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET server.address string | uniq -c)
+  assert_equal "$result" '  30 "localhost"'
+}
+

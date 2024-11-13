@@ -101,8 +101,11 @@ public class Honeycomb {
             }
         let spanProcessor = BatchSpanProcessor(spanExporter: spanExporter)
 
+        let baggageSpanProcessor = HoneycombBaggageSpanProcessor(filter: { _ in true })
+
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
+            .add(spanProcessor: baggageSpanProcessor)
             .with(resource: resource)
             .build()
 
@@ -169,6 +172,8 @@ public class Honeycomb {
         OpenTelemetry.registerTracerProvider(tracerProvider: tracerProvider)
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
+
+        installNetworkInstrumentation(options: options)
 
         if #available(iOS 13.0, macOS 12.0, *) {
             MXMetricManager.shared.add(self.metricKitSubscriber)

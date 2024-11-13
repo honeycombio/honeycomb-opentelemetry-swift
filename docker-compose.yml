@@ -7,4 +7,10 @@ services:
       - './smoke-tests/collector:/var/lib'
     ports:
       - '4318:4318'
-
+  mock-server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mock-server
+    image: hny/custom-ios-mock-server
+    ports:
+      - '1080:1080'
