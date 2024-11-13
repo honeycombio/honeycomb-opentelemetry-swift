@@ -34,9 +34,9 @@ struct HoneycombInstrumentedView<Content: View>: View {
             .setParent(span)
             .setActive(true)
             .startSpan()
-        
+
         let c = content()
-        
+
         let endTime = Date()
         // contents end init
 

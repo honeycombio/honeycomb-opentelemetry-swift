@@ -63,7 +63,7 @@ private struct ExpensiveView: View {
                 HoneycombInstrumentedView(name: "expensive text 4") {
                     Text(timeConsumingCalculation(delay))
                 }
-                
+
                 Spacer()
             }
         }
