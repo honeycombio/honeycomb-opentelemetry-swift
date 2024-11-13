@@ -42,15 +42,15 @@ struct HoneycombInstrumentedView<Content: View>: View {
 
         print("\(name) body finished rendering")
         span.setAttribute(
-            key: "RenderTimeMicroSeconds",
-            value: Int(endTime.timeIntervalSince(start).toMicroseconds)
+            key: "RenderDuration",
+            value: endTime.timeIntervalSince(start)
         )
 
         return c.onAppear {
             // contents end render
 
             print("\(name) content appeared")
-            span.setAttribute(key: "DurationMicroSecons", value: Int(Date().timeIntervalSince(initTime).toMicroseconds))
+            span.setAttribute(key: "TotalDuration", value: Date().timeIntervalSince(initTime))
             span.end(time: Date())
             bodySpan.end(time: endTime)
         }
