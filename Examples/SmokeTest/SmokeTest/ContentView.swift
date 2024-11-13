@@ -69,6 +69,11 @@ struct ContentView: View {
             ViewInstrumentationView()
                 .padding()
                 .tabItem { Label("View Instrumentation", systemImage: "ruler") }
+            
+            UIKView()
+                .padding()
+                .tabItem { Label("UIKit",
+                    systemImage: "paintpalette" )}
         }
     }
 }
