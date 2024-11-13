@@ -29,16 +29,22 @@ extension UIViewController {
         let swizzledDisappearSelector = #selector(UIViewController.trace_viewDidDisappear(_:))
         
         guard
-            let originalAppearMethod = class_getInstanceMethod(UIViewController.self, originalAppearSelector),
-            let swizzledAppearMethod = class_getClassMethod(UIViewController.self, swizzledAppearSelector)
-        else { return }
+            let originalAppearMethod = class_getInstanceMethod(self, originalAppearSelector),
+            let swizzledAppearMethod = class_getInstanceMethod(self, swizzledAppearSelector)
+        else {
+            print("unable to swizzle \(originalAppearSelector): original method not found")
+            return 
+        }
         
         method_exchangeImplementations(originalAppearMethod, swizzledAppearMethod)
         
         guard
-            let originalDisappearMethod = class_getInstanceMethod(UIViewController.self, originalDisappearSelector),
-            let swizzledDisappearMethod = class_getInstanceMethod(UIViewController.self, swizzledDisappearSelector)
-        else { return }
+            let originalDisappearMethod = class_getInstanceMethod(self, originalDisappearSelector),
+            let swizzledDisappearMethod = class_getInstanceMethod(self, swizzledDisappearSelector)
+        else {
+            print("unable to swizzle \(originalDisappearSelector): original method not found")
+            return 
+        }
         
         method_exchangeImplementations(originalDisappearMethod, swizzledDisappearMethod)
     }
