@@ -31,6 +31,17 @@ private func flush() {
     Thread.sleep(forTimeInterval: 3.0)
 }
 
+struct ExpensiveView: View {
+    var body: some View {
+        HStack {
+            Text("test:")
+            HoneycombInstrumentedView(name: "nested expensive text") {
+                Text(String(timeConsumingCalculation()))
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     var body: some View {
         HoneycombInstrumentedView(name: "main view") {
@@ -38,6 +49,10 @@ struct ContentView: View {
                 alignment: .center,
                 spacing: 20.0
             ) {
+                HoneycombInstrumentedView(name: "expensive text 1") {
+                    Text(String(timeConsumingCalculation()))
+                }
+
                 HoneycombInstrumentedView(name: "home icon") {
                     Image(systemName: "globe")
                         .imageScale(.large)
@@ -61,7 +76,19 @@ struct ContentView: View {
                 }
                 .buttonStyle(.bordered)
 
-                HoneycombInstrumentedView(name: "expensive text") {
+                HoneycombInstrumentedView(name: "expensive text 2") {
+                    Text(String(timeConsumingCalculation()))
+                }
+
+                HoneycombInstrumentedView(name: "expensive text 3") {
+                    Text(String(timeConsumingCalculation()))
+                }
+
+                HoneycombInstrumentedView(name: "nested expensive view") {
+                    ExpensiveView()
+                }
+
+                HoneycombInstrumentedView(name: "expensive text 4") {
                     Text(String(timeConsumingCalculation()))
                 }
 
@@ -69,11 +96,11 @@ struct ContentView: View {
             .padding()
         }
     }
+}
 
-    private func timeConsumingCalculation() -> Int {
-        print("starting time consuming calculation")
-        return (1...100_000_000).reduce(0, +)
-    }
+private func timeConsumingCalculation() -> Int {
+    print("starting time consuming calculation")
+    return (1...10_000_000).reduce(0, +)
 }
 
 #Preview {
