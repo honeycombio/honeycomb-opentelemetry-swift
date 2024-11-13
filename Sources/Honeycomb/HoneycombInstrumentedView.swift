@@ -15,7 +15,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
         self.name = name
         self.content = content
 
-        self.span = getMetricKitTracer().spanBuilder(spanName: "View Render")
+        self.span = getViewTracer().spanBuilder(spanName: "View Render")
             .setStartTime(time: Date())
             .setAttribute(key: "ViewName", value: name)
             .startSpan()
@@ -28,7 +28,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
         let start = Date()
 
         // contents start init
-        let bodySpan = getMetricKitTracer().spanBuilder(spanName: "View Body")
+        let bodySpan = getViewTracer().spanBuilder(spanName: "View Body")
             .setStartTime(time: Date())
             .setAttribute(key: "ViewName", value: name)
             .setParent(span)
