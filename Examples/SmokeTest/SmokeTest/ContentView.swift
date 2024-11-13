@@ -31,83 +31,46 @@ private func flush() {
     Thread.sleep(forTimeInterval: 3.0)
 }
 
-struct ExpensiveView: View {
-    var body: some View {
-        HStack {
-            Text("test:")
-            HoneycombInstrumentedView(name: "nested expensive text") {
-                Text(String(timeConsumingCalculation()))
-            }
-        }
-    }
-}
-
 struct ContentView: View {
     var body: some View {
         TabView {
-            HoneycombInstrumentedView(name: "main view") {
-                VStack(
-                    alignment: .center,
-                    spacing: 20.0
-                ) {
-                    HoneycombInstrumentedView(name: "expensive text 1") {
-                        Text(String(timeConsumingCalculation()))
-                    }
-                    
-                    HoneycombInstrumentedView(name: "home icon") {
-                        Image(systemName: "globe")
-                            .imageScale(.large)
-                            .foregroundStyle(.tint)
-                    }
-                    
-                    Text("This is a sample app.")
-                    
-                    Button(action: sendSimpleSpan) {
-                        Text("Send simple span")
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    Button(action: sendFakeMetrics) {
-                        Text("Send fake MetricKit data")
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    Button(action: flush) {
-                        Text("Flush")
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    HoneycombInstrumentedView(name: "expensive text 2") {
-                        Text(String(timeConsumingCalculation()))
-                    }
-                    
-                    HoneycombInstrumentedView(name: "expensive text 3") {
-                        Text(String(timeConsumingCalculation()))
-                    }
-                    
-                    HoneycombInstrumentedView(name: "nested expensive view") {
-                        ExpensiveView()
-                    }
-                    
-                    HoneycombInstrumentedView(name: "expensive text 4") {
-                        Text(String(timeConsumingCalculation()))
-                    }
-                    
+            VStack(
+                alignment: .center,
+                spacing: 20.0
+            ) {
+                Image(systemName: "globe")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+
+                Text("This is a sample app.")
+
+                Button(action: sendSimpleSpan) {
+                    Text("Send simple span")
                 }
-                .padding()
+                .buttonStyle(.bordered)
+
+                Button(action: sendFakeMetrics) {
+                    Text("Send fake MetricKit data")
+                }
+                .buttonStyle(.bordered)
+
+                Button(action: flush) {
+                    Text("Flush")
+                }
+                .buttonStyle(.bordered)
             }
+            .padding()
             .tabItem { Label("Core", systemImage: "house") }
 
             NetworkView()
                 .padding()
                 .tabItem { Label("Network", systemImage: "network") }
+
+            ViewInstrumentationView()
+                .padding()
+                .tabItem { Label("View Instrumentation", systemImage: "ruler") }
         }
     }
-}
-
-private func timeConsumingCalculation() -> Int {
-    print("starting time consuming calculation")
-    return (1...10_000_000).reduce(0, +)
 }
 
 #Preview {
