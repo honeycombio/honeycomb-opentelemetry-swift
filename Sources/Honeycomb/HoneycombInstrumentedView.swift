@@ -1,5 +1,4 @@
 import OpenTelemetryApi
-import OpenTelemetrySdk
 import SwiftUI
 
 private let honeycombInstrumentedViewName = "@honeycombio/instrumentation-view"
@@ -10,7 +9,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
     private let name: String
     private let initTime: Date
 
-    init(name: String, @SwiftUICore.ViewBuilder _ content: @escaping () -> Content) {
+    init(name: String, @ViewBuilder _ content: @escaping () -> Content) {
         self.initTime = Date()
         self.name = name
         self.content = content
