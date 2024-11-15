@@ -17,32 +17,44 @@ private struct NestedExpensiveView: View {
     }
 }
 
-private struct ExpensiveView: View {
-    @State private var delay = 2.0
+// lets us adjust the slider value without re-rendering
+// the main ExpensiveView
+// once the user stops editing the slider, we propagate it back
+// up to ExpensiveView and then that will re-render
+struct DelayedSlider: View {
     @State private var sliderDelay = 2.0
     @State private var isEditing = false
+    var delay: Binding<Double>
+
+    var body: some View {
+        Slider(
+            value: $sliderDelay,
+            in: 0...4,
+            step: 0.5
+        ) {
+            Text("Delay")
+        } minimumValueLabel: {
+            Text("0")
+        } maximumValueLabel: {
+            Text("4")
+        } onEditingChanged: { editing in
+            isEditing = editing
+            if !editing {
+                delay.wrappedValue = sliderDelay
+            }
+        }
+    }
+}
+
+private struct ExpensiveView: View {
+    @State private var delay = 2.0
 
     var body: some View {
         HoneycombInstrumentedView(name: "main view") {
             VStack {
                 Spacer()
 
-                Slider(
-                    value: $sliderDelay,
-                    in: 0...4,
-                    step: 0.5
-                ) {
-                    Text("Delay")
-                } minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("4")
-                } onEditingChanged: { editing in
-                    isEditing = editing
-                    if !editing {
-                        delay = sliderDelay
-                    }
-                }
+                DelayedSlider(delay: $delay)
 
                 HoneycombInstrumentedView(name: "expensive text 1") {
                     Text(timeConsumingCalculation(delay))
@@ -87,9 +99,9 @@ struct ViewInstrumentationView: View {
     }
 }
 
-private func timeConsumingCalculation(_ delay: Double) -> String {
+private func timeConsumingCalculation(_ delay: TimeInterval) -> String {
     print("starting time consuming calculation")
-    sleep(UInt32(delay))
+    Thread.sleep(forTimeInterval: delay)
     return "slow text: \(round(delay * 100) / 100)"
 }
 

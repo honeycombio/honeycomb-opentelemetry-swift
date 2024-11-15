@@ -18,12 +18,9 @@ struct HoneycombInstrumentedView<Content: View>: View {
             .setStartTime(time: Date())
             .setAttribute(key: "ViewName", value: name)
             .startSpan()
-
-        print("\(name) init")
     }
 
     var body: some View {
-        print("\(name) body started rendering")
         let start = Date()
 
         // contents start init
@@ -35,11 +32,13 @@ struct HoneycombInstrumentedView<Content: View>: View {
             .startSpan()
 
         let c = content()
-
-        let endTime = Date()
         // contents end init
 
-        print("\(name) body finished rendering")
+        // we don't end `bodySpan` here so that it remains active in context
+        //   that way subsequent spans get nested in correctly
+        //   but we are going to want to track how long it took, so we need to store the endTime:
+        let endTime = Date()
+        
         span.setAttribute(
             key: "RenderDuration",
             value: endTime.timeIntervalSince(start)
@@ -47,11 +46,15 @@ struct HoneycombInstrumentedView<Content: View>: View {
 
         return c.onAppear {
             // contents end render
-
-            print("\(name) content appeared")
-            span.setAttribute(key: "TotalDuration", value: Date().timeIntervalSince(initTime))
-            span.end(time: Date())
+            // we haven't ended `bodySpan` yet because we wanted it to remain active in context
+            //   now we need to end it, and we pass in the endTime from earlier, when the body actually
+            //   finished rendering. Otherwise this span would stretch out to cover the rendering time
+            //   of other views in the tree, and we wouldn't get an accurate duration.
             bodySpan.end(time: endTime)
+
+            let appearTime = Date()
+            span.setAttribute(key: "TotalDuration", value: appearTime.timeIntervalSince(initTime))
+            span.end(time: appearTime)
         }
     }
 }
