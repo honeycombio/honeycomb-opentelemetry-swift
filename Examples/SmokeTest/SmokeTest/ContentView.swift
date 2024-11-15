@@ -72,8 +72,12 @@ struct ContentView: View {
             
             UIKView()
                 .padding()
-                .tabItem { Label("UIKit",
-                    systemImage: "paintpalette" )}
+                .tabItem {
+                    Label(
+                        "UIKit",
+                        systemImage: "paintpalette"
+                    )
+                }
         }
     }
 }

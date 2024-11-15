@@ -1,18 +1,18 @@
 #if canImport(UIKit)
-import Foundation
-import OpenTelemetryApi
-import UIKit
+    import Foundation
+    import OpenTelemetryApi
+    import UIKit
 
-private let honeycombInstrumentationView = "@honeycombio/instrumented-view";
+    private let honeycombInstrumentationView = "@honeycombio/instrumented-view"
 
-public func InstallUINavigationInstrumentation() {
-    UIViewController.swizzle();
-}
+    public func InstallUINavigationInstrumentation() {
+        UIViewController.swizzle()
+    }
 
-internal func getViewTracer() -> Tracer {
-    return OpenTelemetry.instance.tracerProvider.get(
-        instrumentationName: honeycombInstrumentationView, 
-        instrumentationVersion: honeycombLibraryVersion
-    )
-}
+    internal func getViewTracer() -> Tracer {
+        return OpenTelemetry.instance.tracerProvider.get(
+            instrumentationName: honeycombInstrumentationView,
+            instrumentationVersion: honeycombLibraryVersion
+        )
+    }
 #endif

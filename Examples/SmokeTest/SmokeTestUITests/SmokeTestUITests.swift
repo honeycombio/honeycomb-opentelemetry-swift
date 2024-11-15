@@ -152,14 +152,13 @@ final class SmokeTestUITests: XCTestCase {
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Flush"].tap()
     }
-    
+
     func testUIKitInstrimentation() throws {
         let app = XCUIApplication()
         app.launch()
         app.buttons["UIKit"].tap()
         XCTAssert(app.staticTexts["Sample UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
 
-        
         app.buttons["Core"].tap()
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Flush"].tap()

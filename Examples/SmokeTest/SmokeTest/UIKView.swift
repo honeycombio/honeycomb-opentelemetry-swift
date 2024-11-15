@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import SwiftUI
+import UIKit
 
 struct UIKView: View {
     var body: some View {
@@ -27,7 +27,7 @@ struct StoryboardViewControllerRepresentation: UIViewControllerRepresentable {
         let controller = storyboard.instantiateViewController(identifier: "UIKView")
         return controller
     }
-    
+
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
     }
 }
@@ -38,6 +38,5 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
-
 
 }
