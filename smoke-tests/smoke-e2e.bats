@@ -181,4 +181,9 @@ mk_diag_attr() {
 "main view"
 "nested expensive text"
 "nested expensive view"'
+
+}
+@test "UIViewController attributes are correct" {
+    result=$(attribute_for_span_key "@honeycombio/instrumented-view" viewDidAppear className string | uniq -c)
+    assert_equal "$result" '  3 "UIViewController"'
 }
