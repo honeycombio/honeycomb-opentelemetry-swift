@@ -152,15 +152,15 @@ final class SmokeTestUITests: XCTestCase {
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Flush"].tap()
     }
-    
+
     func testRenderPerformace() throws {
         let app = XCUIApplication()
         app.launch()
         app.buttons["View Instrumentation"].tap()
         XCTAssert(app.staticTexts["enable slow render"].waitForExistence(timeout: uiUpdateTimeout))
-        
+
         app.setToggle("enable slow render", to: true)
-        
+
         // make sure the metrics get flushed
         app.buttons["Core"].tap()
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))

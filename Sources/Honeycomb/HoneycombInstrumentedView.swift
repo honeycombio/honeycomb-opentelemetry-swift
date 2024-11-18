@@ -38,7 +38,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
         //   that way subsequent spans get nested in correctly
         //   but we are going to want to track how long it took, so we need to store the endTime:
         let endTime = Date()
-        
+
         span.setAttribute(
             key: "RenderDuration",
             value: endTime.timeIntervalSince(start)
