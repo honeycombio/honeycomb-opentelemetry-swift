@@ -188,4 +188,9 @@ mk_diag_attr() {
          jq "select (.key == \"className\")" | \
          jq "select (.value.stringValue == \"UIViewController\").value.stringValue" | uniq -c)
     assert_equal "$result" '   1 "UIViewController"'
+
+        result=$(attributes_from_span_named "@honeycombio/instrumented-view" viewDidDisappear | \
+         jq "select (.key == \"className\")" | \
+         jq "select (.value.stringValue == \"UIViewController\").value.stringValue" | uniq -c)
+    assert_equal "$result" '   1 "UIViewController"'
 }
