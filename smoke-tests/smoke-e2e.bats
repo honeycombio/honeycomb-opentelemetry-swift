@@ -184,6 +184,8 @@ mk_diag_attr() {
 
 }
 @test "UIViewController attributes are correct" {
-    result=$(attribute_for_span_key "@honeycombio/instrumented-view" viewDidAppear className string | uniq -c)
-    assert_equal "$result" '  3 "UIViewController"'
+    result=$(attributes_from_span_named "@honeycombio/instrumented-view" viewDidAppear | \
+         jq "select (.key == \"className\")" | \
+         jq "select (.value.stringValue == \"UIViewController\").value.stringValue" | uniq -c)
+    assert_equal "$result" '   1 "UIViewController"'
 }
