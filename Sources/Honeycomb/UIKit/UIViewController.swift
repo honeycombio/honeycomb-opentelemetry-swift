@@ -4,29 +4,29 @@
     import UIKit
 
     extension UIViewController {
-        @objc func trace_viewDidAppear(_ animated: Bool) {
+        @objc func traceViewDidAppear(_ animated: Bool) {
             let span = getViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
             span.setAttribute(key: "title", value: self.title ?? "")
             span.setAttribute(key: "animated", value: animated)
             span.setAttribute(key: "className", value: NSStringFromClass(type(of: self)))
             span.end()
-            trace_viewDidAppear(animated)
+            traceViewDidAppear(animated)
         }
 
-        @objc func trace_viewDidDisappear(_ animated: Bool) {
+        @objc func traceViewDidDisappear(_ animated: Bool) {
             let span = getViewTracer().spanBuilder(spanName: "viewDidDisappear").startSpan()
             span.setAttribute(key: "title", value: self.title ?? "")
             span.setAttribute(key: "animated", value: animated)
             span.setAttribute(key: "className", value: NSStringFromClass(type(of: self)))
             span.end()
-            trace_viewDidDisappear(animated)
+            traceViewDidDisappear(animated)
         }
 
         public static func swizzle() {
             let originalAppearSelector = #selector(UIViewController.viewDidAppear(_:))
-            let swizzledAppearSelector = #selector(UIViewController.trace_viewDidAppear(_:))
+            let swizzledAppearSelector = #selector(UIViewController.traceViewDidAppear(_:))
             let originalDisappearSelector = #selector(UIViewController.viewDidDisappear(_:))
-            let swizzledDisappearSelector = #selector(UIViewController.trace_viewDidDisappear(_:))
+            let swizzledDisappearSelector = #selector(UIViewController.traceViewDidDisappear(_:))
 
             guard
                 let originalAppearMethod = class_getInstanceMethod(self, originalAppearSelector),

@@ -5,7 +5,7 @@
 
     private let honeycombInstrumentationView = "@honeycombio/instrumented-view"
 
-    public func InstallUINavigationInstrumentation() {
+    public func installUINavigationInstrumentation() {
         UIViewController.swizzle()
     }
 
