@@ -20,7 +20,7 @@ span_attributes_for() {
 #   $3 - attribute key
 #   $4 - attribute type
 attribute_for_span_key() {
-	attributes_from_span_named $1 $2 | \
+	attributes_from_span_named "$1" "$2" | \
 		jq "select (.key == \"$3\").value" | \
 		jq ".${4}Value"
 }
