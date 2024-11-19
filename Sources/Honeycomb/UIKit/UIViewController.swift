@@ -5,20 +5,33 @@
 
     extension UIViewController {
         @objc func traceViewDidAppear(_ animated: Bool) {
-            let span = getViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
-            span.setAttribute(key: "title", value: self.title ?? "")
-            span.setAttribute(key: "animated", value: animated)
-            span.setAttribute(key: "className", value: NSStringFromClass(type(of: self)))
-            span.end()
+            let className = NSStringFromClass(type(of: self))
+            
+            // Internal classes from SwiftUI will likely being with an underscore
+            if !className.hasPrefix("_") {
+                let span = getViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
+                span.setAttribute(key: "title", value: self.title ?? "")
+                span.setAttribute(key: "animated", value: animated)
+                span.setAttribute(key: "className", value: className)
+                span.end()
+            }
+        
             traceViewDidAppear(animated)
         }
 
         @objc func traceViewDidDisappear(_ animated: Bool) {
-            let span = getViewTracer().spanBuilder(spanName: "viewDidDisappear").startSpan()
-            span.setAttribute(key: "title", value: self.title ?? "")
-            span.setAttribute(key: "animated", value: animated)
-            span.setAttribute(key: "className", value: NSStringFromClass(type(of: self)))
-            span.end()
+            
+            let className = NSStringFromClass(type(of: self))
+            
+            // Internal classes from SwiftUI will likely being with an underscore
+            if !className.hasPrefix("_") {
+                let span = getViewTracer().spanBuilder(spanName: "viewDidDisappear").startSpan()
+                span.setAttribute(key: "title", value: self.title ?? "")
+                span.setAttribute(key: "animated", value: animated)
+                span.setAttribute(key: "className", value: className)
+                span.end()
+            }
+
             traceViewDidDisappear(animated)
         }
 
