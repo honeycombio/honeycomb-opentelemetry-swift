@@ -10,7 +10,9 @@
             // Internal classes from SwiftUI will likely being with an underscore
             if !className.hasPrefix("_") {
                 let span = getViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
-                span.setAttribute(key: "title", value: self.title ?? "")
+                if self.title != nil {
+                    span.setAttribute(key: "title", value: self.title!)
+                }
                 span.setAttribute(key: "animated", value: animated)
                 span.setAttribute(key: "className", value: className)
                 span.end()
