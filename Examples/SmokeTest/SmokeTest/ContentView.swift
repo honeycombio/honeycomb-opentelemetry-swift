@@ -69,8 +69,8 @@ struct ContentView: View {
             ViewInstrumentationView()
                 .padding()
                 .tabItem { Label("View Instrumentation", systemImage: "ruler") }
-            
-            UIKView()
+
+            UIKitView()
                 .padding()
                 .tabItem {
                     Label(

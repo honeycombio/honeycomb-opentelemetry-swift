@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct UIKView: View {
+struct UIKitView: View {
     var body: some View {
         StoryboardViewControllerRepresentation()
     }
@@ -17,14 +17,14 @@ struct UIKView: View {
 
 struct UIKView_preview: PreviewProvider {
     static var previews: some View {
-        UIKView()
+        UIKitView()
     }
 }
 
 struct StoryboardViewControllerRepresentation: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
-        let storyboard = UIStoryboard(name: "UIKView", bundle: Bundle.main)
-        let controller = storyboard.instantiateViewController(identifier: "UIKView")
+        let storyboard = UIStoryboard(name: "UIKitView", bundle: Bundle.main)
+        let controller = storyboard.instantiateViewController(identifier: "UIKitView")
         return controller
     }
 
