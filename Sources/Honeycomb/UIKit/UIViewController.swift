@@ -6,7 +6,7 @@
     extension UIViewController {
         @objc func traceViewDidAppear(_ animated: Bool) {
             let className = NSStringFromClass(type(of: self))
-            
+
             // Internal classes from SwiftUI will likely being with an underscore
             if !className.hasPrefix("_") {
                 let span = getViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
@@ -15,14 +15,14 @@
                 span.setAttribute(key: "className", value: className)
                 span.end()
             }
-        
+
             traceViewDidAppear(animated)
         }
 
         @objc func traceViewDidDisappear(_ animated: Bool) {
-            
+
             let className = NSStringFromClass(type(of: self))
-            
+
             // Internal classes from SwiftUI will likely being with an underscore
             if !className.hasPrefix("_") {
                 let span = getViewTracer().spanBuilder(spanName: "viewDidDisappear").startSpan()
