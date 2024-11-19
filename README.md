@@ -75,3 +75,32 @@ To manually send a span:
 
 The following auto-instrumentation libraries are automatically included:
 * [MetricKit](https://developer.apple.com/documentation/metrickit) data is automatically collected.
+
+## Manual Instrumentation
+### SwiftUI View Instrumentation
+
+Wrap your SwiftUI views with `HoneycombInstrumentedView(name: String)`, like so:
+
+```
+var body: some View {
+    HoneycombInstrumentedView(name: "main view") {
+        VStack {
+            // ...
+        }
+    }
+}
+```
+
+This will measure and emit instrumentation for your View's render times, ex:
+
+![view instrumentation trace](docs/img/view-instrumentation.png)
+
+Specifically, it will emit 2 kinds of span for each view that is wrapped:
+
+`View Render` spans encompass the entire rendering process, from initialization to appearing on screen. They include the following attributes:
+- `ViewName` (string): the name passed to `HoneycombInstrumentedView`
+- `RenderDuration` (double): amount of time to spent initializing the contents of `HoneycombInstrumentedView`
+- `TotalDuration` (double): amount of time from when `HoneycombInstrumentedView.body()` is called to when the contents appear on screen
+
+`View Body` spans encompass just the `body()` call of `HoneycombInstrumentedView, and include the following attributes:
+- `ViewName` (string): the name passed to `HoneycombInstrumentedView` 

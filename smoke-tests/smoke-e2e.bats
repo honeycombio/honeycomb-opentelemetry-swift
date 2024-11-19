@@ -166,3 +166,19 @@ mk_diag_attr() {
   assert_equal "$result" '  30 "localhost"'
 }
 
+@test "Render Instrumentation attributes are correct" {
+  # we got the spans we expect
+  result=$(span_names_for "@honeycombio/instrumentation-view" | sort | uniq -c)
+  assert_equal "$result" '   7 "View Body"
+   7 "View Render"'
+   
+  # the View Render spans are tracking the views we expect
+  total_duration=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" ViewName string | sort)
+  assert_equal "$total_duration" '"expensive text 1"
+"expensive text 2"
+"expensive text 3"
+"expensive text 4"
+"main view"
+"nested expensive text"
+"nested expensive view"'
+}

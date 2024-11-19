@@ -153,6 +153,20 @@ final class SmokeTestUITests: XCTestCase {
         app.buttons["Flush"].tap()
     }
 
+    func testRenderPerformace() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.buttons["View Instrumentation"].tap()
+        XCTAssert(app.staticTexts["enable slow render"].waitForExistence(timeout: uiUpdateTimeout))
+
+        app.setToggle("enable slow render", to: true)
+
+        // make sure the metrics get flushed
+        app.buttons["Core"].tap()
+        XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Flush"].tap()
+    }
+
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
             // This measures how long it takes to launch your application.

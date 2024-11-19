@@ -65,6 +65,10 @@ struct ContentView: View {
             NetworkView()
                 .padding()
                 .tabItem { Label("Network", systemImage: "network") }
+
+            ViewInstrumentationView()
+                .padding()
+                .tabItem { Label("View Instrumentation", systemImage: "ruler") }
         }
     }
 }
