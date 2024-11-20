@@ -3,16 +3,7 @@
     import OpenTelemetryApi
     import UIKit
 
-    private let honeycombInstrumentationView = "@honeycombio/instrumented-view"
-
     public func installUINavigationInstrumentation() {
         UIViewController.swizzle()
-    }
-
-    internal func getViewTracer() -> Tracer {
-        return OpenTelemetry.instance.tracerProvider.get(
-            instrumentationName: honeycombInstrumentationView,
-            instrumentationVersion: honeycombLibraryVersion
-        )
     }
 #endif
