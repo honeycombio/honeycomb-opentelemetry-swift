@@ -9,7 +9,7 @@
 
             // Internal classes from SwiftUI will likely begin with an underscore
             if !className.hasPrefix("_") {
-                let span = getViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
+                let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
                 if self.title != nil {
                     span.setAttribute(key: "title", value: self.title!)
                 }
@@ -27,7 +27,8 @@
 
             // Internal classes from SwiftUI will likely begin with an underscore
             if !className.hasPrefix("_") {
-                let span = getViewTracer().spanBuilder(spanName: "viewDidDisappear").startSpan()
+                let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidDisappear")
+                    .startSpan()
                 if self.title != nil {
                     span.setAttribute(key: "title", value: self.title!)
                 }

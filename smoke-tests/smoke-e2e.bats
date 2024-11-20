@@ -185,12 +185,12 @@ mk_diag_attr() {
 }
 
 @test "UIViewController attributes are correct" {
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-view" viewDidAppear | \
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear | \
          jq "select (.key == \"className\")" | \
          jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
     assert_equal "$result" '"UIViewController"'
 
-        result=$(attributes_from_span_named "@honeycombio/instrumentation-view" viewDidDisappear | \
+        result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear | \
          jq "select (.key == \"className\")" | \
          jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
     assert_equal "$result" '"UIViewController"'
