@@ -183,13 +183,14 @@ mk_diag_attr() {
 "nested expensive view"'
 
 }
+
 @test "UIViewController attributes are correct" {
-    result=$(attributes_from_span_named "@honeycombio/instrumented-view" viewDidAppear | \
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-view" viewDidAppear | \
          jq "select (.key == \"className\")" | \
          jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
     assert_equal "$result" '"UIViewController"'
 
-        result=$(attributes_from_span_named "@honeycombio/instrumented-view" viewDidDisappear | \
+        result=$(attributes_from_span_named "@honeycombio/instrumentation-view" viewDidDisappear | \
          jq "select (.key == \"className\")" | \
          jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
     assert_equal "$result" '"UIViewController"'
