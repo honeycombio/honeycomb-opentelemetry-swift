@@ -195,3 +195,10 @@ mk_diag_attr() {
          jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
     assert_equal "$result" '"UIViewController"'
 }
+
+@test "UITabView attributes are correct" {
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear | \
+         jq "select (.key == \"className\")" | \
+         jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController\").value.stringValue" | uniq -c)
+    assert_equal "$result" '   5 "SwiftUI.UIKitTabBarController"'
+}
