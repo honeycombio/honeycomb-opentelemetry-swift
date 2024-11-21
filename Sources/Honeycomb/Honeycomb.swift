@@ -106,6 +106,7 @@ public class Honeycomb {
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
+            .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
             .with(resource: resource)
             .build()
 
