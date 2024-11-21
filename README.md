@@ -76,6 +76,16 @@ To manually send a span:
 The following auto-instrumentation libraries are automatically included:
 * [MetricKit](https://developer.apple.com/documentation/metrickit) data is automatically collected.
 
+### UIKit instrumentation
+
+UIKit views will automatically be instrumented, emitting `viewDidAppear` and `viewDidDisappear` events. Both have the following attributes:
+
+- `title` - Title of the view, if provided.
+- `nibName` - The name of the view controller's nib file, if one was specified.
+- `animated` - true if the transition to/from this view is animated, false if it isn't.
+- `className` - name of the swift/objective-c class this view 
+controller has.
+
 ## Manual Instrumentation
 ### SwiftUI View Instrumentation
 
