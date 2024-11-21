@@ -61,14 +61,23 @@ struct ContentView: View {
             }
             .padding()
             .tabItem { Label("Core", systemImage: "house") }
+            .onAppear {
+                reportNavigation(path: "Core")
+            }
 
             NetworkView()
                 .padding()
                 .tabItem { Label("Network", systemImage: "network") }
+                .onAppear {
+                    reportNavigation(path: "Network")
+                }
 
             ViewInstrumentationView()
                 .padding()
                 .tabItem { Label("View Instrumentation", systemImage: "ruler") }
+                .onAppear {
+                    reportNavigation(path: "View Instrumentation")
+                }
 
             UIKitView()
                 .padding()
