@@ -3,7 +3,6 @@ import OpenTelemetrySdk
 import SwiftUI
 
 private let NavigationInstrumentationName = "@honeycombio/instrumentation-navigation"
-private let NavigationBaggageKey = EntryKey(name: "CurrentNavigationPath")!
 private let NavigationSpanName = "Navigation"
 private let UnencodablePath = "<unencodable path>"
 
