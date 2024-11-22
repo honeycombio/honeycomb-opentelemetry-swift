@@ -21,7 +21,7 @@ struct ParkDetails: View {
     }
 }
 
-struct SampleNavigationView: View {
+struct SimpleNavigationView: View {
     @State private var presentedParks: [Park] = []
     //  @State private var presentedParks = NavigationPath()
 
@@ -39,5 +39,5 @@ struct SampleNavigationView: View {
 }
 
 #Preview {
-    SampleNavigationView()
+    SimpleNavigationView()
 }

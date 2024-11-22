@@ -87,7 +87,8 @@ struct ContentView: View {
                         systemImage: "paintpalette"
                     )
                 }
-            SampleNavigationView()
+
+            SimpleNavigationView()
                 .padding()
                 .tabItem { Label("Navigation", systemImage: "globe") }
         }
