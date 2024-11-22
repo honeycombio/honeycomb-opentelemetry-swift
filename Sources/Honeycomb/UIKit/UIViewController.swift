@@ -18,7 +18,7 @@
                 }
                 span.setAttribute(key: "animated", value: animated)
                 span.setAttribute(key: "className", value: className)
-                
+
                 span.end()
             }
 

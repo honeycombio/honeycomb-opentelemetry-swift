@@ -76,7 +76,7 @@ To manually send a span:
 The following auto-instrumentation libraries are automatically included:
 * [MetricKit](https://developer.apple.com/documentation/metrickit) data is automatically collected.
 
-### UIKit instrumentation
+### UIKit Instrumentation
 
 UIKit views will automatically be instrumented, emitting `viewDidAppear` and `viewDidDisappear` events. Both have the following attributes:
 

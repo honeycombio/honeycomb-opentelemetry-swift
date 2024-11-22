@@ -1,10 +1,3 @@
-//
-//  UIKView.swift
-//  SmokeTest
-//
-//  Created by Arri Blais on 11/13/24.
-//
-
 import Foundation
 import SwiftUI
 import UIKit
