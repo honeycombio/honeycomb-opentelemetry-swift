@@ -13,8 +13,12 @@
                 if self.title != nil {
                     span.setAttribute(key: "title", value: self.title!)
                 }
+                if self.nibName != nil {
+                    span.setAttribute(key: "nibName", value: self.nibName!)
+                }
                 span.setAttribute(key: "animated", value: animated)
                 span.setAttribute(key: "className", value: className)
+                
                 span.end()
             }
 
@@ -31,6 +35,9 @@
                     .startSpan()
                 if self.title != nil {
                     span.setAttribute(key: "title", value: self.title!)
+                }
+                if self.nibName != nil {
+                    span.setAttribute(key: "nibName", value: self.nibName!)
                 }
                 span.setAttribute(key: "animated", value: animated)
                 span.setAttribute(key: "className", value: className)
