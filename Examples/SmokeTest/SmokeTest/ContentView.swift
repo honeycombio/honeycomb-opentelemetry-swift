@@ -88,7 +88,7 @@ struct ContentView: View {
                     )
                 }
 
-            SimpleNavigationView()
+            NavigationExamplesView()
                 .padding()
                 .tabItem { Label("Navigation", systemImage: "globe") }
         }

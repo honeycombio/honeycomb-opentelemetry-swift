@@ -29,22 +29,44 @@ func reportNavigation(path: NavigationPath) {
 
 var currentNavigationPath: String? = nil
 
+func reportNavigation(path: String) {
+    print("current path: \(path)")
+
+    currentNavigationPath = path
+
+    // emit a span that says we've navigated to this path
+    getTracer().spanBuilder(spanName: NavigationSpanName)
+        .setAttribute(key: "NavigationPath", value: path)
+        .startSpan()
+        .end()
+}
+
 func reportNavigation(path: Encodable) {
     do {
         let encoder = JSONEncoder()
         let data = try encoder.encode(path)
         let pathStr = String(decoding: data, as: UTF8.self)
-        print("current path: \(pathStr)")
 
-        currentNavigationPath = pathStr
-
-        // emit a span that says we've navigated to this path
-        getTracer().spanBuilder(spanName: NavigationSpanName)
-            .setAttribute(key: "NavigationPath", value: pathStr)
-            .startSpan()
-            .end()
+        reportNavigation(path: pathStr)
     } catch {
-        // Handle error
+        reportNavigation(path: UnencodablePath)
+    }
+}
+
+func reportNavigation(path: [Encodable]) {
+    do {
+        let encoder = JSONEncoder()
+
+        let pathStr =
+            try path.map {
+                let encoded = try encoder.encode($0)
+                return String(decoding: encoded, as: UTF8.self)
+            }
+            .joined(separator: ",")
+
+        reportNavigation(path: "[\(pathStr)]")
+    } catch {
+        reportNavigation(path: UnencodablePath)
     }
 }
 
