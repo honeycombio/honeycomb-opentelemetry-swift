@@ -186,7 +186,7 @@ final class SmokeTestUITests: XCTestCase {
             }
         }
     }
-    
+
     func testNavigations() throws {
         let app = XCUIApplication()
         app.launch()
@@ -196,7 +196,7 @@ final class SmokeTestUITests: XCTestCase {
 
         // make sure the metrics get flushed
         app.buttons["Core"].tap()
-        
+
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Flush"].tap()
     }
