@@ -10,15 +10,15 @@ struct Park: Identifiable, Equatable, Hashable, Codable {
     }
 }
 
-let PARKS = [
+let parks = [
     Park(name: "Yosemite"),
     Park(name: "Zion"),
 ]
 
 func parkFromId(_ id: Park.ID?) -> Park? {
     if let parkId = id {
-        if let index = PARKS.firstIndex(where: { $0.id == parkId }) {
-            return PARKS[index]
+        if let index = parks.firstIndex(where: { $0.id == parkId }) {
+            return parks[index]
         }
     }
     return nil
@@ -31,15 +31,15 @@ struct Tree: Identifiable, Equatable, Hashable, Codable {
     }
 }
 
-let TREES = [
+let trees = [
     Tree(name: "Oak Tree"),
     Tree(name: "Maple Tree"),
 ]
 
 func treeFromId(_ id: Tree.ID?) -> Tree? {
     if let treeId = id {
-        if let index = TREES.firstIndex(where: { $0.id == treeId }) {
-            return TREES[index]
+        if let index = trees.firstIndex(where: { $0.id == treeId }) {
+            return trees[index]
         }
     }
     return nil
@@ -67,7 +67,7 @@ struct NavigationStackExample: View {
 
     var body: some View {
         NavigationStack(path: $presentedParks) {
-            List(PARKS) { park in
+            List(parks) { park in
                 NavigationLink(park.name, value: park)
             }
             .navigationDestination(for: Park.self) { park in
@@ -84,7 +84,7 @@ struct NavigationSplitExample: View {
 
     var body: some View {
         NavigationSplitView {
-            List(PARKS, selection: $selectedPark) { park in
+            List(parks, selection: $selectedPark) { park in
                 Text(park.name)
             }
             .onAppear {
@@ -97,7 +97,7 @@ struct NavigationSplitExample: View {
                         let path: [Encodable] = ["Split View", park]
                         reportNavigation(path: path)
                     }
-                List(TREES, selection: $selectedTree) { tree in
+                List(trees, selection: $selectedTree) { tree in
                     Text(tree.name)
                 }
             } else {

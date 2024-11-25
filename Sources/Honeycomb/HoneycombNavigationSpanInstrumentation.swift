@@ -2,9 +2,9 @@ import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
 
-private let NavigationInstrumentationName = "@honeycombio/instrumentation-navigation"
-private let NavigationSpanName = "Navigation"
-private let UnencodablePath = "<unencodable path>"
+private let navigationInstrumentationName = "@honeycombio/instrumentation-navigation"
+private let navigationSpanName = "Navigation"
+private let unencodablePath = "<unencodable path>"
 
 private func activeBaggage() -> Baggage? {
     return OpenTelemetry.instance.contextProvider.activeBaggage
@@ -12,7 +12,7 @@ private func activeBaggage() -> Baggage? {
 
 func getTracer() -> Tracer {
     return OpenTelemetry.instance.tracerProvider.get(
-        instrumentationName: NavigationInstrumentationName,
+        instrumentationName: navigationInstrumentationName,
         instrumentationVersion: honeycombLibraryVersion
     )
 }
@@ -22,7 +22,7 @@ func reportNavigation(path: NavigationPath) {
     if let codablePath = path.codable {
         reportNavigation(path: codablePath)
     } else {
-        reportNavigation(path: UnencodablePath)
+        reportNavigation(path: unencodablePath)
     }
 
 }
@@ -35,7 +35,7 @@ func reportNavigation(path: String) {
     currentNavigationPath = path
 
     // emit a span that says we've navigated to this path
-    getTracer().spanBuilder(spanName: NavigationSpanName)
+    getTracer().spanBuilder(spanName: navigationSpanName)
         .setAttribute(key: "NavigationPath", value: path)
         .startSpan()
         .end()
@@ -49,7 +49,7 @@ func reportNavigation(path: Encodable) {
 
         reportNavigation(path: pathStr)
     } catch {
-        reportNavigation(path: UnencodablePath)
+        reportNavigation(path: unencodablePath)
     }
 }
 
@@ -66,12 +66,12 @@ func reportNavigation(path: [Encodable]) {
 
         reportNavigation(path: "[\(pathStr)]")
     } catch {
-        reportNavigation(path: UnencodablePath)
+        reportNavigation(path: unencodablePath)
     }
 }
 
 func reportNavigation(path: Any) {
-    reportNavigation(path: UnencodablePath)
+    reportNavigation(path: unencodablePath)
 }
 
 extension View {
