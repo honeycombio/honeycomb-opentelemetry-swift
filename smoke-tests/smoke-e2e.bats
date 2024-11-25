@@ -90,7 +90,8 @@ mk_attr() {
 
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
 
-   assert_equal "$result" '"signpost.category"
+   assert_equal "$result" '"CurrentNavigationPath"
+"signpost.category"
 "signpost.count"
 "signpost.cpu_time"
 "signpost.hitch_time_ratio"
