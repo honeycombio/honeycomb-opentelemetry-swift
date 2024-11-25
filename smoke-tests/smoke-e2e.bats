@@ -201,5 +201,14 @@ mk_diag_attr() {
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear | \
          jq "select (.key == \"className\")" | \
          jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController\").value.stringValue" | uniq -c)
-    assert_equal "$result" '   5 "SwiftUI.UIKitTabBarController"'
+    assert_equal "$result" '   6 "SwiftUI.UIKitTabBarController"'
+}
+
+@test "Navigation attributes are correct" {
+    result=$(attribute_for_span_key "@honeycombio/instrumentation-navigation" Navigation CurrentNavigationPath string | sort | uniq -c)
+    assert_equal "$result" '  10 "Core"
+   1 "Network"
+   1 "View Instrumentation"
+   1 "[]"
+   1 "[{\"name\":\"Yosemite\"}]"'
 }

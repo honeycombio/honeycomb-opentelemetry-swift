@@ -186,4 +186,18 @@ final class SmokeTestUITests: XCTestCase {
             }
         }
     }
+    
+    func testNavigations() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.buttons["Navigation"].tap()
+        XCTAssert(app.buttons["Yosemite"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Yosemite"].tap()
+
+        // make sure the metrics get flushed
+        app.buttons["Core"].tap()
+        
+        XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Flush"].tap()
+    }
 }
