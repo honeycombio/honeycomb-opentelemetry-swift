@@ -1,4 +1,3 @@
-
 import Foundation
 import OpenTelemetryApi
 import SwiftUI
@@ -10,18 +9,15 @@ struct ViewNames {
     var currentTitle: String?
     var titleLabelText: String?
     var className: String?
-    
+
     var name: String? {
-        return accessibilityIdentifier ??
-            accessibilityLabel ??
-            currentTitle ??
-            titleLabelText
+        return accessibilityIdentifier ?? accessibilityLabel ?? currentTitle ?? titleLabelText
     }
-    
+
     init(view: UIView) {
         findNames(view: view)
     }
-    
+
     private mutating func findNames(view: UIView) {
         // Gather various identifiers about the view.
         if let identifier = view.accessibilityIdentifier {
@@ -45,11 +41,11 @@ struct ViewNames {
                 self.findNames(view: parent)
             }
         }
-        
+
         // Set the class name for the bottom-most view.
         self.className = String(describing: type(of: view))
     }
-    
+
     func setAttributes(span: Span) {
         if let accessibilityLabel = self.accessibilityLabel {
             span.setAttribute(key: "view.accessibilityLabel", value: accessibilityLabel)
@@ -79,11 +75,12 @@ enum TouchType {
 }
 
 private func recordTouch(_ touch: UITouch, type: TouchType) {
-    let spanName = switch type {
-    case .began: "Touch Began"
-    case .ended: "Touch Ended"
-    case .cancelled: "Touch Cancelled"
-    }
+    let spanName =
+        switch type {
+        case .began: "Touch Began"
+        case .ended: "Touch Ended"
+        case .cancelled: "Touch Cancelled"
+        }
 
     // Try to find the name of the view this touch was on.
     let viewNames: ViewNames? = touch.view.map({ view in ViewNames(view: view) })
@@ -95,7 +92,7 @@ private func recordTouch(_ touch: UITouch, type: TouchType) {
     let span = tracer.spanBuilder(spanName: spanName).startSpan()
     viewNames?.setAttributes(span: span)
     span.end()
-    
+
     // Do a special check for button clicks.
     if type == .ended {
         if let button = touch.view as? UIButton {
@@ -110,15 +107,18 @@ private func recordTouch(_ touch: UITouch, type: TouchType) {
 }
 
 private func recordTouch(_ touch: UITouch) {
-    guard let type: TouchType = switch touch.phase {
-        case .began: TouchType.began
-        case .cancelled: TouchType.cancelled
-        case .ended: TouchType.ended
-        default: nil
-    } else {
+    guard
+        let type: TouchType =
+            switch touch.phase {
+            case .began: TouchType.began
+            case .cancelled: TouchType.cancelled
+            case .ended: TouchType.ended
+            default: nil
+            }
+    else {
         return
     }
-    
+
     recordTouch(touch, type: type)
 }
 
@@ -133,18 +133,21 @@ extension UIWindow {
                 }
             }
         default:
-            break;
+            break
         }
-        
+
         // Because the methods were swapped, this calls the original method.
         _instrumented_sendEvent(event)
     }
-    
+
     static func swizzle() {
         let sendEventSelector = #selector(UIWindow.sendEvent)
         let instrumentedSendEventSelector = #selector(UIWindow._instrumented_sendEvent)
         let sendEventMethod = class_getInstanceMethod(self, sendEventSelector)
-        let instrumentedSendEventMethod = class_getInstanceMethod(self, instrumentedSendEventSelector)
+        let instrumentedSendEventMethod = class_getInstanceMethod(
+            self,
+            instrumentedSendEventSelector
+        )
         method_exchangeImplementations(sendEventMethod!, instrumentedSendEventMethod!)
     }
 }
