@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,13 +16,43 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="globe" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="O94-9o-FQ4">
-                                <rect key="frame" x="169" y="216" width="54" height="46"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="globe" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="O94-9o-FQ4">
+                                <rect key="frame" x="171.66666666666666" y="376.66666666666669" width="50" height="48.666666666666686"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Fba-48-zi9"/>
+                                    <constraint firstAttribute="width" constant="50" id="GvM-3x-MxK"/>
+                                </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Sample UIKit App" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="008-k5-M1T">
-                                <rect key="frame" x="130" y="266" width="133" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sample UIKit App" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="008-k5-M1T">
+                                <rect key="frame" x="130" y="442" width="133" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Boa-QF-90l">
+                                <rect key="frame" x="16" y="767" width="361" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Simple Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zfX-ff-qIS">
+                                <rect key="frame" x="16" y="716" width="361" height="35"/>
+                                <accessibility key="accessibilityConfiguration" identifier="accessibleButton"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Accessible Button"/>
+                            </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DzX-1X-ZOc">
+                                <rect key="frame" x="16" y="669" width="361" height="32"/>
+                                <segments>
+                                    <segment title="Segmented"/>
+                                    <segment title="Button"/>
+                                </segments>
+                            </segmentedControl>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" title="Switch" translatesAutoresizingMaskIntoConstraints="NO" id="ks9-AV-zp6">
+                                <rect key="frame" x="328" y="622" width="51" height="31"/>
+                                <accessibility key="accessibilityConfiguration" identifier="switch"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Switch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n89-o3-f07">
+                                <rect key="frame" x="16.000000000000004" y="627" width="51.333333333333343" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -30,6 +60,25 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ks9-AV-zp6" secondAttribute="trailing" constant="16" id="34M-ZV-0ya"/>
+                            <constraint firstItem="zfX-ff-qIS" firstAttribute="top" secondItem="DzX-1X-ZOc" secondAttribute="bottom" constant="16" id="3eY-tS-YQ1"/>
+                            <constraint firstItem="O94-9o-FQ4" firstAttribute="bottom" secondItem="5EZ-qb-Rvc" secondAttribute="centerY" id="7U7-eW-BRK"/>
+                            <constraint firstItem="zfX-ff-qIS" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="Cmr-4G-4aM"/>
+                            <constraint firstItem="Boa-QF-90l" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="IPb-0s-21g"/>
+                            <constraint firstItem="ks9-AV-zp6" firstAttribute="centerY" secondItem="n89-o3-f07" secondAttribute="centerY" id="KYa-HI-CEa"/>
+                            <constraint firstItem="008-k5-M1T" firstAttribute="top" secondItem="O94-9o-FQ4" secondAttribute="bottom" constant="16" id="Sg3-Ec-qwk"/>
+                            <constraint firstItem="n89-o3-f07" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="YGK-Ax-o2a"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="DzX-1X-ZOc" secondAttribute="trailing" constant="16" id="ewi-3P-0AT"/>
+                            <constraint firstItem="DzX-1X-ZOc" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="fXA-Y5-41O"/>
+                            <constraint firstItem="Boa-QF-90l" firstAttribute="top" secondItem="zfX-ff-qIS" secondAttribute="bottom" constant="16" id="gng-cj-6eK"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="Boa-QF-90l" secondAttribute="bottom" constant="16" id="iqq-HI-v26"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="zfX-ff-qIS" secondAttribute="trailing" constant="16" id="jcQ-5o-UTD"/>
+                            <constraint firstItem="O94-9o-FQ4" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="qtd-4m-nze"/>
+                            <constraint firstItem="DzX-1X-ZOc" firstAttribute="top" secondItem="ks9-AV-zp6" secondAttribute="bottom" constant="16" id="uoj-ry-roG"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Boa-QF-90l" secondAttribute="trailing" constant="16" id="up8-ZX-dl7"/>
+                            <constraint firstItem="008-k5-M1T" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="xun-d3-rYB"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -75,8 +75,11 @@ To manually send a span:
 
 The following auto-instrumentation libraries are automatically included:
 * [MetricKit](https://developer.apple.com/documentation/metrickit) data is automatically collected.
+* Some UIKit controls are automatically instrumented as described below.
 
 ### UIKit Instrumentation
+
+#### Navigation
 
 UIKit views will automatically be instrumented, emitting `viewDidAppear` and `viewDidDisappear` events. Both have the following attributes:
 
@@ -85,6 +88,21 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
 - `animated` - true if the transition to/from this view is animated, false if it isn't.
 - `className` - name of the swift/objective-c class this view 
 controller has.
+
+#### Interaction
+
+Various touch events are instrumented, such as:
+* `Touch Began` - A touch started
+* `Touch Ended` - A touch ended
+* `click` - A "click". This is currently ony instrumented for `UIButton`s.
+
+These events may have the following attributes. In the case of name attributes, we may walk up the view hierarchy to find a valid entry.
+* `view.class`: e.g. `"UIButton"`
+* `view.accessibilityIdentifier`, The `accessibilityIdentifier` property of a `UIView`, e.g. `"accessibleButton"`
+* `view.accessibilityLabel` - The `accessibilityLabel` property of a `UIView`, e.g. `"Accessible Button"`
+* `view.currentTitle` - The `currentTitle` property of a `UIButton`.
+* `view.titleLabel.text` - The `text` of a `UIButton`'s `titleLabel`, e.g. `"Accessible Button"`
+* `view.name`: The "best" available name of the view, given the other identifiers, e.g. `"accessibleButton"`
 
 ## Manual Instrumentation
 ### SwiftUI View Instrumentation

@@ -175,6 +175,7 @@ public class Honeycomb {
 
         installNetworkInstrumentation(options: options)
         installUINavigationInstrumentation()
+        installWindowInstrumentation()
 
         if #available(iOS 13.0, macOS 12.0, *) {
             MXMetricManager.shared.add(self.metricKitSubscriber)

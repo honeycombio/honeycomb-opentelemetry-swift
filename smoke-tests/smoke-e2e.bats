@@ -181,24 +181,60 @@ mk_diag_attr() {
 "main view"
 "nested expensive text"
 "nested expensive view"'
-
 }
 
 @test "UIViewController attributes are correct" {
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear | \
-         jq "select (.key == \"className\")" | \
-         jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
+        | jq "select (.key == \"className\")" \
+        | jq "select (.value.stringValue == \"UIViewController\").value.stringValue" \
+        | uniq)
     assert_equal "$result" '"UIViewController"'
 
-        result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear | \
-         jq "select (.key == \"className\")" | \
-         jq "select (.value.stringValue == \"UIViewController\").value.stringValue")
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
+        | jq "select (.key == \"className\")" \
+        | jq "select (.value.stringValue == \"UIViewController\").value.stringValue" \
+        | uniq)
     assert_equal "$result" '"UIViewController"'
 }
 
 @test "UITabView attributes are correct" {
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear | \
-         jq "select (.key == \"className\")" | \
-         jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController\").value.stringValue" | uniq -c)
-    assert_equal "$result" '   5 "SwiftUI.UIKitTabBarController"'
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
+        | jq "select (.key == \"className\")" \
+        | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController\").value.stringValue" \
+        | uniq)
+    assert_equal "$result" '"SwiftUI.UIKitTabBarController"'
+}
+
+@test "UIKit touch events are captured" {
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Began" "Simple Button")
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Began" "accessibleButton")
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Began" "switch")
+
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Ended" "Simple Button")
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Ended" "accessibleButton")
+    # UISwitch does not support Touch Ended events at this time. Apple sets the view to null.
+}
+
+@test "UIKit click events are captured" {
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "click" "Simple Button")
+    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "click" "accessibleButton")
+}
+
+@test "UIKit touch events have all attributes" {
+    span=$(spans_on_view_named "@honeycombio/instrumentation-uikit" "click" "accessibleButton")
+
+    name=$(echo "$span" | jq '.attributes[] | select(.key == "view.name").value.stringValue')
+    assert_equal "$name" '"accessibleButton"'
+
+    class=$(echo "$span" | jq '.attributes[] | select(.key == "view.class").value.stringValue')
+    assert_equal "$class" '"UIButton"'
+
+    label=$(echo "$span" | jq '.attributes[] | select(.key == "view.accessibilityLabel").value.stringValue')
+    assert_equal "$label" '"Accessible Button"'
+
+    identifier=$(echo "$span" | jq '.attributes[] | select(.key == "view.accessibilityIdentifier").value.stringValue')
+    assert_equal "$identifier" '"accessibleButton"'
+
+    text=$(echo "$span" | jq '.attributes[] | select(.key == "view.titleLabel.text").value.stringValue')
+    assert_equal "$text" '"Accessible Button"'
 }

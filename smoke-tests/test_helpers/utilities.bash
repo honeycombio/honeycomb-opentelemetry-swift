@@ -1,5 +1,19 @@
 # UTILITY FUNCS
 
+# Spans on a particular view.
+# Arguments:
+#   $1 - scope
+#   $2 - span name
+#   $3 - view.name
+spans_on_view_named() {
+    spans_received | jq ".scopeSpans[] \
+        | select(.scope.name == \"$1\").spans[] \
+        | select (.name == \"$2\") as \$span \
+        | .attributes?[]? \
+        | select (.key? == \"view.name\" and .value.stringValue == \"$3\") \
+		| \$span"
+}
+
 # Span names for a given scope
 # Arguments: $1 - scope name
 span_names_for() {
@@ -98,9 +112,24 @@ assert_equal() {
 
 # Fail and display details if the actual value is empty.
 # Arguments: $1 - actual result
-assert_not_empty() {
+assert_not_empty_string() {
 	EMPTY=(\"\")
 	if [[ "$1" == "${EMPTY}" ]]; then
+		{
+			echo
+			echo "-- 💥 value is empty 💥 --"
+			echo "value : $1"
+			echo "--"
+			echo
+		} >&2 # output error to STDERR
+		return 1
+	fi
+}
+
+# Fail and display details if the actual value is empty.
+# Arguments: $1 - actual result
+assert_not_empty() {
+	if [[ "$1" == "" ]]; then
 		{
 			echo
 			echo "-- 💥 value is empty 💥 --"
