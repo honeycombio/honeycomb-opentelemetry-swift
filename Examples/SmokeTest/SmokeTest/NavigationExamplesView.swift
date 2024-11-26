@@ -15,7 +15,7 @@ let parks = [
     Park(name: "Zion"),
 ]
 
-func parkFromId(_ id: Park.ID?) -> Park? {
+func park(from id: Park.ID?) -> Park? {
     if let parkId = id {
         if let index = parks.firstIndex(where: { $0.id == parkId }) {
             return parks[index]
@@ -36,7 +36,7 @@ let trees = [
     Tree(name: "Maple Tree"),
 ]
 
-func treeFromId(_ id: Tree.ID?) -> Tree? {
+func tree(from id: Tree.ID?) -> Tree? {
     if let treeId = id {
         if let index = trees.firstIndex(where: { $0.id == treeId }) {
             return trees[index]
@@ -74,7 +74,7 @@ struct NavigationStackExample: View {
                 ParkDetails(park: park)
             }
         }
-        .instrumentNavigations(path: presentedParks)
+        .instrumentNavigation(path: presentedParks)
     }
 }
 
@@ -91,7 +91,7 @@ struct NavigationSplitExample: View {
                 reportNavigation(path: "Split View Parks Root")
             }
         } content: {
-            if let park = parkFromId(selectedPark) {
+            if let park = park(from: selectedPark) {
                 ParkDetails(park: park)
                     .onAppear {
                         let path: [Encodable] = ["Split View", park]
@@ -104,7 +104,7 @@ struct NavigationSplitExample: View {
                 Text("Select a park")
             }
         } detail: {
-            if let park = parkFromId(selectedPark), let tree = treeFromId(selectedTree) {
+            if let park = park(from: selectedPark), let tree = tree(from: selectedTree) {
                 TreeDetails(park: park, tree: tree)
                     .onAppear {
                         let path: [Encodable] = ["Split View", park, tree]

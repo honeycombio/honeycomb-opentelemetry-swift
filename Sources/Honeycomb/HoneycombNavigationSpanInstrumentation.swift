@@ -82,7 +82,7 @@ extension View {
         return modifier(EmptyModifier())
     }
 
-    func instrumentNavigations(path: Encodable) -> some View {
+    func instrumentNavigation(path: Encodable) -> some View {
         reportNavigation(path: path)
 
         return modifier(EmptyModifier())
