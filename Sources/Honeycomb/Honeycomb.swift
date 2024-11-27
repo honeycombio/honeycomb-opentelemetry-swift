@@ -9,6 +9,7 @@ import OpenTelemetryProtocolExporterHttp
 import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
+import SwiftUI
 
 // TODO: Implement the following features.
 //       https://github.com/honeycombio/specs/blob/main/specs/otel-sdk-distro.md
@@ -106,6 +107,7 @@ public class Honeycomb {
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
+            .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
             .with(resource: resource)
             .build()
 
@@ -180,5 +182,22 @@ public class Honeycomb {
         if #available(iOS 13.0, macOS 12.0, *) {
             MXMetricManager.shared.add(self.metricKitSubscriber)
         }
+    }
+
+    @available(iOS 16.0, macOS 12.0, *)
+    public static func setCurrentScreen(path: NavigationPath) {
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
+    }
+    public static func setCurrentScreen(path: String) {
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
+    }
+    public static func setCurrentScreen(path: Encodable) {
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
+    }
+    public static func setCurrentScreen(path: [Encodable]) {
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
+    }
+    public static func setCurrentScreen(path: Any) {
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
     }
 }

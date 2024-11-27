@@ -10,6 +10,7 @@
 		452B71DD2CE52C8600C27FB2 /* ViewInstrumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */; };
 		366309102CE51BDC00B97612 /* UIKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3663090F2CE51BDC00B97612 /* UIKitView.swift */; };
 		366309122CE51EF000B97612 /* UIKitView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 366309112CE51EF000B97612 /* UIKitView.storyboard */; };
+		452B71E12CE6A52600C27FB2 /* NavigationExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */; };
 		AF6DEFEA2C8D3CE000363027 /* SmokeTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6DEFE92C8D3CE000363027 /* SmokeTestApp.swift */; };
 		AF6DEFEC2C8D3CE000363027 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6DEFEB2C8D3CE000363027 /* ContentView.swift */; };
 		AF6DEFEE2C8D3CE100363027 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF6DEFED2C8D3CE100363027 /* Assets.xcassets */; };
@@ -43,6 +44,7 @@
 		452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewInstrumentationView.swift; sourceTree = "<group>"; };
 		3663090F2CE51BDC00B97612 /* UIKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitView.swift; sourceTree = "<group>"; };
 		366309112CE51EF000B97612 /* UIKitView.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UIKitView.storyboard; sourceTree = "<group>"; };
+		452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationExamplesView.swift; sourceTree = "<group>"; };
 		AF6DEFE62C8D3CE000363027 /* SmokeTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmokeTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF6DEFE92C8D3CE000363027 /* SmokeTestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTestApp.swift; sourceTree = "<group>"; };
 		AF6DEFEB2C8D3CE000363027 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				AFA277C32CC71DF5007F8A46 /* NetworkView.swift */,
+				452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */,
 				AFA0BA5B2C8E12E700F54611 /* MetricKitTestHelpers.swift */,
 				452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */,
 				AF6DEFE92C8D3CE000363027 /* SmokeTestApp.swift */,
@@ -289,6 +292,7 @@
 				AF6DEFEC2C8D3CE000363027 /* ContentView.swift in Sources */,
 				AFA277C42CC71DF7007F8A46 /* NetworkView.swift in Sources */,
 				366309102CE51BDC00B97612 /* UIKitView.swift in Sources */,
+				452B71E12CE6A52600C27FB2 /* NavigationExamplesView.swift in Sources */,
 				AF6DEFEA2C8D3CE000363027 /* SmokeTestApp.swift in Sources */,
 				AFA0BA5C2C8E12E700F54611 /* MetricKitTestHelpers.swift in Sources */,
 				452B71DD2CE52C8600C27FB2 /* ViewInstrumentationView.swift in Sources */,

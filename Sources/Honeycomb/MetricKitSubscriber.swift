@@ -98,7 +98,7 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
 }
 
 #if os(iOS)
-    func reportMetrics(payload: MXMetricPayload) {
+    public func reportMetrics(payload: MXMetricPayload) {
         let span = getMetricKitTracer().spanBuilder(spanName: "MXMetricPayload")
             .setStartTime(time: payload.timeStampBegin)
             .startSpan()
@@ -371,7 +371,7 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
 #endif
 
 @available(iOS 14.0, macOS 12.0, *)
-func reportDiagnostics(payload: MXDiagnosticPayload) {
+public func reportDiagnostics(payload: MXDiagnosticPayload) {
     let span = getMetricKitTracer().spanBuilder(spanName: "MXDiagnosticPayload")
         .setStartTime(time: payload.timeStampBegin)
         .startSpan()

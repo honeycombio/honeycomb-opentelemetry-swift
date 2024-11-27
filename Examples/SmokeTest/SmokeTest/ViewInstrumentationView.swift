@@ -1,9 +1,8 @@
 import Foundation
+import Honeycomb
 import OpenTelemetryApi
 import SwiftUI
 import UIKit
-
-@testable import Honeycomb
 
 private struct NestedExpensiveView: View {
     let delay: Double

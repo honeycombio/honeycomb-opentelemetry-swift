@@ -1,8 +1,7 @@
+import Honeycomb
 import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
-
-@testable import Honeycomb
 
 private func sendSimpleSpan() {
     let tracerProvider = OpenTelemetry.instance.tracerProvider.get(
@@ -61,14 +60,23 @@ struct ContentView: View {
             }
             .padding()
             .tabItem { Label("Core", systemImage: "house") }
+            .onAppear {
+                Honeycomb.setCurrentScreen(path: "Core")
+            }
 
             NetworkView()
                 .padding()
                 .tabItem { Label("Network", systemImage: "network") }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "Network")
+                }
 
             ViewInstrumentationView()
                 .padding()
                 .tabItem { Label("View Instrumentation", systemImage: "ruler") }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "View Instrumentation")
+                }
 
             UIKitView()
                 .padding()
@@ -78,6 +86,13 @@ struct ContentView: View {
                         systemImage: "paintpalette"
                     )
                 }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "UIKit")
+                }
+
+            NavigationExamplesView()
+                .padding()
+                .tabItem { Label("Navigation", systemImage: "globe") }
         }
     }
 }

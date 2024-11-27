@@ -1,0 +1,135 @@
+import Honeycomb
+import SwiftUI
+
+// MARK: data models
+struct Park: Identifiable, Equatable, Hashable, Codable {
+    let name: String
+    var id: String {
+        name
+    }
+}
+
+let parks = [
+    Park(name: "Yosemite"),
+    Park(name: "Zion"),
+]
+
+func park(from id: Park.ID?) -> Park? {
+    if let parkId = id {
+        if let index = parks.firstIndex(where: { $0.id == parkId }) {
+            return parks[index]
+        }
+    }
+    return nil
+}
+
+struct Tree: Identifiable, Equatable, Hashable, Codable {
+    let name: String
+    var id: String {
+        name
+    }
+}
+
+let trees = [
+    Tree(name: "Oak Tree"),
+    Tree(name: "Maple Tree"),
+]
+
+func tree(from id: Tree.ID?) -> Tree? {
+    if let treeId = id {
+        if let index = trees.firstIndex(where: { $0.id == treeId }) {
+            return trees[index]
+        }
+    }
+    return nil
+}
+
+// MARK: views
+struct ParkDetails: View {
+    let park: Park
+    var body: some View {
+        Text("details for \(park.name)")
+    }
+}
+
+struct TreeDetails: View {
+    let park: Park
+    let tree: Tree
+    var body: some View {
+        Text("\(park) has many \(tree)")
+    }
+}
+
+struct NavigationStackExample: View {
+    @State private var presentedParks: [Park] = []
+
+    var body: some View {
+        NavigationStack(path: $presentedParks) {
+            List(parks) { park in
+                NavigationLink(park.name, value: park)
+            }
+            .navigationDestination(for: Park.self) { park in
+                ParkDetails(park: park)
+            }
+        }
+        .instrumentNavigation(path: presentedParks)
+    }
+}
+
+struct NavigationSplitExample: View {
+    @State private var selectedPark: Park.ID? = nil
+    @State private var selectedTree: Park.ID? = nil
+
+    var body: some View {
+        NavigationSplitView {
+            List(parks, selection: $selectedPark) { park in
+                Text(park.name)
+            }
+            .onAppear {
+                Honeycomb.setCurrentScreen(path: "Split View Parks Root")
+            }
+        } content: {
+            if let park = park(from: selectedPark) {
+                ParkDetails(park: park)
+                    .onAppear {
+                        let path: [Encodable] = ["Split View", park]
+                        Honeycomb.setCurrentScreen(path: path)
+                    }
+                List(trees, selection: $selectedTree) { tree in
+                    Text(tree.name)
+                }
+            } else {
+                Text("Select a park")
+            }
+        } detail: {
+            if let park = park(from: selectedPark), let tree = tree(from: selectedTree) {
+                TreeDetails(park: park, tree: tree)
+                    .onAppear {
+                        let path: [Encodable] = ["Split View", park, tree]
+                        Honeycomb.setCurrentScreen(path: path)
+                    }
+            } else {
+                Text("Select a tree")
+            }
+        }
+    }
+}
+
+struct NavigationExamplesView: View {
+    @State private var useSplit = false
+
+    var body: some View {
+        VStack {
+            Toggle("Use Split View", isOn: $useSplit)
+            if useSplit {
+                NavigationSplitExample()
+            } else {
+                NavigationStackExample()
+            }
+        }
+    }
+}
+
+#Preview {
+    NavigationExamplesView()
+}

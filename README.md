@@ -132,3 +132,92 @@ Specifically, it will emit 2 kinds of span for each view that is wrapped:
 
 `View Body` spans encompass just the `body()` call of `HoneycombInstrumentedView, and include the following attributes:
 - `view.name` (string): the name passed to `HoneycombInstrumentedView` 
+
+### SwiftUI Navigation Instrumentation
+iOS 16 introduced two [new Navigation types](https://developer.apple.com/documentation/swiftui/migrating-to-new-navigation-types) that replace the now-deprecated [NavigationView](https://developer.apple.com/documentation/swiftui/navigationview).
+
+We offer a convenience view modifier (`.instrumentNavigation(path: String)`) for cases where you are using a [`NavigationStack`](https://developer.apple.com/documentation/swiftui/navigationstack) and [managing navigation state externally](https://developer.apple.com/documentation/swiftui/navigationstack#Manage-navigation-state)
+
+ex.:
+```swift
+import Honeycomb
+
+struct SampleNavigationView: View {
+    @State private var presentedParks: [Park] = [] // or var presentedParks = NavigationPath()
+
+    var body: some View {
+        NavigationStack(path: $presentedParks) {
+            List(PARKS) { park in
+                NavigationLink(park.name, value: park)
+            }
+            .navigationDestination(for: Park.self) { park in
+                ParkDetails(park: park)
+            }
+        }
+        .instrumentNavigation(path: presentedParks) // convenience View Modifier
+    }
+}
+```  
+
+Whenever the `path` variable changes, this View Modifier will emit a span with the name `Navigation`. This span will contain the following attributes:
+
+- `screen.name` (string): the full navigation path when the span is emitted. If the path passed to the view modifier is not `Encodable` (ie. if you're using a `NavigationPath` and have stored a value that does not conform to the `Codable` protocol), then this attribute will have the value `<unencodable path>`.
+
+When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`), we offer a utility function `Honeycomb.setCurrentScreen(path: Any)`. This will immediately emit a `Navigation` span as documented above. As with the View Modifier form, if the `path` is `Encodable`, that will be included as an attribute on the span. Otherwise the `screen.name` attribute on the span will have the value `<unencodable path>`.
+
+This function can be called from a view's `onAppear`, or inside a button's `action`, or wherever you decide to manage your navigation.
+
+ex.:
+```swift
+struct ContentView: View {
+    var body: some View {
+        TabView {
+            ViewA()
+                .padding()
+                .tabItem { Label("View A") }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "View A")
+                }
+
+            ViewB()
+                .padding()
+                .tabItem { Label("View B" }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "View B")
+                }
+
+            ViewC()
+                .padding()
+                .tabItem { Label("View C" }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "View C")
+                }
+        }
+    }
+}
+```
+
+Regardless of which form you use, either helper will keep track of the most recent path value, and our instrumentation will sets up a SpanProcessor that will automatically propage that value as a `screen.name` attribute onto any other spans.
+
+This means that if you miss a navigation, you will see spans attributed to the wrong screen. For example:
+```swift
+struct ContentView: View {
+    var body: some View {
+        TabView {
+            ViewA()
+                .padding()
+                .tabItem { Label("View A") }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "View A")
+                }
+
+            ViewB()
+                .padding()
+                .tabItem { Label("View B" }
+                // no onAppear callback and no reportNavigation() call
+        }
+    }
+}
+``` 
+
+In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `screen.name: "View A"`.
