@@ -143,9 +143,9 @@ struct SampleNavigationView: View {
 
 Whenever the `path` variable changes, this View Modifier will emit a span with the name `Navigation`. This span will contain the following attributes:
 
-- `NavigationPath` (string): the full navigation path when the span is emitted. If the path passed to the view modifier is not `Encodable` (ie. if you're using a `NavigationPath` and have stored a value that does not conform to the `Codable` protocol), then this attribute will have the value `<unencodable path>`.
+- `screen.name` (string): the full navigation path when the span is emitted. If the path passed to the view modifier is not `Encodable` (ie. if you're using a `NavigationPath` and have stored a value that does not conform to the `Codable` protocol), then this attribute will have the value `<unencodable path>`.
 
-When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`), we offer a utility function `Honeycomb.setCurrentScreen(path: Any)`. This will immediately emit a `Navigation` span as documented above. As with the View Modifier form, if the `path` is `Encodable`, that will be included as an attribute on the span. Otherwise the `NavigationPath` attribute on the span will have the value `<unencodable path>`.
+When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`), we offer a utility function `Honeycomb.setCurrentScreen(path: Any)`. This will immediately emit a `Navigation` span as documented above. As with the View Modifier form, if the `path` is `Encodable`, that will be included as an attribute on the span. Otherwise the `screen.name` attribute on the span will have the value `<unencodable path>`.
 
 This function can be called from a view's `onAppear`, or inside a button's `action`, or wherever you decide to manage your navigation.
 
@@ -179,7 +179,7 @@ struct ContentView: View {
 }
 ```
 
-Regardless of which form you use, either helper will keep track of the most recent path value, and our instrumentation will sets up a SpanProcessor that will automatically propage that value as a `CurrentNavigationPath` attribute onto any other spans.
+Regardless of which form you use, either helper will keep track of the most recent path value, and our instrumentation will sets up a SpanProcessor that will automatically propage that value as a `screen.name` attribute onto any other spans.
 
 This means that if you miss a navigation, you will see spans attributed to the wrong screen. For example:
 ```swift
@@ -202,4 +202,4 @@ struct ContentView: View {
 }
 ``` 
 
-In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `CurrentNavigationPath: "View A"`.
+In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `screen.name: "View A"`.

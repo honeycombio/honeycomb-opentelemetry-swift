@@ -14,7 +14,7 @@ func getTracer() -> Tracer {
 }
 
 internal class HoneycombNavigationProcessor {
-    static let singleton = HoneycombNavigationProcessor()
+    static let shared = HoneycombNavigationProcessor()
     var currentNavigationPath: String? = nil
 
     private init() {}
@@ -29,13 +29,11 @@ internal class HoneycombNavigationProcessor {
     }
 
     func reportNavigation(path: String) {
-        print("current path: \(path)")
-
         currentNavigationPath = path
 
         // emit a span that says we've navigated to this path
         getTracer().spanBuilder(spanName: navigationSpanName)
-            .setAttribute(key: "NavigationPath", value: path)
+            .setAttribute(key: "screen.name", value: path)
             .startSpan()
             .end()
     }
@@ -78,13 +76,13 @@ internal class HoneycombNavigationProcessor {
 extension View {
     @available(iOS 16.0, macOS 12.0, *)
     public func instrumentNavigation(path: NavigationPath) -> some View {
-        HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
 
         return modifier(EmptyModifier())
     }
 
     public func instrumentNavigation(path: Encodable) -> some View {
-        HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
+        HoneycombNavigationProcessor.shared.reportNavigation(path: path)
 
         return modifier(EmptyModifier())
     }
@@ -98,10 +96,10 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
         parentContext: SpanContext?,
         span: any ReadableSpan
     ) {
-        if HoneycombNavigationProcessor.singleton.currentNavigationPath != nil {
+        if HoneycombNavigationProcessor.shared.currentNavigationPath != nil {
             span.setAttribute(
-                key: "CurrentNavigationPath",
-                value: HoneycombNavigationProcessor.singleton.currentNavigationPath!
+                key: "screen.name",
+                value: HoneycombNavigationProcessor.shared.currentNavigationPath!
             )
 
         }

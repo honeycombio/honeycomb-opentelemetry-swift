@@ -86,6 +86,9 @@ struct ContentView: View {
                         systemImage: "paintpalette"
                     )
                 }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "UIKit")
+                }
 
             NavigationExamplesView()
                 .padding()
