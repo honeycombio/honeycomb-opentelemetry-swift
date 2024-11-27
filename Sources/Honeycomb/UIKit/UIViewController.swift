@@ -4,21 +4,24 @@
     import UIKit
 
     extension UIViewController {
+        private func setAttributes(span: Span, className: String, animated: Bool) {
+            if let title = self.title {
+                span.setAttribute(key: "view.title", value: title)
+            }
+            if let nibName = self.nibName {
+                span.setAttribute(key: "view.nibName", value: nibName)
+            }
+            span.setAttribute(key: "view.animated", value: animated)
+            span.setAttribute(key: "view.class", value: className)
+        }
+
         @objc func traceViewDidAppear(_ animated: Bool) {
             let className = NSStringFromClass(type(of: self))
 
             // Internal classes from SwiftUI will likely begin with an underscore
             if !className.hasPrefix("_") {
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
-                if self.title != nil {
-                    span.setAttribute(key: "title", value: self.title!)
-                }
-                if self.nibName != nil {
-                    span.setAttribute(key: "nibName", value: self.nibName!)
-                }
-                span.setAttribute(key: "animated", value: animated)
-                span.setAttribute(key: "className", value: className)
-
+                setAttributes(span: span, className: className, animated: animated)
                 span.end()
             }
 
@@ -33,14 +36,7 @@
             if !className.hasPrefix("_") {
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidDisappear")
                     .startSpan()
-                if self.title != nil {
-                    span.setAttribute(key: "title", value: self.title!)
-                }
-                if self.nibName != nil {
-                    span.setAttribute(key: "nibName", value: self.nibName!)
-                }
-                span.setAttribute(key: "animated", value: animated)
-                span.setAttribute(key: "className", value: className)
+                setAttributes(span: span, className: className, animated: animated)
                 span.end()
             }
 

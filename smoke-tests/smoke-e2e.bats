@@ -173,7 +173,7 @@ mk_diag_attr() {
    7 "View Render"'
    
   # the View Render spans are tracking the views we expect
-  total_duration=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" ViewName string | sort)
+  total_duration=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" "view.name" string | sort)
   assert_equal "$total_duration" '"expensive text 1"
 "expensive text 2"
 "expensive text 3"
@@ -185,13 +185,13 @@ mk_diag_attr() {
 
 @test "UIViewController attributes are correct" {
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
-        | jq "select (.key == \"className\")" \
+        | jq "select (.key == \"view.class\")" \
         | jq "select (.value.stringValue == \"UIViewController\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"UIViewController"'
 
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
-        | jq "select (.key == \"className\")" \
+        | jq "select (.key == \"view.class\")" \
         | jq "select (.value.stringValue == \"UIViewController\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"UIViewController"'
@@ -199,7 +199,7 @@ mk_diag_attr() {
 
 @test "UITabView attributes are correct" {
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
-        | jq "select (.key == \"className\")" \
+        | jq "select (.key == \"view.class\")" \
         | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"SwiftUI.UIKitTabBarController"'

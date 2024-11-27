@@ -11,7 +11,7 @@ spans_on_view_named() {
         | select (.name == \"$2\") as \$span \
         | .attributes?[]? \
         | select (.key? == \"view.name\" and .value.stringValue == \"$3\") \
-		| \$span"
+        | \$span"
 }
 
 # Span names for a given scope

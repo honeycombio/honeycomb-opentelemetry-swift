@@ -16,7 +16,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
 
         self.span = getViewTracer().spanBuilder(spanName: "View Render")
             .setStartTime(time: Date())
-            .setAttribute(key: "ViewName", value: name)
+            .setAttribute(key: "view.name", value: name)
             .startSpan()
     }
 
@@ -26,7 +26,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
         // contents start init
         let bodySpan = getViewTracer().spanBuilder(spanName: "View Body")
             .setStartTime(time: Date())
-            .setAttribute(key: "ViewName", value: name)
+            .setAttribute(key: "view.name", value: name)
             .setParent(span)
             .setActive(true)
             .startSpan()
@@ -40,7 +40,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
         let endTime = Date()
 
         span.setAttribute(
-            key: "RenderDuration",
+            key: "view.renderDuration",
             value: endTime.timeIntervalSince(start)
         )
 
@@ -53,7 +53,10 @@ struct HoneycombInstrumentedView<Content: View>: View {
             bodySpan.end(time: endTime)
 
             let appearTime = Date()
-            span.setAttribute(key: "TotalDuration", value: appearTime.timeIntervalSince(initTime))
+            span.setAttribute(
+                key: "view.totalDuration",
+                value: appearTime.timeIntervalSince(initTime)
+            )
             span.end(time: appearTime)
         }
     }

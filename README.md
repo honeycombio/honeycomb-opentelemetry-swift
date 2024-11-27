@@ -83,10 +83,10 @@ The following auto-instrumentation libraries are automatically included:
 
 UIKit views will automatically be instrumented, emitting `viewDidAppear` and `viewDidDisappear` events. Both have the following attributes:
 
-- `title` - Title of the view, if provided.
-- `nibName` - The name of the view controller's nib file, if one was specified.
-- `animated` - true if the transition to/from this view is animated, false if it isn't.
-- `className` - name of the swift/objective-c class this view 
+- `view.title` - Title of the view controller, if provided.
+- `view.nibName` - The name of the view controller's nib file, if one was specified.
+- `view.animated` - true if the transition to/from this view is animated, false if it isn't.
+- `view.class` - name of the swift/objective-c class this view 
 controller has.
 
 #### Interaction
@@ -126,9 +126,9 @@ This will measure and emit instrumentation for your View's render times, ex:
 Specifically, it will emit 2 kinds of span for each view that is wrapped:
 
 `View Render` spans encompass the entire rendering process, from initialization to appearing on screen. They include the following attributes:
-- `ViewName` (string): the name passed to `HoneycombInstrumentedView`
-- `RenderDuration` (double): amount of time to spent initializing the contents of `HoneycombInstrumentedView`
-- `TotalDuration` (double): amount of time from when `HoneycombInstrumentedView.body()` is called to when the contents appear on screen
+- `view.name` (string): the name passed to `HoneycombInstrumentedView`
+- `view.enderDuration` (double): amount of time to spent initializing the contents of `HoneycombInstrumentedView`
+- `view.otalDuration` (double): amount of time from when `HoneycombInstrumentedView.body()` is called to when the contents appear on screen
 
 `View Body` spans encompass just the `body()` call of `HoneycombInstrumentedView, and include the following attributes:
-- `ViewName` (string): the name passed to `HoneycombInstrumentedView` 
+- `view.name` (string): the name passed to `HoneycombInstrumentedView` 
