@@ -90,7 +90,7 @@ mk_attr() {
 
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
 
-   assert_equal "$result" '"CurrentNavigationPath"
+   assert_equal "$result" '"screen.name"
 "signpost.category"
 "signpost.count"
 "signpost.cpu_time"
@@ -204,11 +204,18 @@ mk_diag_attr() {
     assert_equal "$result" '   6 "SwiftUI.UIKitTabBarController"'
 }
 
+@test "Navigation spans are correct" {
+    result=$(attribute_for_span_key "@honeycombio/instrumentation-navigation" Navigation "screen.name" string \
+    | sort \
+    | uniq -c)
+    root_count=$(echo "$result" | grep "\[\]")
+    yosemite_count=$(echo "$result" | grep "Yosemite")
+    
+    assert_equal "$root_count" '   1 "[]"'
+    assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
+}
+
 @test "Navigation attributes are correct" {
-    result=$(attribute_for_span_key "@honeycombio/instrumentation-navigation" Navigation CurrentNavigationPath string | sort | uniq -c)
-    assert_equal "$result" '  10 "Core"
-   1 "Network"
-   1 "View Instrumentation"
-   1 "[]"
-   1 "[{\"name\":\"Yosemite\"}]"'
+    result=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" "screen.name" string | uniq)
+    assert_equal "$result" '"View Instrumentation"'
 }
