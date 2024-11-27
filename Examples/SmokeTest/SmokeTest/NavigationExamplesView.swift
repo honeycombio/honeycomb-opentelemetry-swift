@@ -1,6 +1,5 @@
+import Honeycomb
 import SwiftUI
-
-@testable import Honeycomb
 
 // MARK: data models
 struct Park: Identifiable, Equatable, Hashable, Codable {

@@ -77,13 +77,13 @@ internal class HoneycombNavigationProcessor {
 
 extension View {
     @available(iOS 16.0, macOS 12.0, *)
-    func instrumentNavigation(path: NavigationPath) -> some View {
+    public func instrumentNavigation(path: NavigationPath) -> some View {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
 
         return modifier(EmptyModifier())
     }
 
-    func instrumentNavigation(path: Encodable) -> some View {
+    public func instrumentNavigation(path: Encodable) -> some View {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
 
         return modifier(EmptyModifier())

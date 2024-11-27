@@ -1,8 +1,7 @@
+import Honeycomb
 import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
-
-@testable import Honeycomb
 
 private func sendSimpleSpan() {
     let tracerProvider = OpenTelemetry.instance.tracerProvider.get(

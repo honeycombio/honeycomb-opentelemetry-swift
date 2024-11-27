@@ -3,13 +3,13 @@ import SwiftUI
 
 private let honeycombInstrumentedViewName = "@honeycombio/instrumentation-view"
 
-struct HoneycombInstrumentedView<Content: View>: View {
+public struct HoneycombInstrumentedView<Content: View>: View {
     private let span: Span
     private let content: () -> Content
     private let name: String
     private let initTime: Date
 
-    init(name: String, @ViewBuilder _ content: @escaping () -> Content) {
+    public init(name: String, @ViewBuilder _ content: @escaping () -> Content) {
         self.initTime = Date()
         self.name = name
         self.content = content
@@ -20,7 +20,7 @@ struct HoneycombInstrumentedView<Content: View>: View {
             .startSpan()
     }
 
-    var body: some View {
+    public var body: some View {
         let start = Date()
 
         // contents start init

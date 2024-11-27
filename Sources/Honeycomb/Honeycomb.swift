@@ -184,19 +184,19 @@ public class Honeycomb {
     }
 
     @available(iOS 16.0, macOS 12.0, *)
-    static func setCurrentScreen(path: NavigationPath) {
+    public static func setCurrentScreen(path: NavigationPath) {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
     }
-    static func setCurrentScreen(path: String) {
+    public static func setCurrentScreen(path: String) {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
     }
-    static func setCurrentScreen(path: Encodable) {
+    public static func setCurrentScreen(path: Encodable) {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
     }
-    static func setCurrentScreen(path: [Encodable]) {
+    public static func setCurrentScreen(path: [Encodable]) {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
     }
-    static func setCurrentScreen(path: Any) {
+    public static func setCurrentScreen(path: Any) {
         HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
     }
 }
