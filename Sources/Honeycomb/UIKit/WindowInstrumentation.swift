@@ -60,6 +60,7 @@ private func recordTouch(_ touch: UITouch) {
 }
 
 extension UIWindow {
+    // swift-format-ignore
     @objc func _instrumented_sendEvent(_ event: UIEvent) {
         switch event.type {
         case .touches:
