@@ -6,10 +6,6 @@ private let navigationInstrumentationName = "@honeycombio/instrumentation-naviga
 private let navigationSpanName = "Navigation"
 private let unencodablePath = "<unencodable path>"
 
-private func activeBaggage() -> Baggage? {
-    return OpenTelemetry.instance.contextProvider.activeBaggage
-}
-
 func getTracer() -> Tracer {
     return OpenTelemetry.instance.tracerProvider.get(
         instrumentationName: navigationInstrumentationName,
@@ -17,73 +13,78 @@ func getTracer() -> Tracer {
     )
 }
 
-@available(iOS 16.0, macOS 12.0, *)
-func reportNavigation(path: NavigationPath) {
-    if let codablePath = path.codable {
-        reportNavigation(path: codablePath)
-    } else {
+internal class HoneycombNavigationProcessor {
+    static let singleton = HoneycombNavigationProcessor()
+    var currentNavigationPath: String? = nil
+
+    private init() {}
+
+    @available(iOS 16.0, macOS 12.0, *)
+    func reportNavigation(path: NavigationPath) {
+        if let codablePath = path.codable {
+            reportNavigation(path: codablePath)
+        } else {
+            reportNavigation(path: unencodablePath)
+        }
+    }
+
+    func reportNavigation(path: String) {
+        print("current path: \(path)")
+
+        currentNavigationPath = path
+
+        // emit a span that says we've navigated to this path
+        getTracer().spanBuilder(spanName: navigationSpanName)
+            .setAttribute(key: "NavigationPath", value: path)
+            .startSpan()
+            .end()
+    }
+
+    func reportNavigation(path: Encodable) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(path)
+            let pathStr = String(decoding: data, as: UTF8.self)
+
+            reportNavigation(path: pathStr)
+        } catch {
+            reportNavigation(path: unencodablePath)
+        }
+    }
+
+    func reportNavigation(path: [Encodable]) {
+        do {
+            let encoder = JSONEncoder()
+
+            let pathStr =
+                try path.map {
+                    let encoded = try encoder.encode($0)
+                    return String(decoding: encoded, as: UTF8.self)
+                }
+                .joined(separator: ",")
+
+            reportNavigation(path: "[\(pathStr)]")
+        } catch {
+            reportNavigation(path: unencodablePath)
+        }
+    }
+
+    func reportNavigation(path: Any) {
         reportNavigation(path: unencodablePath)
     }
 
-}
-
-var currentNavigationPath: String? = nil
-
-func reportNavigation(path: String) {
-    print("current path: \(path)")
-
-    currentNavigationPath = path
-
-    // emit a span that says we've navigated to this path
-    getTracer().spanBuilder(spanName: navigationSpanName)
-        .setAttribute(key: "NavigationPath", value: path)
-        .startSpan()
-        .end()
-}
-
-func reportNavigation(path: Encodable) {
-    do {
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(path)
-        let pathStr = String(decoding: data, as: UTF8.self)
-
-        reportNavigation(path: pathStr)
-    } catch {
-        reportNavigation(path: unencodablePath)
-    }
-}
-
-func reportNavigation(path: [Encodable]) {
-    do {
-        let encoder = JSONEncoder()
-
-        let pathStr =
-            try path.map {
-                let encoded = try encoder.encode($0)
-                return String(decoding: encoded, as: UTF8.self)
-            }
-            .joined(separator: ",")
-
-        reportNavigation(path: "[\(pathStr)]")
-    } catch {
-        reportNavigation(path: unencodablePath)
-    }
-}
-
-func reportNavigation(path: Any) {
-    reportNavigation(path: unencodablePath)
 }
 
 extension View {
     @available(iOS 16.0, macOS 12.0, *)
-    func instrumentNavigations(path: NavigationPath) -> some View {
-        reportNavigation(path: path)
+    func instrumentNavigation(path: NavigationPath) -> some View {
+        HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
 
         return modifier(EmptyModifier())
     }
 
     func instrumentNavigation(path: Encodable) -> some View {
-        reportNavigation(path: path)
+        HoneycombNavigationProcessor.singleton.reportNavigation(path: path)
 
         return modifier(EmptyModifier())
     }
@@ -97,8 +98,11 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
         parentContext: SpanContext?,
         span: any ReadableSpan
     ) {
-        if currentNavigationPath != nil {
-            span.setAttribute(key: "CurrentNavigationPath", value: currentNavigationPath!)
+        if HoneycombNavigationProcessor.singleton.currentNavigationPath != nil {
+            span.setAttribute(
+                key: "CurrentNavigationPath",
+                value: HoneycombNavigationProcessor.singleton.currentNavigationPath!
+            )
 
         }
     }

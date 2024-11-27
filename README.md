@@ -118,7 +118,7 @@ Specifically, it will emit 2 kinds of span for each view that is wrapped:
 ### SwiftUI Navigation Instrumentation
 iOS 16 introduced two [new Navigation types](https://developer.apple.com/documentation/swiftui/migrating-to-new-navigation-types) that replace the now-deprecated [NavigationView](https://developer.apple.com/documentation/swiftui/navigationview).
 
-We offer a convenience view modifier (`.instrumentNavigations(path: String)`) for cases where you are using a [`NavigationStack`](https://developer.apple.com/documentation/swiftui/navigationstack) and [managing navigation state externally](https://developer.apple.com/documentation/swiftui/navigationstack#Manage-navigation-state)
+We offer a convenience view modifier (`.instrumentNavigation(path: String)`) for cases where you are using a [`NavigationStack`](https://developer.apple.com/documentation/swiftui/navigationstack) and [managing navigation state externally](https://developer.apple.com/documentation/swiftui/navigationstack#Manage-navigation-state)
 
 ex.:
 ```swift
@@ -136,7 +136,7 @@ struct SampleNavigationView: View {
                 ParkDetails(park: park)
             }
         }
-        .instrumentNavigations(path: presentedParks) // convenience View Modifier
+        .instrumentNavigation(path: presentedParks) // convenience View Modifier
     }
 }
 ```  
@@ -145,7 +145,7 @@ Whenever the `path` variable changes, this View Modifier will emit a span with t
 
 - `NavigationPath` (string): the full navigation path when the span is emitted. If the path passed to the view modifier is not `Encodable` (ie. if you're using a `NavigationPath` and have stored a value that does not conform to the `Codable` protocol), then this attribute will have the value `<unencodable path>`.
 
-When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`), we offer a utility function `reportNavigation(path: Any)`. This will immediately emit a `Navigation` span as documented above. As with the View Modifier form, if the `path` is `Encodable`, that will be included as an attribute on the span. Otherwise the `NavigationPath` attribute on the span will have the value `<unencodable path>`.
+When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`), we offer a utility function `Honeycomb.setCurrentScreen(path: Any)`. This will immediately emit a `Navigation` span as documented above. As with the View Modifier form, if the `path` is `Encodable`, that will be included as an attribute on the span. Otherwise the `NavigationPath` attribute on the span will have the value `<unencodable path>`.
 
 This function can be called from a view's `onAppear`, or inside a button's `action`, or wherever you decide to manage your navigation.
 
@@ -158,28 +158,28 @@ struct ContentView: View {
                 .padding()
                 .tabItem { Label("View A") }
                 .onAppear {
-                    reportNavigation(path: "View A")
+                    Honeycomb.setCurrentScreen(path: "View A")
                 }
 
             ViewB()
                 .padding()
                 .tabItem { Label("View B" }
                 .onAppear {
-                    reportNavigation(path: "View B")
+                    Honeycomb.setCurrentScreen(path: "View B")
                 }
 
             ViewC()
                 .padding()
                 .tabItem { Label("View C" }
                 .onAppear {
-                    reportNavigation(path: "View C")
+                    Honeycomb.setCurrentScreen(path: "View C")
                 }
         }
     }
 }
 ```
 
-Regardless of which form you use, either helper will keep track of the most recent path value, and our instrumentation will sets up a SpanProcesser that will automatically propage that value as a `CurrentNavigationPath` attribute onto any other spans.
+Regardless of which form you use, either helper will keep track of the most recent path value, and our instrumentation will sets up a SpanProcessor that will automatically propage that value as a `CurrentNavigationPath` attribute onto any other spans.
 
 This means that if you miss a navigation, you will see spans attributed to the wrong screen. For example:
 ```swift
@@ -190,7 +190,7 @@ struct ContentView: View {
                 .padding()
                 .tabItem { Label("View A") }
                 .onAppear {
-                    reportNavigation(path: "View A")
+                    Honeycomb.setCurrentScreen(path: "View A")
                 }
 
             ViewB()

@@ -88,14 +88,14 @@ struct NavigationSplitExample: View {
                 Text(park.name)
             }
             .onAppear {
-                reportNavigation(path: "Split View Parks Root")
+                Honeycomb.setCurrentScreen(path: "Split View Parks Root")
             }
         } content: {
             if let park = park(from: selectedPark) {
                 ParkDetails(park: park)
                     .onAppear {
                         let path: [Encodable] = ["Split View", park]
-                        reportNavigation(path: path)
+                        Honeycomb.setCurrentScreen(path: path)
                     }
                 List(trees, selection: $selectedTree) { tree in
                     Text(tree.name)
@@ -108,7 +108,7 @@ struct NavigationSplitExample: View {
                 TreeDetails(park: park, tree: tree)
                     .onAppear {
                         let path: [Encodable] = ["Split View", park, tree]
-                        reportNavigation(path: path)
+                        Honeycomb.setCurrentScreen(path: path)
                     }
             } else {
                 Text("Select a tree")

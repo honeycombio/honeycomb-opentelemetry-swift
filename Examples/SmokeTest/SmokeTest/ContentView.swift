@@ -62,21 +62,21 @@ struct ContentView: View {
             .padding()
             .tabItem { Label("Core", systemImage: "house") }
             .onAppear {
-                reportNavigation(path: "Core")
+                Honeycomb.setCurrentScreen(path: "Core")
             }
 
             NetworkView()
                 .padding()
                 .tabItem { Label("Network", systemImage: "network") }
                 .onAppear {
-                    reportNavigation(path: "Network")
+                    Honeycomb.setCurrentScreen(path: "Network")
                 }
 
             ViewInstrumentationView()
                 .padding()
                 .tabItem { Label("View Instrumentation", systemImage: "ruler") }
                 .onAppear {
-                    reportNavigation(path: "View Instrumentation")
+                    Honeycomb.setCurrentScreen(path: "View Instrumentation")
                 }
 
             UIKitView()
