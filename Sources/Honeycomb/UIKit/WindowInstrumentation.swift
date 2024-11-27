@@ -64,7 +64,6 @@ extension UIWindow {
     @objc func _instrumented_sendEvent(_ event: UIEvent) {
         switch event.type {
         case .touches:
-            //if let touches = event.touches(for: self) {
             if let touches = event.allTouches {
                 for touch in touches {
                     recordTouch(touch)
