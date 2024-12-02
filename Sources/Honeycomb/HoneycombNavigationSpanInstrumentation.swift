@@ -29,7 +29,7 @@ internal class HoneycombNavigationProcessor {
     }
 
     func reportNavigation(path: String) {
-        currentNavigationPath = path
+        setCurrentNavigationPath(path)
 
         // emit a span that says we've navigated to this path
         getTracer().spanBuilder(spanName: navigationSpanName)
@@ -70,7 +70,10 @@ internal class HoneycombNavigationProcessor {
     func reportNavigation(path: Any) {
         reportNavigation(path: unencodablePath)
     }
-
+    
+    func setCurrentNavigationPath(_ path: String?) {
+        currentNavigationPath = path
+    }
 }
 
 extension View {

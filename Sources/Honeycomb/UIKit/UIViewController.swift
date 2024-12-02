@@ -23,6 +23,8 @@
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
+                
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(className)
             }
 
             traceViewDidAppear(animated)
@@ -38,6 +40,8 @@
                     .startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
+                
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(nil)
             }
 
             traceViewDidDisappear(animated)
