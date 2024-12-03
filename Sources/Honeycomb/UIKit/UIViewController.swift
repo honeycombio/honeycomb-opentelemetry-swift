@@ -23,13 +23,13 @@
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
-                
-                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(getScreenName())
+
+                HoneycombNavigationProcessor.shared.pushUiKitPath(getScreenName())
             }
 
             traceViewDidAppear(animated)
         }
-        
+
         private func getScreenName() -> String {
             var name = NSStringFromClass(type(of: self))
             if let title = self.title {
@@ -48,8 +48,8 @@
                     .startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
-                
-                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(nil)
+
+                HoneycombNavigationProcessor.shared.popUiKitPath()
             }
 
             traceViewDidDisappear(animated)
