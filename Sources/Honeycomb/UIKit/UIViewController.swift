@@ -24,10 +24,18 @@
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
                 
-                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(className)
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(getScreenName())
             }
 
             traceViewDidAppear(animated)
+        }
+        
+        private func getScreenName() -> String {
+            var name = NSStringFromClass(type(of: self))
+            if let title = self.title {
+                name += " (\(title))"
+            }
+            return name
         }
 
         @objc func traceViewDidDisappear(_ animated: Bool) {
