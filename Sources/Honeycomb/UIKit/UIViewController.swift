@@ -8,13 +8,16 @@
             return value(forKey: "storyboardIdentifier") as? String
         }
 
+        private var viewName: String {
+            return self.storyboardId ?? self.title ?? NSStringFromClass(type(of: self))
+        }
+
         private func viewStack() -> [String] {
-            let selfPath = self.storyboardId ?? NSStringFromClass(type(of: self))
             if var parentPath = self.parent?.viewStack() {
-                parentPath.append(selfPath)
+                parentPath.append(self.viewName)
                 return parentPath
             }
-            return [selfPath]
+            return [self.viewName]
         }
 
         private func viewPath() -> String {
@@ -61,8 +64,6 @@
                     .startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
-
-                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(nil)
             }
 
             traceViewDidDisappear(animated)

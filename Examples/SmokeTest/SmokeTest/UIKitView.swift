@@ -17,7 +17,7 @@ struct UIKView_preview: PreviewProvider {
 struct StoryboardViewControllerRepresentation: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
         let storyboard = UIStoryboard(name: "UIKitViewStoryboard", bundle: Bundle.main)
-        let controller = storyboard.instantiateViewController(identifier: "UIKitView123")
+        let controller = storyboard.instantiateViewController(identifier: "UIKitNavigationRoot")
         return controller
     }
 
@@ -25,11 +25,20 @@ struct StoryboardViewControllerRepresentation: UIViewControllerRepresentable {
     }
 }
 
-class ViewController: UIViewController {
+class UIKitScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "UIKit Screen"
         // Do any additional setup after loading the view.
     }
 
+}
+
+class UIKitMenuViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "UIKit Menu"
+    }
 }
