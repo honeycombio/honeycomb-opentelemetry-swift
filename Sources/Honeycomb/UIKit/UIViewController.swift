@@ -24,7 +24,7 @@
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
 
-                HoneycombNavigationProcessor.shared.pushUiKitPath(getScreenName())
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(getScreenName())
             }
 
             traceViewDidAppear(animated)
@@ -49,7 +49,7 @@
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
 
-                HoneycombNavigationProcessor.shared.popUiKitPath()
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(nil)
             }
 
             traceViewDidDisappear(animated)

@@ -16,7 +16,6 @@ func getTracer() -> Tracer {
 internal class HoneycombNavigationProcessor {
     static let shared = HoneycombNavigationProcessor()
     var currentNavigationPath: String? = nil
-    var uiKitPath: [String] = []
 
     private init() {}
 
@@ -72,28 +71,8 @@ internal class HoneycombNavigationProcessor {
         reportNavigation(path: unencodablePath)
     }
 
-    func setCurrentNavigationPath(_ path: String) {
+    func setCurrentNavigationPath(_ path: String?) {
         currentNavigationPath = path
-        uiKitPath.removeAll()
-    }
-
-    func pushUiKitPath(_ path: String) {
-        currentNavigationPath = nil
-        uiKitPath.append(path)
-    }
-
-    func popUiKitPath() {
-        uiKitPath.removeLast()
-    }
-
-    func getCurrentPath() -> String? {
-        if let currentNavigationPath {
-            return currentNavigationPath
-        }
-        if !uiKitPath.isEmpty {
-            return uiKitPath.joined(separator: "/")
-        }
-        return nil
     }
 }
 
@@ -120,7 +99,7 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
         parentContext: SpanContext?,
         span: any ReadableSpan
     ) {
-        if let currentPath = HoneycombNavigationProcessor.shared.getCurrentPath() {
+        if let currentPath = HoneycombNavigationProcessor.shared.currentNavigationPath {
             span.setAttribute(
                 key: "screen.name",
                 value: currentPath
