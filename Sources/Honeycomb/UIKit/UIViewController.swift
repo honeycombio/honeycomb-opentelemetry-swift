@@ -4,6 +4,27 @@
     import UIKit
 
     extension UIViewController {
+        var storyboardId: String? {
+            return value(forKey: "storyboardIdentifier") as? String
+        }
+
+        private func viewStack() -> [String] {
+            let selfPath = self.storyboardId ?? NSStringFromClass(type(of: self))
+            if var parentPath = self.parent?.viewStack() {
+                parentPath.append(selfPath)
+                return parentPath
+            }
+            return [selfPath]
+        }
+
+        private func viewPath() -> String {
+            self.viewStack()
+                .filter { str in
+                    !str.starts(with: ("_"))
+                }
+                .joined(separator: "/")
+        }
+
         private func setAttributes(span: Span, className: String, animated: Bool) {
             if let title = self.title {
                 span.setAttribute(key: "view.title", value: title)
@@ -24,18 +45,10 @@
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
 
-                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(getScreenName())
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(viewPath())
             }
 
             traceViewDidAppear(animated)
-        }
-
-        private func getScreenName() -> String {
-            var name = NSStringFromClass(type(of: self))
-            if let title = self.title {
-                name += " (\(title))"
-            }
-            return name
         }
 
         @objc func traceViewDidDisappear(_ animated: Bool) {

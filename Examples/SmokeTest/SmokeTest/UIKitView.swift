@@ -16,8 +16,8 @@ struct UIKView_preview: PreviewProvider {
 
 struct StoryboardViewControllerRepresentation: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
-        let storyboard = UIStoryboard(name: "UIKitView", bundle: Bundle.main)
-        let controller = storyboard.instantiateViewController(identifier: "UIKitView")
+        let storyboard = UIStoryboard(name: "UIKitViewStoryboard", bundle: Bundle.main)
+        let controller = storyboard.instantiateViewController(identifier: "UIKitView123")
         return controller
     }
 
