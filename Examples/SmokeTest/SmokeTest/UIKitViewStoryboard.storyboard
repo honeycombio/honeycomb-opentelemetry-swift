@@ -61,7 +61,7 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <accessibility key="accessibilityConfiguration" identifier="UI KIT SCREEN OVERRIDE">
-                            <bool key="isElement" value="YES"/>
+                            <bool key="isElement" value="NO"/>
                         </accessibility>
                         <constraints>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ks9-AV-zp6" secondAttribute="trailing" constant="16" id="34M-ZV-0ya"/>
