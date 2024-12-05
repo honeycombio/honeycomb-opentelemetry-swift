@@ -23,7 +23,8 @@
         }
 
         private var viewName: String {
-            return self.honeycombIdentifier ?? self.storyboardId ?? self.title ?? NSStringFromClass(type(of: self))
+            return self.honeycombIdentifier ?? self.storyboardId ?? self.title
+                ?? NSStringFromClass(type(of: self))
         }
 
         private func viewStack() -> [String] {
