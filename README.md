@@ -88,10 +88,10 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
 - `view.animated` - true if the transition to/from this view is animated, false if it isn't.
 - `view.class` - name of the swift/objective-c class this view controller has.
 - `screen.name` - name of the screen that appeared. In order of precedence, this attribute will have the value of the first of these to be set:
-    - `honeycombIdentifier` - set this on the view controller to provide a custom name for this view
+    - `accessiblityIdentifier` of the view that appeared
     - Storybook Identifier - unique id identifying the view controller within its Storybook
-    - `view.title`
-    - `view.class`
+    - `view.title` - as defined above
+    - `view.class` - as defined above
     
 `viewDidAppear` events will also track `screen.name` as the "current screen" (as with the manual instrumentation described below), and will include that value as `screen.name` on other, non-navigation spans emitted. 
 

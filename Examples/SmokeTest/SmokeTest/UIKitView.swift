@@ -29,7 +29,6 @@ class UIKitScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.honeycombIdentifier = "UI KIT SCREEN OVERRIDE"
         self.title = "UIKit Screen"
         // Do any additional setup after loading the view.
     }
