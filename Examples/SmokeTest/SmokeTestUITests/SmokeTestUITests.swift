@@ -157,7 +157,7 @@ final class SmokeTestUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         app.buttons["UIKit"].tap()
-        XCTAssert(app.staticTexts["Sample UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
+        XCTAssert(app.buttons["Go To UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
 
         app.buttons["Core"].tap()
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
@@ -168,6 +168,9 @@ final class SmokeTestUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         app.buttons["UIKit"].tap()
+        XCTAssert(app.buttons["Go To UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Go To UIKit App"].tap()
+
         XCTAssert(app.staticTexts["Sample UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
 
         app.buttons["Simple Button"].tap()
