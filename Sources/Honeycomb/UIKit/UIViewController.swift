@@ -4,12 +4,26 @@
     import UIKit
 
     extension UIViewController {
+        // I would like to express my disdain with this code
+        //
+        // extensions can't add new stored properties so we have to hack around that
+        // see also https://valv0.medium.com/computed-properties-and-extensions-a-pure-swift-approach-64733768112c
+        private static var _honeycombIdentifiers = [UIViewController: String]()
+        public var honeycombIdentifier: String? {
+            get {
+                return UIViewController._honeycombIdentifiers[self]
+            }
+            set {
+                UIViewController._honeycombIdentifiers[self] = newValue
+            }
+        }
+
         var storyboardId: String? {
             return value(forKey: "storyboardIdentifier") as? String
         }
 
         private var viewName: String {
-            return self.storyboardId ?? self.title ?? NSStringFromClass(type(of: self))
+            return self.honeycombIdentifier ?? self.storyboardId ?? self.title ?? NSStringFromClass(type(of: self))
         }
 
         private func viewStack() -> [String] {
