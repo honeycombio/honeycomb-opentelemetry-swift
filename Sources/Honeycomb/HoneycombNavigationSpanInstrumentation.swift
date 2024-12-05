@@ -71,7 +71,7 @@ internal class HoneycombNavigationProcessor {
         reportNavigation(path: unencodablePath)
     }
 
-    func setCurrentNavigationPath(_ path: String?) {
+    func setCurrentNavigationPath(_ path: String) {
         currentNavigationPath = path
     }
 }
