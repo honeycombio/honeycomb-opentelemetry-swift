@@ -71,6 +71,9 @@ internal class HoneycombNavigationProcessor {
         reportNavigation(path: unencodablePath)
     }
 
+    func setCurrentNavigationPath(_ path: String) {
+        currentNavigationPath = path
+    }
 }
 
 extension View {
@@ -96,12 +99,11 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
         parentContext: SpanContext?,
         span: any ReadableSpan
     ) {
-        if HoneycombNavigationProcessor.shared.currentNavigationPath != nil {
+        if let currentPath = HoneycombNavigationProcessor.shared.currentNavigationPath {
             span.setAttribute(
                 key: "screen.name",
-                value: HoneycombNavigationProcessor.shared.currentNavigationPath!
+                value: currentPath
             )
-
         }
     }
 

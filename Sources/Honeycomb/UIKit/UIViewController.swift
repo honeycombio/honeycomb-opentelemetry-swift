@@ -4,6 +4,31 @@
     import UIKit
 
     extension UIViewController {
+        var storyboardId: String? {
+            return value(forKey: "storyboardIdentifier") as? String
+        }
+
+        private var viewName: String {
+            return self.view.accessibilityIdentifier ?? self.storyboardId ?? self.title
+                ?? NSStringFromClass(type(of: self))
+        }
+
+        private func viewStack() -> [String] {
+            if var parentPath = self.parent?.viewStack() {
+                parentPath.append(self.viewName)
+                return parentPath
+            }
+            return [self.viewName]
+        }
+
+        private func viewPath() -> String {
+            self.viewStack()
+                .filter { str in
+                    !str.starts(with: ("_"))
+                }
+                .joined(separator: "/")
+        }
+
         private func setAttributes(span: Span, className: String, animated: Bool) {
             if let title = self.title {
                 span.setAttribute(key: "view.title", value: title)
@@ -23,6 +48,8 @@
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
+
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(viewPath())
             }
 
             traceViewDidAppear(animated)
