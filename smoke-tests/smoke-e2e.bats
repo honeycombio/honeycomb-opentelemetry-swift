@@ -234,6 +234,16 @@ mk_diag_attr() {
         | uniq
     )
     assert_equal "$screen_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
+    
+    screen_attr=$(attribute_for_span_key "@honeycombio/instrumentation-uikit" "Touch Began" "screen.name" string | uniq)
+    
+    echo $(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" | jq "select (.key == \"screen.name\")")
+    screen_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
+        | uniq
+    )
+    assert_equal "$screen_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu"'
 }
 
 @test "UIKit click events are captured" {
