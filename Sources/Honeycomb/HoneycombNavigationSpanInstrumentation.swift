@@ -15,7 +15,7 @@ func getTracer() -> Tracer {
 
 internal class HoneycombNavigationProcessor {
     static let shared = HoneycombNavigationProcessor()
-    var currentNavigationPath: String? = nil
+    var currentNavigationPath: [String] = []
 
     private init() {}
 
@@ -29,7 +29,7 @@ internal class HoneycombNavigationProcessor {
     }
 
     func reportNavigation(path: String) {
-        currentNavigationPath = path
+        currentNavigationPath = [path]
 
         // emit a span that says we've navigated to this path
         getTracer().spanBuilder(spanName: navigationSpanName)
@@ -71,7 +71,7 @@ internal class HoneycombNavigationProcessor {
         reportNavigation(path: unencodablePath)
     }
 
-    func setCurrentNavigationPath(_ path: String) {
+    func setCurrentNavigationPath(_ path: [String]) {
         currentNavigationPath = path
     }
 }
@@ -99,12 +99,25 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
         parentContext: SpanContext?,
         span: any ReadableSpan
     ) {
-        if let currentPath = HoneycombNavigationProcessor.shared.currentNavigationPath {
+        let currentViewPath = HoneycombNavigationProcessor.shared.currentNavigationPath
+        if !currentViewPath.isEmpty {
             span.setAttribute(
                 key: "screen.name",
-                value: currentPath
+                value: currentViewPath.last!
+            )
+            span.setAttribute(
+                key: "screen.path",
+                value: serializePath(currentViewPath)
             )
         }
+    }
+    
+    private func serializePath(_ path: [String]) -> String {
+        return path
+            .filter { str in
+                !str.starts(with: ("_"))
+            }
+            .joined(separator: "/")
     }
 
     public func onEnd(span: any ReadableSpan) {}

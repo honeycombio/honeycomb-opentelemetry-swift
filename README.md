@@ -92,6 +92,7 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
     - Storybook Identifier - unique id identifying the view controller within its Storybook
     - `view.title` - as defined above
     - `view.class` - as defined above
+- `screen.path` - the full path leading to the current view, consisting of the current view's `screen.name` as well as any parent views.
     
 `viewDidAppear` events will also track `screen.name` as the "current screen" (as with the manual instrumentation described below), and will include that value as `screen.name` on other, non-navigation spans emitted. 
 

@@ -9,7 +9,9 @@
         }
 
         private var viewName: String {
-            return self.view.accessibilityIdentifier ?? self.storyboardId ?? self.title
+            return self.view.accessibilityIdentifier
+                ?? self.storyboardId
+                ?? self.title
                 ?? NSStringFromClass(type(of: self))
         }
 
@@ -19,14 +21,6 @@
                 return parentPath
             }
             return [self.viewName]
-        }
-
-        private func viewPath() -> String {
-            self.viewStack()
-                .filter { str in
-                    !str.starts(with: ("_"))
-                }
-                .joined(separator: "/")
         }
 
         private func setAttributes(span: Span, className: String, animated: Bool) {
@@ -45,11 +39,12 @@
 
             // Internal classes from SwiftUI will likely begin with an underscore
             if !className.hasPrefix("_") {
+                // set this _before_ creating the span
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(viewStack())
+
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()
-
-                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(viewPath())
             }
 
             traceViewDidAppear(animated)
