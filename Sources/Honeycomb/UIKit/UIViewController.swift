@@ -9,9 +9,17 @@
         }
 
         private var viewName: String {
+            // prefer storyboardId over title for UINavigationController
+            // prefer title over storyboardId for other classes
+            if self.isKind(of: UINavigationController.self) {
+                return self.view.accessibilityIdentifier
+                    ?? self.storyboardId
+                    ?? self.title
+                    ?? NSStringFromClass(type(of: self))
+            }
             return self.view.accessibilityIdentifier
-                ?? self.storyboardId
                 ?? self.title
+                ?? self.storyboardId
                 ?? NSStringFromClass(type(of: self))
         }
 
