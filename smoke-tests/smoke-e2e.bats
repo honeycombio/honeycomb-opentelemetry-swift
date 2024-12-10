@@ -91,6 +91,7 @@ mk_attr() {
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
 
    assert_equal "$result" '"screen.name"
+"screen.path"
 "signpost.category"
 "signpost.count"
 "signpost.cpu_time"
@@ -187,15 +188,27 @@ mk_diag_attr() {
 @test "UIViewController attributes are correct" {
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
         | jq "select (.key == \"view.class\")" \
-        | jq "select (.value.stringValue == \"UIViewController\").value.stringValue" \
+        | jq "select (.value.stringValue == \"SmokeTest.UIKitMenuViewController\").value.stringValue" \
         | uniq)
-    assert_equal "$result" '"UIViewController"'
+    assert_equal "$result" '"SmokeTest.UIKitMenuViewController"'
 
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
         | jq "select (.key == \"view.class\")" \
-        | jq "select (.value.stringValue == \"UIViewController\").value.stringValue" \
+        | jq "select (.value.stringValue == \"SmokeTest.UIKitMenuViewController\").value.stringValue" \
         | uniq)
-    assert_equal "$result" '"UIViewController"'
+    assert_equal "$result" '"SmokeTest.UIKitMenuViewController"'
+    
+        result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
+        | jq "select (.key == \"view.class\")" \
+        | jq "select (.value.stringValue == \"SmokeTest.UIKitScreenViewController\").value.stringValue" \
+        | uniq)
+    assert_equal "$result" '"SmokeTest.UIKitScreenViewController"'
+
+    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
+        | jq "select (.key == \"view.class\")" \
+        | jq "select (.value.stringValue == \"SmokeTest.UIKitScreenViewController\").value.stringValue" \
+        | uniq)
+    assert_equal "$result" '"SmokeTest.UIKitScreenViewController"'
 }
 
 @test "UITabView attributes are correct" {
@@ -214,6 +227,34 @@ mk_diag_attr() {
     assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Ended" "Simple Button")
     assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Ended" "accessibleButton")
     # UISwitch does not support Touch Ended events at this time. Apple sets the view to null.
+    
+    screen_name_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
+        | uniq
+    )
+    assert_equal "$screen_name_attr" '"UI KIT SCREEN OVERRIDE"'
+    
+    screen_path_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+        | jq "select (.key == \"screen.path\")" \
+        | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE\").value.stringValue" \
+        | uniq
+    )
+    assert_equal "$screen_path_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
+    
+    screen_name_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
+        | uniq
+    )
+    assert_equal "$screen_name_attr" '"UIKit Menu"'
+    
+    screen_path_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+        | jq "select (.key == \"screen.path\")" \
+        | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
+        | uniq
+    )
+    assert_equal "$screen_path_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu"'
 }
 
 @test "UIKit click events are captured" {

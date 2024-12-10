@@ -4,6 +4,33 @@
     import UIKit
 
     extension UIViewController {
+        var storyboardId: String? {
+            return value(forKey: "storyboardIdentifier") as? String
+        }
+
+        private var viewName: String {
+            // prefer storyboardId over title for UINavigationController
+            // prefer title over storyboardId for other classes
+            if self.isKind(of: UINavigationController.self) {
+                return self.view.accessibilityIdentifier
+                    ?? self.storyboardId
+                    ?? self.title
+                    ?? NSStringFromClass(type(of: self))
+            }
+            return self.view.accessibilityIdentifier
+                ?? self.title
+                ?? self.storyboardId
+                ?? NSStringFromClass(type(of: self))
+        }
+
+        private func viewStack() -> [String] {
+            if var parentPath = self.parent?.viewStack() {
+                parentPath.append(self.viewName)
+                return parentPath
+            }
+            return [self.viewName]
+        }
+
         private func setAttributes(span: Span, className: String, animated: Bool) {
             if let title = self.title {
                 span.setAttribute(key: "view.title", value: title)
@@ -20,6 +47,9 @@
 
             // Internal classes from SwiftUI will likely begin with an underscore
             if !className.hasPrefix("_") {
+                // set this _before_ creating the span
+                HoneycombNavigationProcessor.shared.setCurrentNavigationPath(viewStack())
+
                 let span = getUIKitViewTracer().spanBuilder(spanName: "viewDidAppear").startSpan()
                 setAttributes(span: span, className: className, animated: animated)
                 span.end()

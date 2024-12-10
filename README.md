@@ -86,8 +86,15 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
 - `view.title` - Title of the view controller, if provided.
 - `view.nibName` - The name of the view controller's nib file, if one was specified.
 - `view.animated` - true if the transition to/from this view is animated, false if it isn't.
-- `view.class` - name of the swift/objective-c class this view 
-controller has.
+- `view.class` - name of the swift/objective-c class this view controller has.
+- `screen.name` - name of the screen that appeared. In order of precedence, this attribute will have the value of the first of these to be set:
+    - `accessiblityIdentifier` of the view that appeared
+    - `view.title` - as defined above. If the view is a UINavigationController, Storybook Identifier (below) will be used in preference to `view.title`.
+    - Storybook Identifier - unique id identifying the view controller within its Storybook.
+    - `view.class` - as defined above
+- `screen.path` - the full path leading to the current view, consisting of the current view's `screen.name` as well as any parent views.
+    
+`viewDidAppear` events will also track `screen.name` as the "current screen" (as with the manual instrumentation described below), and will include that value as `screen.name` on other, non-navigation spans emitted. 
 
 #### Interaction
 
