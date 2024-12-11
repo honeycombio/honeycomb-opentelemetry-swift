@@ -111,9 +111,10 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
             )
         }
     }
-    
+
     private func serializePath(_ path: [String]) -> String {
-        return path
+        return
+            path
             .filter { str in
                 !str.starts(with: ("_"))
             }
