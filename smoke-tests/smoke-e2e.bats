@@ -17,6 +17,13 @@ teardown_file() {
   assert_equal "$result" '"test-span"'
 }
 
+@test "SDK had default resources" {
+  result=$(resource_attributes_received \
+      | jq 'select (.key == "telemetry.sdk.language").value.stringValue' \
+      | sort | uniq)
+  assert_equal "$result" '"swift"'
+}
+
 # A helper just for MetricKit attributes, because there's so many of them.
 # Arguments:
 #   $1 - attribute key
@@ -283,8 +290,8 @@ mk_diag_attr() {
 
 @test "Navigation spans are correct" {
     result=$(attribute_for_span_key "@honeycombio/instrumentation-navigation" Navigation "screen.name" string \
-    | sort \
-    | uniq -c)
+        | sort \
+        | uniq -c)
     root_count=$(echo "$result" | grep "\[\]")
     yosemite_count=$(echo "$result" | grep "Yosemite")
     
