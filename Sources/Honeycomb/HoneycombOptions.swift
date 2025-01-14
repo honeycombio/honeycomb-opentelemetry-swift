@@ -1,10 +1,9 @@
+
 import Foundation
+import OpenTelemetrySdk
 
 internal let runtimeVersion = ProcessInfo().operatingSystemVersionString
-// TODO: This can't be set programmatically for now, because it is incorrect upstream.
-// We should fix this here:
-// https://github.com/open-telemetry/opentelemetry-swift/blob/32ea291d791f5a0652630fc176b73d1639074046/Sources/OpenTelemetrySdk/Version.swift#L9
-internal let otlpVersion = "1.10.1"
+internal let otlpVersion = Resource.OTEL_SWIFT_SDK_VERSION
 
 // Constants for keys and defaults in HoneycombOptions.
 
@@ -160,7 +159,7 @@ extension Dictionary {
 /// https://github.com/honeycombio/specs/blob/main/specs/otel-sdk-distro.md
 /// https://opentelemetry.io/docs/languages/sdk-configuration/general/
 /// https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/
-public class HoneycombOptions {
+public struct HoneycombOptions {
     let tracesApiKey: String
     let metricsApiKey: String
     let logsApiKey: String

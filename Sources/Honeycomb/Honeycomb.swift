@@ -11,14 +11,6 @@ import ResourceExtension
 import StdoutExporter
 import SwiftUI
 
-// TODO: Implement the following features.
-//       https://github.com/honeycombio/specs/blob/main/specs/otel-sdk-distro.md
-//
-// * DeterministicSampler.
-// * BaggageSpanProcessor.
-// * LoggingMetricExporter.
-// * Debug logging.
-
 private func createAttributeDict(_ dict: [String: String]) -> [String: AttributeValue] {
     var result: [String: AttributeValue] = [:]
     for (key, value) in dict {
