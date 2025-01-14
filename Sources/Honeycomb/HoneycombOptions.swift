@@ -188,59 +188,6 @@ public struct HoneycombOptions {
     let metricsProtocol: OTLPProtocol
     let logsProtocol: OTLPProtocol
 
-    init(
-        tracesApiKey: String,
-        metricsApiKey: String,
-        logsApiKey: String,
-        dataset: String?,
-        metricsDataset: String?,
-        tracesEndpoint: String,
-        metricsEndpoint: String,
-        logsEndpoint: String,
-        sampleRate: Int,
-        debug: Bool,
-        serviceName: String,
-        resourceAttributes: [String: String],
-        tracesSampler: String,
-        tracesSamplerArg: String?,
-        propagators: String,
-        tracesHeaders: [String: String],
-        metricsHeaders: [String: String],
-        logsHeaders: [String: String],
-        tracesTimeout: TimeInterval,
-        metricsTimeout: TimeInterval,
-        logsTimeout: TimeInterval,
-        tracesProtocol: OTLPProtocol,
-        metricsProtocol: OTLPProtocol,
-        logsProtocol: OTLPProtocol
-    ) {
-
-        self.tracesApiKey = tracesApiKey
-        self.metricsApiKey = metricsApiKey
-        self.logsApiKey = logsApiKey
-        self.dataset = dataset
-        self.metricsDataset = metricsDataset
-        self.tracesEndpoint = tracesEndpoint
-        self.metricsEndpoint = metricsEndpoint
-        self.logsEndpoint = logsEndpoint
-        self.sampleRate = sampleRate
-        self.debug = debug
-        self.serviceName = serviceName
-        self.resourceAttributes = resourceAttributes
-        self.tracesSampler = tracesSampler
-        self.tracesSamplerArg = tracesSamplerArg
-        self.propagators = propagators
-        self.tracesHeaders = tracesHeaders
-        self.metricsHeaders = metricsHeaders
-        self.logsHeaders = logsHeaders
-        self.tracesTimeout = tracesTimeout
-        self.metricsTimeout = metricsTimeout
-        self.logsTimeout = logsTimeout
-        self.tracesProtocol = tracesProtocol
-        self.metricsProtocol = metricsProtocol
-        self.logsProtocol = logsProtocol
-    }
-
     public class Builder {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
