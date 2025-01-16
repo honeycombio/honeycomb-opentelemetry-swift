@@ -32,9 +32,10 @@
         }
 
         private func setAttributes(span: Span, className: String, animated: Bool) {
-            if let title = self.title {
-                span.setAttribute(key: "view.title", value: title)
-            }
+
+            span.setAttribute(key: "screen.name", value: self.viewName)
+            span.setAttribute(key: "screen.path", value: self.viewStack().joined(separator: "/"))
+
             if let nibName = self.nibName {
                 span.setAttribute(key: "view.nibName", value: nibName)
             }
