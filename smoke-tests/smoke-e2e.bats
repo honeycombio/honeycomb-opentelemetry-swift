@@ -107,6 +107,7 @@ mk_attr() {
 
    assert_equal "$result" '"screen.name"
 "screen.path"
+"session.id"
 "signpost.category"
 "signpost.count"
 "signpost.cpu_time"

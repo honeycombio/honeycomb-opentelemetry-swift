@@ -42,7 +42,10 @@ struct ContentView: View {
                     .foregroundStyle(.tint)
 
                 Text("This is a sample app.")
-
+                Text("This is session.id:" )
+                Text( (UserDefaults.standard.string(forKey: "session.id" ) ?? "🐢"))
+        .font(.caption)
+                
                 Button(action: sendSimpleSpan) {
                     Text("Send simple span")
                 }
