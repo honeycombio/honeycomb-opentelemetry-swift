@@ -10,6 +10,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Auto-instrumentation of "clicks" and touch events in UI Kit.
 * Manual instrumentation of SwiftUI navigation.
 * Manual instrumentation of SwiftUI view rendering.
+* Add Cocoapods support.
 
 ## 0.0.1-alpha (2024-09-27)
 

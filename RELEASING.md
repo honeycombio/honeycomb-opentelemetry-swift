@@ -1,6 +1,7 @@
 # Releasing
 
 - Update `honeycombLibraryVersion` in `Sources/Honeycomb/HoneycombVersion.swift`.
+- Update `spec.version` in `Honeycomb.podspec`.
 - Update `CHANGELOG.md` with the changes since the last release.
 - Commit changes, push, and open a release preparation pull request for review.
 - Once the pull request is merged, fetch the updated `main` branch.
