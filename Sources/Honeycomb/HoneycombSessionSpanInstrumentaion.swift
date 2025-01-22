@@ -38,18 +38,28 @@ protocol SessionManager:
 public class SessionStorage {
     // TODO: Is there a convention for keys?
     public static var sessionIdKey: String = "session.id"
+    public static var sessionStartTimeKey: String = "session.startTime"
     public static var suiteName: String = "io.honeycomb.opentelemetry.swift"
     let userDefaults = UserDefaults(suiteName: SessionStorage.suiteName)!
 
-    func read() -> String {
-        let id = userDefaults.string(forKey: SessionStorage.sessionIdKey) ?? ""
-        return id
+    func read() -> Session {
+        guard let id = userDefaults.string(forKey: SessionStorage.sessionIdKey),
+              let startTimestamp = userDefaults.object(forKey: SessionStorage.sessionStartTimeKey) as? Date else {
+            // If the saves session is garbo, return sentienel value to indicate there's no existing session
+            return DefaultSession.none
+        }
+        
+        return DefaultSession(id: id, startTimestamp: startTimestamp)
     }
+    
     func save(session: Session) {
         userDefaults.set(session.id, forKey: SessionStorage.sessionIdKey)
+        userDefaults.set(session.startTimestamp, forKey: SessionStorage.sessionStartTimeKey)
     }
     func clear() {
-        userDefaults.set("", forKey: SessionStorage.sessionIdKey)
+        userDefaults.set(DefaultSession.none.id, forKey: SessionStorage.sessionIdKey)
+        userDefaults.set(DefaultSession.none.startTimestamp, forKey: SessionStorage.sessionStartTimeKey)
+
     }
 }
 
@@ -85,6 +95,7 @@ public class HoneycombSessionManager: SessionManager {
         self.dateProvider = dateProvider
         self.sessionLifetimeSeconds = sessionLifetimeSeconds
         self.debug = debug
+        self.currentSession = sessionStorage.read()
     }
 
     func isSessionExpired() -> Bool {
@@ -95,7 +106,7 @@ public class HoneycombSessionManager: SessionManager {
 
     var sessionId: String {
         // If the session is default session make a new one
-        if compareSesh(s1: currentSession, s2: DefaultSession.NONE) {
+        if compareSesh(s1: currentSession, s2: DefaultSession.none) {
             let newSession = DefaultSession(
                 id: sessionIdGenerator(),
                 startTimestamp: dateProvider()

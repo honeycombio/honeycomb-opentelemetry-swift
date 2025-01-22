@@ -16,10 +16,11 @@ class MockDateProvider {
 
 final class HoneycombSessionManagerTests: XCTestCase {
     var sessionManager: HoneycombSessionManager!
-    var storage = SessionStorage()
+    var storage : SessionStorage!
 
     override func setUp() {
         super.setUp()
+        storage = SessionStorage()
         storage.clear()
         sessionManager = HoneycombSessionManager(sessionStorage: storage, debug: true)
 
@@ -31,7 +32,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
     }
 
     func testSessionCreationOnStartup() {
-        let sessionIdBefore = storage.read()
+        let sessionIdBefore = storage.read().id
         XCTAssert(sessionIdBefore.isEmpty, "The default session ID should be empty.")
 
         let sessionIdAfter = sessionManager.sessionId
@@ -43,7 +44,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
         XCTAssert(!sessionIdAfter.isEmpty, "A new session ID should not be empty.")
 
         // The new sessionId should be stored
-        let storedSessionId = storage.read()
+        let storedSessionId = storage.read().id
         XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
         XCTAssertEqual(
             storedSessionId,
@@ -62,7 +63,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
         XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
 
-        let storedSessionId = storage.read()
+        let storedSessionId = storage.read().id
         XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
         XCTAssertEqual(
             storedSessionId,
@@ -95,7 +96,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
         XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
 
-        let storedSessionId = storage.read()
+        let storedSessionId = storage.read().id
         XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
         XCTAssertEqual(
             storedSessionId,
@@ -120,4 +121,57 @@ final class HoneycombSessionManagerTests: XCTestCase {
             "After timeout, a new session ID should be generated."
         )
     }
+    
+    func testSessionIDShouldBeStableAfterAppRestart() {
+        let dateProvider = MockDateProvider()
+
+        sessionManager = HoneycombSessionManager(
+            sessionStorage: storage,
+            debug: true,
+            dateProvider: dateProvider.provider
+        )
+        let sessionId = sessionManager.sessionId
+        XCTAssertNotEqual(
+            sessionId,
+            "",
+            "A non-empty session ID exists"
+        )
+        XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
+
+        let storedSessionId = storage.read().id
+        XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
+        XCTAssertEqual(
+            storedSessionId,
+            sessionId,
+            "the stored session ID should match the newly created one."
+        )
+
+        let readOne = sessionManager.sessionId
+        XCTAssertEqual(
+            sessionId,
+            readOne,
+            "Subsequent reads should yield the same session ID."
+        )
+        
+        // Instantiate a new sessionManager to simulate app restart within timeout
+        let sessionManager2 = HoneycombSessionManager(
+            sessionStorage: storage,
+            debug: true,
+            dateProvider: dateProvider.provider
+        )
+        
+        
+        let readTwo = sessionManager2.sessionId
+        XCTAssertEqual(
+            readOne,
+            readTwo,
+            "the session ID should match the previously fetched one."
+        )
+        XCTAssertEqual(
+            storedSessionId,
+            readTwo,
+            "the session ID should match the stored one."
+        )
+    }
 }
+

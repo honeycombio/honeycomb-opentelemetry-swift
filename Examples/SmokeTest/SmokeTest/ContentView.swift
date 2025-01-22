@@ -32,11 +32,17 @@ private func flush() {
 
 struct ContentView: View {
     @State private var sessionId: String = "🐝💭"
+    @State private var sessionStartTime: String = "🐝💭"
     @State private var timer: Timer?
     func updateSessionId() {
         sessionId =
             UserDefaults(suiteName: SessionStorage.suiteName)?
             .string(forKey: SessionStorage.sessionIdKey) ?? "🐝🫥"
+        let date  = UserDefaults(suiteName: SessionStorage.suiteName)?
+            .object(forKey: SessionStorage.sessionStartTimeKey) as! Date
+        sessionStartTime = date  .ISO8601Format().description
+        
+
     }
 
     func startTimer() {
@@ -57,10 +63,12 @@ struct ContentView: View {
                     .foregroundStyle(.tint)
 
                 Text("This is a sample app.")
-                Text("This is session.id:")
-                Text("\(sessionId)")
-                    .font(.caption)
-
+                VStack(alignment: .leading){
+                    Text("\(SessionStorage.sessionIdKey): \(sessionId)")
+                        .font(.caption)
+                    Text("\(SessionStorage.sessionStartTimeKey): \(sessionStartTime)")
+                        .font(.caption)
+                }
                 Button(action: sendSimpleSpan) {
                     Text("Send simple span")
                 }
