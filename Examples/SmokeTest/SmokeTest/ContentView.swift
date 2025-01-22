@@ -31,6 +31,21 @@ private func flush() {
 }
 
 struct ContentView: View {
+    @State private var sessionId: String = "🐝💭"
+    @State private var timer: Timer?
+    func updateSessionId() {
+        sessionId =
+            UserDefaults(suiteName: SessionStorage.suiteName)?
+            .string(forKey: SessionStorage.sessionIdKey) ?? "🐝🫥"
+    }
+    
+    func startTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            updateSessionId()
+        }
+    }
+
     var body: some View {
         TabView {
             VStack(
@@ -42,10 +57,10 @@ struct ContentView: View {
                     .foregroundStyle(.tint)
 
                 Text("This is a sample app.")
-                Text("This is session.id:" )
-                Text( (UserDefaults.standard.string(forKey: "session.id" ) ?? "🐢"))
-        .font(.caption)
-                
+                Text("This is session.id:")
+                Text("\(sessionId)")
+                    .font(.caption)
+
                 Button(action: sendSimpleSpan) {
                     Text("Send simple span")
                 }
@@ -96,6 +111,13 @@ struct ContentView: View {
             NavigationExamplesView()
                 .padding()
                 .tabItem { Label("Navigation", systemImage: "globe") }
+        }
+
+        .onAppear {
+            startTimer()
+        }
+        .onDisappear {
+            timer?.invalidate()
         }
     }
 }
