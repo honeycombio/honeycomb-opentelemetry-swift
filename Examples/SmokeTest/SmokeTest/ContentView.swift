@@ -38,7 +38,7 @@ struct ContentView: View {
             UserDefaults(suiteName: SessionStorage.suiteName)?
             .string(forKey: SessionStorage.sessionIdKey) ?? "🐝🫥"
     }
-    
+
     func startTimer() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in

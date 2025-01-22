@@ -19,7 +19,7 @@ class DefaultSession: Session {
     let id: String
     let startTimestamp: Date
 
-    static var NONE: any Session = DefaultSession(id: "", startTimestamp: Date.distantPast)
+    static var none: any Session = DefaultSession(id: "", startTimestamp: Date.distantPast)
 
     required public init(id: String, startTimestamp: Date) {
         self.id = id
@@ -54,7 +54,7 @@ public class SessionStorage {
 }
 
 public class HoneycombSessionManager: SessionManager {
-    private var currentSession: Session = DefaultSession.NONE
+    private var currentSession: Session = DefaultSession.none
 
     private var debug: Bool
     private var sessionLifetimeSeconds: TimeInterval
