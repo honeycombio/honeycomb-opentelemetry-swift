@@ -44,21 +44,26 @@ public class SessionStorage {
 
     func read() -> Session {
         guard let id = userDefaults.string(forKey: SessionStorage.sessionIdKey),
-              let startTimestamp = userDefaults.object(forKey: SessionStorage.sessionStartTimeKey) as? Date else {
+            let startTimestamp = userDefaults.object(forKey: SessionStorage.sessionStartTimeKey)
+                as? Date
+        else {
             // If the saves session is garbo, return sentienel value to indicate there's no existing session
             return DefaultSession.none
         }
-        
+
         return DefaultSession(id: id, startTimestamp: startTimestamp)
     }
-    
+
     func save(session: Session) {
         userDefaults.set(session.id, forKey: SessionStorage.sessionIdKey)
         userDefaults.set(session.startTimestamp, forKey: SessionStorage.sessionStartTimeKey)
     }
     func clear() {
         userDefaults.set(DefaultSession.none.id, forKey: SessionStorage.sessionIdKey)
-        userDefaults.set(DefaultSession.none.startTimestamp, forKey: SessionStorage.sessionStartTimeKey)
+        userDefaults.set(
+            DefaultSession.none.startTimestamp,
+            forKey: SessionStorage.sessionStartTimeKey
+        )
 
     }
 }

@@ -38,10 +38,10 @@ struct ContentView: View {
         sessionId =
             UserDefaults(suiteName: SessionStorage.suiteName)?
             .string(forKey: SessionStorage.sessionIdKey) ?? "🐝🫥"
-        let date  = UserDefaults(suiteName: SessionStorage.suiteName)?
+        let date =
+            UserDefaults(suiteName: SessionStorage.suiteName)?
             .object(forKey: SessionStorage.sessionStartTimeKey) as! Date
-        sessionStartTime = date  .ISO8601Format().description
-        
+        sessionStartTime = date.ISO8601Format().description
 
     }
 
@@ -63,7 +63,7 @@ struct ContentView: View {
                     .foregroundStyle(.tint)
 
                 Text("This is a sample app.")
-                VStack(alignment: .leading){
+                VStack(alignment: .leading) {
                     Text("\(SessionStorage.sessionIdKey): \(sessionId)")
                         .font(.caption)
                     Text("\(SessionStorage.sessionStartTimeKey): \(sessionStartTime)")

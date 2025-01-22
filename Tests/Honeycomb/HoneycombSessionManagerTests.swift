@@ -16,7 +16,7 @@ class MockDateProvider {
 
 final class HoneycombSessionManagerTests: XCTestCase {
     var sessionManager: HoneycombSessionManager!
-    var storage : SessionStorage!
+    var storage: SessionStorage!
 
     override func setUp() {
         super.setUp()
@@ -121,7 +121,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
             "After timeout, a new session ID should be generated."
         )
     }
-    
+
     func testSessionIDShouldBeStableAfterAppRestart() {
         let dateProvider = MockDateProvider()
 
@@ -152,15 +152,14 @@ final class HoneycombSessionManagerTests: XCTestCase {
             readOne,
             "Subsequent reads should yield the same session ID."
         )
-        
+
         // Instantiate a new sessionManager to simulate app restart within timeout
         let sessionManager2 = HoneycombSessionManager(
             sessionStorage: storage,
             debug: true,
             dateProvider: dateProvider.provider
         )
-        
-        
+
         let readTwo = sessionManager2.sessionId
         XCTAssertEqual(
             readOne,
@@ -174,4 +173,3 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
     }
 }
-
