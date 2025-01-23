@@ -13,10 +13,10 @@ struct SessionStorage {
                 as? Date
         else {
             // If the saves session is garbo, return sentienel value to indicate there's no existing session
-            return DefaultSession.none
+            return defaulSession
         }
 
-        return DefaultSession(id: id, startTimestamp: startTimestamp)
+        return Session(id: id, startTimestamp: startTimestamp)
     }
 
     func save(session: Session) {
@@ -24,9 +24,9 @@ struct SessionStorage {
         userDefaults.set(session.startTimestamp, forKey: sessionStartTimeKey)
     }
     func clear() {
-        userDefaults.set(DefaultSession.none.id, forKey: sessionIdKey)
+        userDefaults.set(defaulSession.id, forKey: sessionIdKey)
         userDefaults.set(
-            DefaultSession.none.startTimestamp,
+            defaulSession.startTimestamp,
             forKey: sessionStartTimeKey
         )
 

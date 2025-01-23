@@ -19,7 +19,7 @@ internal func defaultDateProvider() -> Date {
 }
 
 public class HoneycombSessionManager: SessionManager {
-    private var currentSession: Session = DefaultSession.none
+    private var currentSession: Session = defaulSession
 
     private var debug: Bool
     private var sessionLifetimeSeconds: TimeInterval
@@ -41,7 +41,7 @@ public class HoneycombSessionManager: SessionManager {
         self.dateProvider = dateProvider
         self.sessionLifetimeSeconds = sessionLifetimeSeconds
         self.debug = debug
-        self.currentSession = DefaultSession.none
+        self.currentSession = defaulSession
         self.sessionStorage.save(session: self.currentSession)
     }
 
@@ -53,8 +53,8 @@ public class HoneycombSessionManager: SessionManager {
 
     var sessionId: String {
         // If the session is default session make a new one
-        if compareSesh(s1: currentSession, s2: DefaultSession.none) {
-            let newSession = DefaultSession(
+        if currentSession == defaulSession {
+            let newSession = Session(
                 id: sessionIdGenerator(),
                 startTimestamp: dateProvider()
             )
@@ -68,7 +68,7 @@ public class HoneycombSessionManager: SessionManager {
         // If the session timeout has elapsed, make a new one
         if isSessionExpired() {
             let previousSession = currentSession
-            let newSession = DefaultSession(
+            let newSession = Session(
                 id: sessionIdGenerator(),
                 startTimestamp: dateProvider()
             )
