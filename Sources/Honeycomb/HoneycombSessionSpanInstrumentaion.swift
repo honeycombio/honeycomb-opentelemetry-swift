@@ -95,12 +95,14 @@ public class HoneycombSessionManager: SessionManager {
             .defaultSessionIdGenerator,
         dateProvider: @escaping () -> Date = HoneycombSessionManager.defaultDateProvider
     ) {
+
         self.sessionStorage = sessionStorage
         self.sessionIdGenerator = sessionIdGenerator
         self.dateProvider = dateProvider
         self.sessionLifetimeSeconds = sessionLifetimeSeconds
         self.debug = debug
-        self.currentSession = sessionStorage.read()
+        self.currentSession = DefaultSession.none
+        self.sessionStorage.save(session: self.currentSession)
     }
 
     func isSessionExpired() -> Bool {

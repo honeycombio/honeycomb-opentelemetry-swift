@@ -21,7 +21,6 @@ final class HoneycombSessionManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         storage = SessionStorage()
-        storage.clear()
         sessionManager = HoneycombSessionManager(sessionStorage: storage, debug: true)
 
     }
@@ -122,7 +121,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
     }
 
-    func testSessionIDShouldBeStableAfterAppRestart() {
+    func testSessionIDShouldRefreshOnStartup() {
         let dateProvider = MockDateProvider()
 
         sessionManager = HoneycombSessionManager(
@@ -131,26 +130,15 @@ final class HoneycombSessionManagerTests: XCTestCase {
             dateProvider: dateProvider.provider
         )
         let sessionId = sessionManager.sessionId
-        XCTAssertNotEqual(
-            sessionId,
-            "",
-            "A non-empty session ID exists"
-        )
-        XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
+        let storedSessionIdOne = storage.read().id
 
-        let storedSessionId = storage.read().id
-        XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
+
+        XCTAssert(!sessionId.isEmpty, "A non-empty session ID is return from SessionManager")
+        XCTAssert(!storedSessionIdOne.isEmpty, "A non-empty session ID is return from SessionStorage")
         XCTAssertEqual(
-            storedSessionId,
+            storedSessionIdOne,
             sessionId,
             "the stored session ID should match the newly created one."
-        )
-
-        let readOne = sessionManager.sessionId
-        XCTAssertEqual(
-            sessionId,
-            readOne,
-            "Subsequent reads should yield the same session ID."
         )
 
         // Instantiate a new sessionManager to simulate app restart within timeout
@@ -160,16 +148,31 @@ final class HoneycombSessionManagerTests: XCTestCase {
             dateProvider: dateProvider.provider
         )
 
-        let readTwo = sessionManager2.sessionId
+        let sessionIdTwo = sessionManager2.sessionId
+        let storedSessionIdTwo = storage.read().id
+        
+        XCTAssert(!sessionIdTwo.isEmpty, "A non-empty session ID is return from SessionManager")
+        XCTAssert(!storedSessionIdTwo.isEmpty, "A non-empty session ID is return from SessionStorage")
         XCTAssertEqual(
-            readOne,
-            readTwo,
-            "the session ID should match the previously fetched one."
+            sessionIdTwo,
+            storedSessionIdTwo,
+            "the stored session ID should match the newly created one."
+        )
+        
+        XCTAssertNotEqual(
+            sessionId,
+            sessionIdTwo,
+            "the session ID should not match the previously fetched one."
+        )
+        XCTAssertNotEqual(
+            storedSessionIdOne,
+            storedSessionIdTwo,
+            "the session ID should not match the stored one."
         )
         XCTAssertEqual(
-            storedSessionId,
-            readTwo,
-            "the session ID should match the stored one."
+            sessionIdTwo,
+            storedSessionIdTwo,
+            "the current session ID should match the current stored one."
         )
     }
 }
