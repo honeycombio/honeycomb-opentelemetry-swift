@@ -3,7 +3,7 @@ import OpenTelemetryApi
 import OpenTelemetrySdk
 
 //TODO: not one giant file, probaly
-protocol Session {
+internal protocol Session {
     var id: String { get }
     var startTimestamp: Date { get }
 
@@ -11,11 +11,11 @@ protocol Session {
 }
 
 // TODO: Override equals so that we can s1 == s2 ?
-func compareSesh(s1: any Session, s2: any Session) -> Bool {
+internal func compareSesh(s1: any Session, s2: any Session) -> Bool {
     return s1.id == s2.id && s1.startTimestamp == s2.startTimestamp
 }
 
-class DefaultSession: Session {
+internal class DefaultSession: Session {
     let id: String
     let startTimestamp: Date
 
@@ -27,46 +27,15 @@ class DefaultSession: Session {
     }
 }
 
-protocol SessionProvider {
+internal protocol SessionProvider {
     var sessionId: String { get }
 }
 
-protocol SessionManager:
+internal protocol SessionManager:
     SessionProvider
 {}
 
-public class SessionStorage {
-    // TODO: Is there a convention for keys?
-    public static var sessionIdKey: String = "session.id"
-    public static var sessionStartTimeKey: String = "session.startTime"
-    public static var suiteName: String = "io.honeycomb.opentelemetry.swift"
-    let userDefaults = UserDefaults(suiteName: SessionStorage.suiteName)!
 
-    func read() -> Session {
-        guard let id = userDefaults.string(forKey: SessionStorage.sessionIdKey),
-            let startTimestamp = userDefaults.object(forKey: SessionStorage.sessionStartTimeKey)
-                as? Date
-        else {
-            // If the saves session is garbo, return sentienel value to indicate there's no existing session
-            return DefaultSession.none
-        }
-
-        return DefaultSession(id: id, startTimestamp: startTimestamp)
-    }
-
-    func save(session: Session) {
-        userDefaults.set(session.id, forKey: SessionStorage.sessionIdKey)
-        userDefaults.set(session.startTimestamp, forKey: SessionStorage.sessionStartTimeKey)
-    }
-    func clear() {
-        userDefaults.set(DefaultSession.none.id, forKey: SessionStorage.sessionIdKey)
-        userDefaults.set(
-            DefaultSession.none.startTimestamp,
-            forKey: SessionStorage.sessionStartTimeKey
-        )
-
-    }
-}
 
 public class HoneycombSessionManager: SessionManager {
     private var currentSession: Session = DefaultSession.none

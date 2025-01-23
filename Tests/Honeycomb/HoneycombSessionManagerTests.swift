@@ -166,8 +166,8 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
         XCTAssertNotEqual(
             storedSessionIdOne,
-            storedSessionIdTwo,
-            "the session ID should not match the stored one."
+            storedSessionIdTwo//,
+//            "the session ID should not match the stored one."
         )
         XCTAssertEqual(
             sessionIdTwo,
