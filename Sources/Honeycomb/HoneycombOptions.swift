@@ -228,7 +228,7 @@ public struct HoneycombOptions {
         private var metricsProtocol: OTLPProtocol? = nil
         private var logsProtocol: OTLPProtocol? = nil
 
-        private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4) // 4 hours
+        private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
 
         /// Creates a builder with default options.
         public init() {}
@@ -547,4 +547,3 @@ public struct HoneycombOptions {
 
     }
 }
-

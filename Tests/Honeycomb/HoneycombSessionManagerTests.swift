@@ -17,12 +17,15 @@ class MockDateProvider {
 final class HoneycombSessionManagerTests: XCTestCase {
     var sessionManager: HoneycombSessionManager!
     var storage: SessionStorage!
-
+    var sessionLifetimeSeconds = TimeInterval(60 * 60 * 4)
     override func setUp() {
         super.setUp()
         storage = SessionStorage()
-        sessionManager = HoneycombSessionManager(sessionStorage: storage, debug: true)
-
+        sessionManager = HoneycombSessionManager(
+            sessionStorage: storage,
+            debug: true,
+            sessionLifetimeSeconds: sessionLifetimeSeconds
+        )
     }
 
     override func tearDown() {
@@ -85,7 +88,9 @@ final class HoneycombSessionManagerTests: XCTestCase {
         sessionManager = HoneycombSessionManager(
             sessionStorage: storage,
             debug: true,
+            sessionLifetimeSeconds: sessionLifetimeSeconds,
             dateProvider: dateProvider.provider
+
         )
         let sessionId = sessionManager.sessionId
         XCTAssertNotEqual(
@@ -127,14 +132,17 @@ final class HoneycombSessionManagerTests: XCTestCase {
         sessionManager = HoneycombSessionManager(
             sessionStorage: storage,
             debug: true,
+            sessionLifetimeSeconds: sessionLifetimeSeconds,
             dateProvider: dateProvider.provider
         )
         let sessionId = sessionManager.sessionId
         let storedSessionIdOne = storage.read().id
 
-
         XCTAssert(!sessionId.isEmpty, "A non-empty session ID is return from SessionManager")
-        XCTAssert(!storedSessionIdOne.isEmpty, "A non-empty session ID is return from SessionStorage")
+        XCTAssert(
+            !storedSessionIdOne.isEmpty,
+            "A non-empty session ID is return from SessionStorage"
+        )
         XCTAssertEqual(
             storedSessionIdOne,
             sessionId,
@@ -145,20 +153,24 @@ final class HoneycombSessionManagerTests: XCTestCase {
         let sessionManager2 = HoneycombSessionManager(
             sessionStorage: storage,
             debug: true,
+            sessionLifetimeSeconds: sessionLifetimeSeconds,
             dateProvider: dateProvider.provider
         )
 
         let sessionIdTwo = sessionManager2.sessionId
         let storedSessionIdTwo = storage.read().id
-        
+
         XCTAssert(!sessionIdTwo.isEmpty, "A non-empty session ID is return from SessionManager")
-        XCTAssert(!storedSessionIdTwo.isEmpty, "A non-empty session ID is return from SessionStorage")
+        XCTAssert(
+            !storedSessionIdTwo.isEmpty,
+            "A non-empty session ID is return from SessionStorage"
+        )
         XCTAssertEqual(
             sessionIdTwo,
             storedSessionIdTwo,
             "the stored session ID should match the newly created one."
         )
-        
+
         XCTAssertNotEqual(
             sessionId,
             sessionIdTwo,
@@ -166,8 +178,8 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
         XCTAssertNotEqual(
             storedSessionIdOne,
-            storedSessionIdTwo//,
-//            "the session ID should not match the stored one."
+            storedSessionIdTwo  //,
+            //            "the session ID should not match the stored one."
         )
         XCTAssertEqual(
             sessionIdTwo,
