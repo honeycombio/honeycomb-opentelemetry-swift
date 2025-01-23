@@ -19,7 +19,7 @@ internal func defaultDateProvider() -> Date {
 }
 
 public class HoneycombSessionManager: SessionManager {
-    private var currentSession: Session = defaulSession
+    private var currentSession: Session?
 
     private var debug: Bool
     private var sessionLifetimeSeconds: TimeInterval
@@ -41,19 +41,22 @@ public class HoneycombSessionManager: SessionManager {
         self.dateProvider = dateProvider
         self.sessionLifetimeSeconds = sessionLifetimeSeconds
         self.debug = debug
-        self.currentSession = defaulSession
-        self.sessionStorage.save(session: self.currentSession)
+        self.currentSession = nil
+        self.sessionStorage.clear()
     }
 
     func isSessionExpired() -> Bool {
+        guard let currentSession = currentSession else {
+            return true
+        }
         let elapsedTime: TimeInterval = dateProvider()
             .timeIntervalSince(currentSession.startTimestamp)
         return elapsedTime >= sessionLifetimeSeconds
     }
 
     var sessionId: String {
-        // If the session is default session make a new one
-        if currentSession == defaulSession {
+        // If there is no current session make a new one
+        if self.currentSession == nil {
             let newSession = Session(
                 id: sessionIdGenerator(),
                 startTimestamp: dateProvider()
@@ -64,10 +67,9 @@ public class HoneycombSessionManager: SessionManager {
             }
             self.currentSession = newSession
         }
-
         // If the session timeout has elapsed, make a new one
         if isSessionExpired() {
-            let previousSession = currentSession
+            let previousSession = self.currentSession
             let newSession = Session(
                 id: sessionIdGenerator(),
                 startTimestamp: dateProvider()
@@ -82,9 +84,12 @@ public class HoneycombSessionManager: SessionManager {
             self.currentSession = newSession
         }
 
-        // Update the session ID
-        sessionStorage.save(session: currentSession)
+        guard let currentSession = self.currentSession else {
+            return ""
+        }
         // Always return the current session's id
-        return self.currentSession.id
+        sessionStorage.save(session: currentSession)
+        return currentSession.id
     }
+
 }
