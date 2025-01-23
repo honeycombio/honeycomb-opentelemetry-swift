@@ -156,7 +156,7 @@ public struct HoneycombSessionIdSpanProcessor: SpanProcessor {
 
     public init(
         debug: Bool = false,
-        sessionLifetimeSeconds: TimeInterval = HoneycombSessionManager.defaultTimeout
+        sessionLifetimeSeconds: TimeInterval
     ) {
         self.sessionManager = HoneycombSessionManager(
             debug: debug,
