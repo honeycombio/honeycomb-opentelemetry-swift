@@ -118,7 +118,7 @@ public class HoneycombSessionManager: SessionManager {
             )
             if debug {
                 print("🐝: HoneycombSessionManager: No active session, creating session.")
-                dump(newSession, name: " 🐝: Current Sesion")
+                dump(newSession, name: "Current session")
             }
             self.currentSession = newSession
         }
@@ -134,8 +134,8 @@ public class HoneycombSessionManager: SessionManager {
                 print(
                     "🐝: HoneycombSessionManager: Session timeout after \(sessionLifetimeSeconds) seconds elapsed, creating new session."
                 )
-                dump(previousSession, name: "🐝:  Previous Sesion")
-                dump(newSession, name: " 🐝: Current Sesion")
+                dump(previousSession, name: "Previous session")
+                dump(newSession, name: "Current session")
             }
             self.currentSession = newSession
         }
