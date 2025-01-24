@@ -111,6 +111,21 @@ These events may have the following attributes. In the case of name attributes, 
 * `view.titleLabel.text` - The `text` of a `UIButton`'s `titleLabel`, e.g. `"Accessible Button"`
 * `view.name`: The "best" available name of the view, given the other identifiers, e.g. `"accessibleButton"`
 
+#### Session
+
+The default session manager will create a new session on startup and will expire the session after a timeout. 
+You can call `setSessionTimeout` to set the timeout duration.
+
+ Spans will have the following attributes: 
+* `session.id` will be added to spans
+
+You can subscribe to `.sessionStarted` and `sessionEnded` to be notified of session start and end events. 
+For `.sessionStarted`:
+* `.object` constians the session just created
+* userInfo["previousSession"] contains the previous session or `nil` if there is no previous session. 
+For `.sessionEnded`:
+* `.object` constians the session just eneded.
+
 ## Manual Instrumentation
 ### SwiftUI View Instrumentation
 
