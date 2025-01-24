@@ -15,7 +15,7 @@ public class HoneycombSessionManager: SessionManager {
     private var currentSession: Session?
     private var debug: Bool
     private var sessionLifetimeSeconds: TimeInterval
-    
+
     private var sessionIdProvider: () -> String
     private var dateProvider: () -> Date
 

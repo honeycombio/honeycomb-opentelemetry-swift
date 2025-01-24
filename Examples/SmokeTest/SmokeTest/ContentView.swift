@@ -36,10 +36,10 @@ struct ContentView: View {
     @State private var timer: Timer?
     func updateSessionId() {
         sessionId =
-        UserDefaults.standard
+            UserDefaults.standard
             .string(forKey: "session.id") ?? "🐝🫥"
         let date =
-        UserDefaults.standard
+            UserDefaults.standard
             .object(forKey: "session.startTime") as! Date
         sessionStartTime = date.ISO8601Format().description
 
