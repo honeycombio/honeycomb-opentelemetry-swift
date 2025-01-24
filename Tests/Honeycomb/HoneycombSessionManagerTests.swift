@@ -22,7 +22,6 @@ final class HoneycombSessionManagerTests: XCTestCase {
         super.setUp()
         storage = SessionStorage()
         sessionManager = HoneycombSessionManager(
-            sessionStorage: storage,
             debug: true,
             sessionLifetimeSeconds: sessionLifetimeSeconds
         )
@@ -97,7 +96,6 @@ final class HoneycombSessionManagerTests: XCTestCase {
         let dateProvider = MockDateProvider()
 
         sessionManager = HoneycombSessionManager(
-            sessionStorage: storage,
             debug: true,
             sessionLifetimeSeconds: sessionLifetimeSeconds,
             dateProvider: dateProvider.provider
@@ -146,7 +144,6 @@ final class HoneycombSessionManagerTests: XCTestCase {
         let dateProvider = MockDateProvider()
 
         sessionManager = HoneycombSessionManager(
-            sessionStorage: storage,
             debug: true,
             sessionLifetimeSeconds: sessionLifetimeSeconds,
             dateProvider: dateProvider.provider
@@ -172,7 +169,6 @@ final class HoneycombSessionManagerTests: XCTestCase {
 
         // Instantiate a new sessionManager to simulate app restart within timeout
         let sessionManager2 = HoneycombSessionManager(
-            sessionStorage: storage,
             debug: true,
             sessionLifetimeSeconds: sessionLifetimeSeconds,
             dateProvider: dateProvider.provider

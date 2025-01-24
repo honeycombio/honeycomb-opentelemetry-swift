@@ -36,11 +36,11 @@ struct ContentView: View {
     @State private var timer: Timer?
     func updateSessionId() {
         sessionId =
-            UserDefaults(suiteName: SessionStorage.suiteName)?
-            .string(forKey: SessionStorage.sessionIdKey) ?? "🐝🫥"
+        UserDefaults.standard
+            .string(forKey: "session.id") ?? "🐝🫥"
         let date =
-            UserDefaults(suiteName: SessionStorage.suiteName)?
-            .object(forKey: SessionStorage.sessionStartTimeKey) as! Date
+        UserDefaults.standard
+            .object(forKey: "session.startTime") as! Date
         sessionStartTime = date.ISO8601Format().description
 
     }
@@ -64,9 +64,9 @@ struct ContentView: View {
 
                 Text("This is a sample app.")
                 VStack(alignment: .leading) {
-                    Text("\(SessionStorage.sessionIdKey): \(sessionId)")
+                    Text("Session Id: \(sessionId)")
                         .font(.caption)
-                    Text("\(SessionStorage.sessionStartTimeKey): \(sessionStartTime)")
+                    Text("Start Time: \(sessionStartTime)")
                         .font(.caption)
                 }
                 Button(action: sendSimpleSpan) {

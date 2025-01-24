@@ -11,15 +11,15 @@ internal protocol SessionManager:
 {}
 
 public class HoneycombSessionManager: SessionManager {
+    private var sessionStorage: SessionStorage
     private var currentSession: Session?
     private var debug: Bool
     private var sessionLifetimeSeconds: TimeInterval
-    private var sessionIdGenerator: () -> String
-    private var sessionStorage: SessionStorage
+    
+    private var sessionIdProvider: () -> String
     private var dateProvider: () -> Date
 
     init(
-        sessionStorage: SessionStorage = SessionStorage(),
         debug: Bool = false,
         sessionLifetimeSeconds: TimeInterval,
         sessionIdGenerator: @escaping () -> String =
@@ -30,9 +30,8 @@ public class HoneycombSessionManager: SessionManager {
             Date()
         }
     ) {
-
-        self.sessionStorage = sessionStorage
-        self.sessionIdGenerator = sessionIdGenerator
+        self.sessionStorage = SessionStorage()
+        self.sessionIdProvider = sessionIdGenerator
         self.dateProvider = dateProvider
         self.sessionLifetimeSeconds = sessionLifetimeSeconds
         self.debug = debug
@@ -53,7 +52,7 @@ public class HoneycombSessionManager: SessionManager {
         // If there is no current session make a new one
         if self.currentSession == nil {
             let newSession = Session(
-                id: sessionIdGenerator(),
+                id: sessionIdProvider(),
                 startTimestamp: dateProvider()
             )
             if debug {
@@ -66,7 +65,7 @@ public class HoneycombSessionManager: SessionManager {
         if isSessionExpired {
             let previousSession = self.currentSession
             let newSession = Session(
-                id: sessionIdGenerator(),
+                id: sessionIdProvider(),
                 startTimestamp: dateProvider()
             )
             if debug {
