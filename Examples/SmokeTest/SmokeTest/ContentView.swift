@@ -32,24 +32,15 @@ private func flush() {
 
 struct ContentView: View {
     @State private var sessionId: String = "🐝💭"
-    @State private var sessionStartTime: String = "🐝💭"
+    @State private var sessionStartTime: String = "🐝🕰️"
     @State private var timer: Timer?
-    func updateSessionId() {
+
+    func updateSessionInfo(session: Session) {
         sessionId =
-            UserDefaults.standard
-            .string(forKey: "session.id") ?? "🐝🫥"
-        let date =
-            UserDefaults.standard
-            .object(forKey: "session.startTime") as! Date
-        sessionStartTime = date.ISO8601Format().description
+            session.id
+        sessionStartTime =
+            session.startTimestamp.ISO8601Format().description
 
-    }
-
-    func startTimer() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            updateSessionId()
-        }
     }
 
     var body: some View {
@@ -122,10 +113,17 @@ struct ContentView: View {
         }
 
         .onAppear {
-            startTimer()
+            NotificationCenter.default.addObserver(
+                forName: .sessionStarted,
+                object: nil,
+                queue: .main
+            ) { notification in
+                guard let session = notification.object as? Session else { return }
+                updateSessionInfo(session: session)
+            }
         }
         .onDisappear {
-            timer?.invalidate()
+            NotificationCenter.default.removeObserver(self)
         }
     }
 }

@@ -10,7 +10,7 @@ struct SmokeTestApp: App {
                 .setAPIEndpoint("http://localhost:4318")
                 .setServiceName("ios-test")
                 .setDebug(true)
-                .setSessionTimeout(30)
+                .setSessionTimeout(10)
                 .build()
             try Honeycomb.configure(options: options)
         } catch {

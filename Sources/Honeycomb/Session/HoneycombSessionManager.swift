@@ -11,11 +11,11 @@ internal protocol SessionManager:
 {}
 
 extension Notification.Name {
-    static let sessionStarted = Notification.Name("io.honeycomb.app.session.started")
+    public static let sessionStarted = Notification.Name("io.honeycomb.app.session.started")
 }
 
 extension Notification.Name {
-    static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
+    public static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
 }
 
 public class HoneycombSessionManager: SessionManager {
