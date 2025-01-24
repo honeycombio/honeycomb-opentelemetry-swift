@@ -209,4 +209,131 @@ final class HoneycombSessionManagerTests: XCTestCase {
             "the current session ID should match the current stored one."
         )
     }
+
+    func testOnSessionStartedOnStartup() {
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
+            notification in
+            if let session = notification.object as? Session {
+                XCTAssertNil(notification.userInfo!["previousSession"])
+                XCTAssertNotNil(session.id)
+                XCTAssertNotNil(session.startTimestamp)
+                return true
+            }
+            return false
+        }
+
+        _ = sessionManager.sessionId
+
+        wait(for: [expectation], timeout: 1)
+    }
+
+    func testOnSessionEndedOnStartupShouldNotBeEmitted() {
+        let expectation = self.expectation(
+            forNotification: .sessionEnded,
+            object: nil,
+            handler: nil
+        )
+        expectation.isInverted = true
+
+        _ = sessionManager.sessionId
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(
+            expectation.expectedFulfillmentCount > 0,
+            "Notification '.sessionEnded' was unexpectedly posted when it should not have been."
+        )
+    }
+
+    func testOnSessionStartedAfterTimeout() {
+        let dateProvider = MockDateProvider()
+        sessionManager = HoneycombSessionManager(
+            debug: true,
+            sessionLifetimeSeconds: sessionLifetimeSeconds,
+            dateProvider: dateProvider.provider
+
+        )
+        var startNotifications: [Notification] = []
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
+            notification in
+            startNotifications.append(notification)
+            return startNotifications.count == 2
+        }
+        var endNotifications: [Notification] = []
+
+        let endExpectation = self.expectation(forNotification: .sessionEnded, object: nil) {
+            notification in
+            endNotifications.append(notification)
+            return endNotifications.count == 1
+        }
+
+        _ = sessionManager.sessionId
+        dateProvider.advanedBy()
+        _ = sessionManager.sessionId
+
+        wait(for: [expectation, endExpectation], timeout: 1)
+        guard let session = startNotifications.last?.object as? Session else {
+            XCTFail("Session not present on notification")
+            return
+        }
+        XCTAssertNotNil(session.id)
+        XCTAssertNotNil(session.startTimestamp)
+
+        guard
+            let previousSession = startNotifications.last?.userInfo?["previousSession"] as? Session
+        else {
+            XCTFail("Previous session not present on notification")
+            return
+        }
+        XCTAssertNotNil(previousSession.id)
+        XCTAssertNotNil(previousSession.startTimestamp)
+
+        guard let endedSession = endNotifications.last?.object as? Session else {
+            XCTFail("Session not present on end notification")
+            return
+        }
+        XCTAssertNotNil(endedSession.id)
+        XCTAssertNotNil(endedSession.startTimestamp)
+
+        XCTAssert(
+            previousSession == endedSession,
+            "Previous session should match the ended session"
+        )
+    }
+
+    func testOnSessionEndedAfterTimeout() {
+        let dateProvider = MockDateProvider()
+        sessionManager = HoneycombSessionManager(
+            debug: true,
+            sessionLifetimeSeconds: sessionLifetimeSeconds,
+            dateProvider: dateProvider.provider
+
+        )
+        var lastNotification: Notification? = nil
+        var count = 0
+        let expectation = self.expectation(forNotification: .sessionEnded, object: nil) {
+            notification in
+            lastNotification = notification
+            count += 1
+            return count == 2
+        }
+
+        _ = sessionManager.sessionId
+        dateProvider.advanedBy()
+        _ = sessionManager.sessionId
+
+        wait(for: [expectation], timeout: 1)
+        guard let session = lastNotification?.object as? Session else {
+            XCTFail("Session not present on notification")
+            return
+        }
+        XCTAssertNotNil(session.id)
+        XCTAssertNotNil(session.startTimestamp)
+
+        guard let previousSession = lastNotification?.userInfo?["previousSession"] as? Session
+        else {
+            XCTFail("Previous session not present on notification")
+            return
+        }
+        XCTAssertNotNil(previousSession.id)
+        XCTAssertNotNil(previousSession.startTimestamp)
+    }
 }

@@ -6,19 +6,17 @@ internal protocol SessionProvider {
     var sessionId: String { get }
 }
 
-internal protocol SessionObserver {
-    func onSessionStarted(
-        newSession: Session,
-        previousSession: Session?
-    )
+internal protocol SessionManager:
+    SessionProvider
+{}
 
-    func onSessionEnded(session: Session)
+extension Notification.Name {
+    static let sessionStarted = Notification.Name("io.honeycomb.app.session.started")
 }
 
-internal protocol SessionManager:
-    SessionProvider,
-    SessionObserver
-{}
+extension Notification.Name {
+    static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
+}
 
 public class HoneycombSessionManager: SessionManager {
     private var sessionStorage: SessionStorage
@@ -85,7 +83,7 @@ public class HoneycombSessionManager: SessionManager {
             )
 
             onSessionStarted(newSession: newSession, previousSession: previousSession)
-            if(previousSession != nil){
+            if previousSession != nil {
                 onSessionEnded(session: previousSession!)
             }
             self.currentSession = newSession
@@ -107,6 +105,14 @@ public class HoneycombSessionManager: SessionManager {
             dump(previousSession, name: "Previous session")
             dump(newSession, name: "Current session")
         }
+        var userInfo: [String: Any] = [:]
+        userInfo["previousSession"] = previousSession ?? nil
+        NotificationCenter.default.post(
+            name: Notification.Name.sessionStarted,
+            object: newSession,
+            userInfo: userInfo
+        )
+
     }
 
     func onSessionEnded(session: Session) {
@@ -116,6 +122,7 @@ public class HoneycombSessionManager: SessionManager {
             )
             dump(session, name: "Session")
         }
+        NotificationCenter.default.post(name: Notification.Name.sessionEnded, object: session)
     }
 
 }
