@@ -40,7 +40,7 @@ public class HoneycombSessionManager: SessionManager {
         self.sessionStorage.clear()
     }
 
-    func isSessionExpired() -> Bool {
+    var isSessionExpired: Bool {
         guard let currentSession = currentSession else {
             return true
         }
@@ -63,7 +63,7 @@ public class HoneycombSessionManager: SessionManager {
             self.currentSession = newSession
         }
         // If the session timeout has elapsed, make a new one
-        if isSessionExpired() {
+        if isSessionExpired {
             let previousSession = self.currentSession
             let newSession = Session(
                 id: sessionIdGenerator(),
