@@ -211,8 +211,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
     }
 
     func testOnSessionStartedOnStartup() {
-        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
-            notification in
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) { notification in
             if let session = notification.object as? Session {
                 XCTAssertNil(notification.userInfo!["previousSession"])
                 XCTAssertNotNil(session.id)
@@ -252,15 +251,13 @@ final class HoneycombSessionManagerTests: XCTestCase {
 
         )
         var startNotifications: [Notification] = []
-        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
-            notification in
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) { notification in
             startNotifications.append(notification)
             return startNotifications.count == 2
         }
         var endNotifications: [Notification] = []
 
-        let endExpectation = self.expectation(forNotification: .sessionEnded, object: nil) {
-            notification in
+        let endExpectation = self.expectation(forNotification: .sessionEnded, object: nil) { notification in
             endNotifications.append(notification)
             return endNotifications.count == 1
         }
@@ -293,9 +290,6 @@ final class HoneycombSessionManagerTests: XCTestCase {
         XCTAssertNotNil(endedSession.id)
         XCTAssertNotNil(endedSession.startTimestamp)
 
-        XCTAssert(
-            previousSession == endedSession,
-            "Previous session should match the ended session"
-        )
+        XCTAssertEqual(previousSession, endedSession, "Previous session should match the ended session")
     }
 }

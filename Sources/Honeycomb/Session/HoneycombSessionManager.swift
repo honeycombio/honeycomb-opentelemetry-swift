@@ -14,7 +14,7 @@ public class HoneycombSessionManager {
     private var sessionStorage: SessionStorage
     private var currentSession: Session?
     private var debug: Bool
-    private var sessionLifetimeSeconds: TimeInterval
+    private var sessionLifetime: TimeInterval
 
     private var sessionIdProvider: () -> String
     private var dateProvider: () -> Date
@@ -33,7 +33,7 @@ public class HoneycombSessionManager {
         self.sessionStorage = SessionStorage()
         self.sessionIdProvider = sessionIdGenerator
         self.dateProvider = dateProvider
-        self.sessionLifetimeSeconds = sessionLifetimeSeconds
+        self.sessionLifetime = sessionLifetimeSeconds
         self.debug = debug
         self.currentSession = nil
         self.sessionStorage.clear()
@@ -45,7 +45,7 @@ public class HoneycombSessionManager {
         }
         let elapsedTime: TimeInterval = dateProvider()
             .timeIntervalSince(currentSession.startTimestamp)
-        return elapsedTime >= sessionLifetimeSeconds
+        return elapsedTime >= sessionLifetime
     }
 
     var sessionId: String {
@@ -65,7 +65,7 @@ public class HoneycombSessionManager {
         if isSessionExpired {
             if debug {
                 print(
-                    "HoneycombSessionManager: Session timeout after \(sessionLifetimeSeconds) seconds elapsed, creating new session."
+                    "HoneycombSessionManager: Session timeout after \(sessionLifetime) seconds elapsed, creating new session."
                 )
             }
             let previousSession = self.currentSession
