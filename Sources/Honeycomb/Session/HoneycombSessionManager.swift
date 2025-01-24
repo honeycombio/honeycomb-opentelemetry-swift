@@ -56,7 +56,7 @@ public class HoneycombSessionManager {
                 startTimestamp: dateProvider()
             )
             if debug {
-                print("🐝: HoneycombSessionManager: No active session, creating session.")
+                print("HoneycombSessionManager: No active session, creating session.")
                 onSessionStarted(newSession: newSession, previousSession: nil)
             }
             self.currentSession = newSession
@@ -65,7 +65,7 @@ public class HoneycombSessionManager {
         if isSessionExpired {
             if debug {
                 print(
-                    "🐝: HoneycombSessionManager: Session timeout after \(sessionLifetimeSeconds) seconds elapsed, creating new session."
+                    "HoneycombSessionManager: Session timeout after \(sessionLifetimeSeconds) seconds elapsed, creating new session."
                 )
             }
             let previousSession = self.currentSession
@@ -89,11 +89,9 @@ public class HoneycombSessionManager {
         return currentSession.id
     }
 
-    func onSessionStarted(newSession: Session, previousSession: Session?) {
+    private func onSessionStarted(newSession: Session, previousSession: Session?) {
         if debug {
-            print(
-                "🐝: HoneycombSessionManager: Creating new session."
-            )
+            print("HoneycombSessionManager: Creating new session.")
             dump(previousSession, name: "Previous session")
             dump(newSession, name: "Current session")
         }
@@ -107,7 +105,7 @@ public class HoneycombSessionManager {
 
     }
 
-    func onSessionEnded(session: Session) {
+    private func onSessionEnded(session: Session) {
         if debug {
             print(
                 "🐝: HoneycombSessionManager: Session Ended."
