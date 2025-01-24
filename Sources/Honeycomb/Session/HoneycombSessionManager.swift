@@ -6,8 +6,18 @@ internal protocol SessionProvider {
     var sessionId: String { get }
 }
 
+internal protocol SessionObserver {
+    func onSessionStarted(
+        newSession: Session,
+        previousSession: Session?
+    )
+
+    func onSessionEnded(session: Session)
+}
+
 internal protocol SessionManager:
-    SessionProvider
+    SessionProvider,
+    SessionObserver
 {}
 
 public class HoneycombSessionManager: SessionManager {
@@ -57,23 +67,26 @@ public class HoneycombSessionManager: SessionManager {
             )
             if debug {
                 print("🐝: HoneycombSessionManager: No active session, creating session.")
-                dump(newSession, name: "Current session")
+                onSessionStarted(newSession: newSession, previousSession: nil)
             }
             self.currentSession = newSession
-        }
+        } else
         // If the session timeout has elapsed, make a new one
         if isSessionExpired {
+            if debug {
+                print(
+                    "🐝: HoneycombSessionManager: Session timeout after \(sessionLifetimeSeconds) seconds elapsed, creating new session."
+                )
+            }
             let previousSession = self.currentSession
             let newSession = Session(
                 id: sessionIdProvider(),
                 startTimestamp: dateProvider()
             )
-            if debug {
-                print(
-                    "🐝: HoneycombSessionManager: Session timeout after \(sessionLifetimeSeconds) seconds elapsed, creating new session."
-                )
-                dump(previousSession, name: "Previous session")
-                dump(newSession, name: "Current session")
+
+            onSessionStarted(newSession: newSession, previousSession: previousSession)
+            if(previousSession != nil){
+                onSessionEnded(session: previousSession!)
             }
             self.currentSession = newSession
         }
@@ -84,6 +97,25 @@ public class HoneycombSessionManager: SessionManager {
         // Always return the current session's id
         sessionStorage.save(session: currentSession)
         return currentSession.id
+    }
+
+    func onSessionStarted(newSession: Session, previousSession: Session?) {
+        if debug {
+            print(
+                "🐝: HoneycombSessionManager: Creating new session."
+            )
+            dump(previousSession, name: "Previous session")
+            dump(newSession, name: "Current session")
+        }
+    }
+
+    func onSessionEnded(session: Session) {
+        if debug {
+            print(
+                "🐝: HoneycombSessionManager: Session Ended."
+            )
+            dump(session, name: "Session")
+        }
     }
 
 }
