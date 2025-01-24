@@ -2,10 +2,9 @@ import Foundation
 
 internal let sessionIdKey: String = "session.id"
 internal let sessionStartTimeKey: String = "session.startTime"
-internal let suiteName: String = "io.honeycomb.opentelemetry.swift"
 
 struct SessionStorage {
-    let userDefaults = UserDefaults(suiteName: suiteName)!
+    let userDefaults = UserDefaults.standard 
 
     func read() -> Session? {
         guard let id = userDefaults.string(forKey: sessionIdKey),
