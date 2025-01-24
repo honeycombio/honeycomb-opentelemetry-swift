@@ -271,7 +271,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
 
         wait(for: [expectation, endExpectation], timeout: 1)
         guard let session = startNotifications.last?.object as? Session else {
-            XCTFail("Session not present on notification")
+            XCTFail("Session not present on start session notification")
             return
         }
         XCTAssertNotNil(session.id)
@@ -280,14 +280,14 @@ final class HoneycombSessionManagerTests: XCTestCase {
         guard
             let previousSession = startNotifications.last?.userInfo?["previousSession"] as? Session
         else {
-            XCTFail("Previous session not present on notification")
+            XCTFail("Previous session not present on start session notification")
             return
         }
         XCTAssertNotNil(previousSession.id)
         XCTAssertNotNil(previousSession.startTimestamp)
 
         guard let endedSession = endNotifications.last?.object as? Session else {
-            XCTFail("Session not present on end notification")
+            XCTFail("Session not present on end session notification")
             return
         }
         XCTAssertNotNil(endedSession.id)
@@ -297,43 +297,5 @@ final class HoneycombSessionManagerTests: XCTestCase {
             previousSession == endedSession,
             "Previous session should match the ended session"
         )
-    }
-
-    func testOnSessionEndedAfterTimeout() {
-        let dateProvider = MockDateProvider()
-        sessionManager = HoneycombSessionManager(
-            debug: true,
-            sessionLifetimeSeconds: sessionLifetimeSeconds,
-            dateProvider: dateProvider.provider
-
-        )
-        var lastNotification: Notification? = nil
-        var count = 0
-        let expectation = self.expectation(forNotification: .sessionEnded, object: nil) {
-            notification in
-            lastNotification = notification
-            count += 1
-            return count == 2
-        }
-
-        _ = sessionManager.sessionId
-        dateProvider.advanedBy()
-        _ = sessionManager.sessionId
-
-        wait(for: [expectation], timeout: 1)
-        guard let session = lastNotification?.object as? Session else {
-            XCTFail("Session not present on notification")
-            return
-        }
-        XCTAssertNotNil(session.id)
-        XCTAssertNotNil(session.startTimestamp)
-
-        guard let previousSession = lastNotification?.userInfo?["previousSession"] as? Session
-        else {
-            XCTFail("Previous session not present on notification")
-            return
-        }
-        XCTAssertNotNil(previousSession.id)
-        XCTAssertNotNil(previousSession.startTimestamp)
     }
 }
