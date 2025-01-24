@@ -39,7 +39,7 @@ public class HoneycombSessionManager {
         self.sessionStorage.clear()
     }
 
-    var isSessionExpired: Bool {
+    private var isSessionExpired: Bool {
         guard let currentSession = currentSession else {
             return true
         }
