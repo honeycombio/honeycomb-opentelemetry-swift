@@ -71,7 +71,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
         XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
 
-        guard  let storedSessionId = storage.read()?.id else {
+        guard let storedSessionId = storage.read()?.id else {
             XCTFail(
                 "No session found in storage."
             )

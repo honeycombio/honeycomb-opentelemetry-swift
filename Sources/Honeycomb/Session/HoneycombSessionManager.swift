@@ -10,14 +10,6 @@ internal protocol SessionManager:
     SessionProvider
 {}
 
-internal func defaultSessionIdGenerator() -> String {
-    TraceId.random().hexString
-}
-
-internal func defaultDateProvider() -> Date {
-    Date()
-}
-
 public class HoneycombSessionManager: SessionManager {
     private var currentSession: Session?
     private var debug: Bool
@@ -31,8 +23,12 @@ public class HoneycombSessionManager: SessionManager {
         debug: Bool = false,
         sessionLifetimeSeconds: TimeInterval,
         sessionIdGenerator: @escaping () -> String =
-            defaultSessionIdGenerator,
-        dateProvider: @escaping () -> Date = defaultDateProvider
+            {
+                TraceId.random().hexString
+            },
+        dateProvider: @escaping () -> Date = {
+            Date()
+        }
     ) {
 
         self.sessionStorage = sessionStorage
