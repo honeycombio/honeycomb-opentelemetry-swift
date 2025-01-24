@@ -2,14 +2,6 @@ import Foundation
 import OpenTelemetryApi
 import OpenTelemetrySdk
 
-internal protocol SessionProvider {
-    var sessionId: String { get }
-}
-
-internal protocol SessionManager:
-    SessionProvider
-{}
-
 extension Notification.Name {
     public static let sessionStarted = Notification.Name("io.honeycomb.app.session.started")
 }
@@ -18,7 +10,7 @@ extension Notification.Name {
     public static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
 }
 
-public class HoneycombSessionManager: SessionManager {
+public class HoneycombSessionManager {
     private var sessionStorage: SessionStorage
     private var currentSession: Session?
     private var debug: Bool
