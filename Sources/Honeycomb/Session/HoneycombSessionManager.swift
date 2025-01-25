@@ -12,7 +12,7 @@ extension Notification.Name {
 
 public class HoneycombSessionManager {
     private var sessionStorage: SessionStorage
-    private var currentSession: Session?
+    private var currentSession: HoneycombSession?
     private var debug: Bool
     private var sessionLifetime: TimeInterval
 
@@ -21,7 +21,7 @@ public class HoneycombSessionManager {
 
     init(
         debug: Bool = false,
-        sessionLifetimeSeconds: TimeInterval,
+        sessionLifetimeSeconds: TimeInterval = TimeInterval(60 * 60 * 4),
         sessionIdGenerator: @escaping () -> String =
             {
                 TraceId.random().hexString
@@ -40,7 +40,7 @@ public class HoneycombSessionManager {
     }
 
     private var isSessionExpired: Bool {
-        guard let currentSession = currentSession else {
+        guard let currentSession = self.currentSession else {
             return true
         }
         let elapsedTime: TimeInterval = dateProvider()
@@ -51,25 +51,24 @@ public class HoneycombSessionManager {
     var sessionId: String {
         // If there is no current session make a new one
         if self.currentSession == nil {
-            let newSession = Session(
+            let newSession = HoneycombSession(
                 id: sessionIdProvider(),
                 startTimestamp: dateProvider()
             )
             if debug {
                 print("HoneycombSessionManager: No active session, creating session.")
-                onSessionStarted(newSession: newSession, previousSession: nil)
             }
+            onSessionStarted(newSession: newSession, previousSession: nil)
             self.currentSession = newSession
-        } else
-        // If the session timeout has elapsed, make a new one
-        if isSessionExpired {
+        } else if isSessionExpired {
+            // If the session timeout has elapsed, make a new one
             if debug {
                 print(
                     "HoneycombSessionManager: Session timeout after \(sessionLifetime) seconds elapsed, creating new session."
                 )
             }
             let previousSession = self.currentSession
-            let newSession = Session(
+            let newSession = HoneycombSession(
                 id: sessionIdProvider(),
                 startTimestamp: dateProvider()
             )
@@ -89,14 +88,15 @@ public class HoneycombSessionManager {
         return currentSession.id
     }
 
-    private func onSessionStarted(newSession: Session, previousSession: Session?) {
+    private func onSessionStarted(newSession: HoneycombSession, previousSession: HoneycombSession?)
+    {
         if debug {
             print("HoneycombSessionManager: Creating new session.")
             dump(previousSession, name: "Previous session")
             dump(newSession, name: "Current session")
         }
         var userInfo: [String: Any] = [:]
-        userInfo["previousSession"] = previousSession ?? nil
+        userInfo["previousSession"] = previousSession
         NotificationCenter.default.post(
             name: Notification.Name.sessionStarted,
             object: newSession,
@@ -105,10 +105,10 @@ public class HoneycombSessionManager {
 
     }
 
-    private func onSessionEnded(session: Session) {
+    private func onSessionEnded(session: HoneycombSession) {
         if debug {
             print(
-                "🐝: HoneycombSessionManager: Session Ended."
+                "HoneycombSessionManager: Session Ended."
             )
             dump(session, name: "Session")
         }

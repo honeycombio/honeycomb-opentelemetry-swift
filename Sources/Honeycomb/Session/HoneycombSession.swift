@@ -1,10 +1,10 @@
 import Foundation
 
-public struct Session: Equatable {
+public struct HoneycombSession: Equatable {
     public let id: String
     public let startTimestamp: Date
 
-    public static func == (lhs: Session, rhs: Session) -> Bool {
+    public static func == (lhs: HoneycombSession, rhs: HoneycombSession) -> Bool {
         return lhs.id == rhs.id && lhs.startTimestamp == rhs.startTimestamp
     }
 }

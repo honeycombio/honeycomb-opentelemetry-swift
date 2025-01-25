@@ -3,14 +3,14 @@ import XCTest
 @testable import Honeycomb
 
 class MockDateProvider {
-    var advanedBy: TimeInterval = 0
+    var elapsed: TimeInterval = 0
 
-    func advanedBy(by: TimeInterval = TimeInterval(60 * 60 * 6)) {
-        advanedBy = by
+    func advance(by: TimeInterval = TimeInterval(60 * 60 * 6)) {
+        elapsed += by
     }
 
     func provider() -> Date {
-        return Date().advanced(by: advanedBy)
+        return Date().advanced(by: elapsed)
     }
 }
 
@@ -33,26 +33,17 @@ final class HoneycombSessionManagerTests: XCTestCase {
     }
 
     func testSessionCreationOnStartup() {
-        guard let sessionIdBefore = storage.read()?.id else {
-            XCTFail("No session found in storage.")
-            return
-        }
-        XCTAssert(sessionIdBefore.isEmpty, "The default session ID should be empty.")
-
+        let sessionBeforeId = storage.read()?.id
+        XCTAssertNil(sessionBeforeId, "Session should be cleared on startup.")
         let sessionIdAfter = sessionManager.sessionId
-        XCTAssertNotEqual(
-            sessionIdBefore,
+        XCTAssertNotNil(
             sessionIdAfter,
             "A new session should be created"
         )
         XCTAssert(!sessionIdAfter.isEmpty, "A new session ID should not be empty.")
 
         // The new sessionId should be stored
-        guard let storedSessionId = storage.read()?.id else {
-            XCTFail("No session found in storage.")
-            return
-        }
-        XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
+        let storedSessionId = storage.read()?.id
         XCTAssertEqual(
             storedSessionId,
             sessionIdAfter,
@@ -63,20 +54,10 @@ final class HoneycombSessionManagerTests: XCTestCase {
 
     func testSessionIdShouldBeStableOnSubsequentRereads() {
         let sessionId = sessionManager.sessionId
-        XCTAssertNotEqual(
-            sessionId,
-            "",
-            "A non-empty session ID exists"
-        )
-        XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
+        let storedSessionId = storage.read()?.id
 
-        guard let storedSessionId = storage.read()?.id else {
-            XCTFail(
-                "No session found in storage."
-            )
-            return
-        }
-        XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
+        XCTAssertNotNil(sessionId, "A non-empty session ID exists")
+        XCTAssertNotNil(storedSessionId, "The stored session ID should not be empty.")
         XCTAssertEqual(
             storedSessionId,
             sessionId,
@@ -109,13 +90,8 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
         XCTAssert(!sessionId.isEmpty, "A non-empty session ID exists")
 
-        guard let storedSessionId = storage.read()?.id else {
-            XCTFail(
-                "No session found in storage."
-            )
-            return
-        }
-        XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
+        let storedSessionId = storage.read()?.id
+        XCTAssertNotNil(storedSessionId, "The stored session ID should not be empty.")
         XCTAssertEqual(
             storedSessionId,
             sessionId,
@@ -129,10 +105,9 @@ final class HoneycombSessionManagerTests: XCTestCase {
             "Subsequent reads should yield the same session ID."
         )
         // Jump forward in time.
-        dateProvider.advanedBy()
+        dateProvider.advance()
 
         let readTwo = sessionManager.sessionId
-        XCTAssert(!storedSessionId.isEmpty, "The stored session ID should not be empty.")
         XCTAssertNotEqual(
             sessionId,
             readTwo,
@@ -149,18 +124,10 @@ final class HoneycombSessionManagerTests: XCTestCase {
             dateProvider: dateProvider.provider
         )
         let sessionId = sessionManager.sessionId
-        guard let storedSessionIdOne = storage.read()?.id else {
-            XCTFail(
-                "No session found in storage."
-            )
-            return
-        }
+        let storedSessionIdOne = storage.read()?.id
 
         XCTAssert(!sessionId.isEmpty, "A non-empty session ID is return from SessionManager")
-        XCTAssert(
-            !storedSessionIdOne.isEmpty,
-            "A non-empty session ID is return from SessionStorage"
-        )
+        XCTAssertNotNil(storedSessionIdOne, "A non-empty session ID is return from SessionStorage")
         XCTAssertEqual(
             storedSessionIdOne,
             sessionId,
@@ -175,34 +142,16 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
 
         let sessionIdTwo = sessionManager2.sessionId
-        guard let storedSessionIdTwo = storage.read()?.id else {
-            XCTFail(
-                "No session found in storage."
-            )
-            return
-        }
-
-        XCTAssert(!sessionIdTwo.isEmpty, "A non-empty session ID is return from SessionManager")
-        XCTAssert(
-            !storedSessionIdTwo.isEmpty,
-            "A non-empty session ID is return from SessionStorage"
-        )
+        let storedSessionIdTwo = storage.read()?.id
+        XCTAssertNotNil(sessionIdTwo, "A non-empty session ID is return from SessionManager")
         XCTAssertEqual(
             sessionIdTwo,
             storedSessionIdTwo,
             "the stored session ID should match the newly created one."
         )
 
-        XCTAssertNotEqual(
-            sessionId,
-            sessionIdTwo,
-            "the session ID should not match the previously fetched one."
-        )
-        XCTAssertNotEqual(
-            storedSessionIdOne,
-            storedSessionIdTwo  //,
-            //            "the session ID should not match the stored one."
-        )
+        XCTAssertNotEqual(sessionId, sessionIdTwo)
+        XCTAssertNotEqual(storedSessionIdOne, storedSessionIdTwo)
         XCTAssertEqual(
             sessionIdTwo,
             storedSessionIdTwo,
@@ -211,8 +160,9 @@ final class HoneycombSessionManagerTests: XCTestCase {
     }
 
     func testOnSessionStartedOnStartup() {
-        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) { notification in
-            if let session = notification.object as? Session {
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
+            notification in
+            if let session = notification.object as? HoneycombSession {
                 XCTAssertNil(notification.userInfo!["previousSession"])
                 XCTAssertNotNil(session.id)
                 XCTAssertNotNil(session.startTimestamp)
@@ -251,23 +201,25 @@ final class HoneycombSessionManagerTests: XCTestCase {
 
         )
         var startNotifications: [Notification] = []
-        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) { notification in
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
+            notification in
             startNotifications.append(notification)
             return startNotifications.count == 2
         }
         var endNotifications: [Notification] = []
 
-        let endExpectation = self.expectation(forNotification: .sessionEnded, object: nil) { notification in
+        let endExpectation = self.expectation(forNotification: .sessionEnded, object: nil) {
+            notification in
             endNotifications.append(notification)
             return endNotifications.count == 1
         }
 
         _ = sessionManager.sessionId
-        dateProvider.advanedBy()
+        dateProvider.advance()
         _ = sessionManager.sessionId
 
         wait(for: [expectation, endExpectation], timeout: 1)
-        guard let session = startNotifications.last?.object as? Session else {
+        guard let session = startNotifications.last?.object as? HoneycombSession else {
             XCTFail("Session not present on start session notification")
             return
         }
@@ -275,7 +227,8 @@ final class HoneycombSessionManagerTests: XCTestCase {
         XCTAssertNotNil(session.startTimestamp)
 
         guard
-            let previousSession = startNotifications.last?.userInfo?["previousSession"] as? Session
+            let previousSession = startNotifications.last?.userInfo?["previousSession"]
+                as? HoneycombSession
         else {
             XCTFail("Previous session not present on start session notification")
             return
@@ -283,13 +236,17 @@ final class HoneycombSessionManagerTests: XCTestCase {
         XCTAssertNotNil(previousSession.id)
         XCTAssertNotNil(previousSession.startTimestamp)
 
-        guard let endedSession = endNotifications.last?.object as? Session else {
+        guard let endedSession = endNotifications.last?.object as? HoneycombSession else {
             XCTFail("Session not present on end session notification")
             return
         }
         XCTAssertNotNil(endedSession.id)
         XCTAssertNotNil(endedSession.startTimestamp)
 
-        XCTAssertEqual(previousSession, endedSession, "Previous session should match the ended session")
+        XCTAssertEqual(
+            previousSession,
+            endedSession,
+            "Previous session should match the ended session"
+        )
     }
 }

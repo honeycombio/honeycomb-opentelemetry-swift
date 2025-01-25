@@ -35,7 +35,7 @@ struct ContentView: View {
     @State private var sessionStartTime: String = "🐝🕰️"
     @State private var timer: Timer?
 
-    func updateSessionInfo(session: Session) {
+    func updateSessionInfo(session: HoneycombSession) {
         sessionId =
             session.id
         sessionStartTime =
@@ -118,7 +118,7 @@ struct ContentView: View {
                 object: nil,
                 queue: .main
             ) { notification in
-                guard let session = notification.object as? Session else { return }
+                guard let session = notification.object as? HoneycombSession else { return }
                 updateSessionInfo(session: session)
             }
         }
