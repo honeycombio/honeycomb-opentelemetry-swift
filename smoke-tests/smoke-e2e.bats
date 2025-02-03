@@ -194,28 +194,28 @@ mk_diag_attr() {
 
 @test "UIViewController attributes are correct" {
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
-        | jq "select (.key == \"view.class\")" \
-        | jq "select (.value.stringValue == \"SmokeTest.UIKitMenuViewController\").value.stringValue" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq)
-    assert_equal "$result" '"SmokeTest.UIKitMenuViewController"'
+    assert_equal "$result" '"UIKit Menu"'
 
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
-        | jq "select (.key == \"view.class\")" \
-        | jq "select (.value.stringValue == \"SmokeTest.UIKitMenuViewController\").value.stringValue" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq)
-    assert_equal "$result" '"SmokeTest.UIKitMenuViewController"'
+    assert_equal "$result" '"UIKit Menu"'
     
         result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
-        | jq "select (.key == \"view.class\")" \
-        | jq "select (.value.stringValue == \"SmokeTest.UIKitScreenViewController\").value.stringValue" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq)
-    assert_equal "$result" '"SmokeTest.UIKitScreenViewController"'
+    assert_equal "$result" '"UI KIT SCREEN OVERRIDE"'
 
     result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
-        | jq "select (.key == \"view.class\")" \
-        | jq "select (.value.stringValue == \"SmokeTest.UIKitScreenViewController\").value.stringValue" \
+        | jq "select (.key == \"screen.name\")" \
+        | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq)
-    assert_equal "$result" '"SmokeTest.UIKitScreenViewController"'
+    assert_equal "$result" '"UI KIT SCREEN OVERRIDE"'
 }
 
 @test "UITabView attributes are correct" {
