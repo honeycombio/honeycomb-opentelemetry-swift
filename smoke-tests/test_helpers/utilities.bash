@@ -110,27 +110,6 @@ assert_equal() {
 	fi
 }
 
-# Fail and display details if the expected value is not a substring
-# of the actual result. Details include both values.
-#
-# Inspired by bats-assert * bats-support, but dramatically simplified
-# Arguments:
-# $1 - actual result
-# $2 - expected result
-assert_contains() {
-    	if [[ $1 != *"$2"* ]]; then
-		{
-			echo
-			echo "-- 💥 values are not equal 💥 --"
-			echo "expected : $2"
-			echo "actual   : $1"
-			echo "--"
-			echo
-		} >&2 # output error to STDERR
-		return 1
-	fi
-}
-
 # Fail and display details if the actual value is empty.
 # Arguments: $1 - actual result
 assert_not_empty_string() {
