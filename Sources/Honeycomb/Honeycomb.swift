@@ -103,6 +103,12 @@ public class Honeycomb {
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
             .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
+            .add(
+                spanProcessor: HoneycombSessionIdSpanProcessor(
+                    debug: options.debug,
+                    sessionLifetimeSeconds: options.sessionTimeout
+                )
+            )
             .with(resource: resource)
             .build()
 

@@ -188,6 +188,8 @@ public struct HoneycombOptions {
     let metricsProtocol: OTLPProtocol
     let logsProtocol: OTLPProtocol
 
+    let sessionTimeout: TimeInterval
+
     public class Builder {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
@@ -225,6 +227,8 @@ public struct HoneycombOptions {
         private var tracesProtocol: OTLPProtocol? = nil
         private var metricsProtocol: OTLPProtocol? = nil
         private var logsProtocol: OTLPProtocol? = nil
+
+        private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
 
         /// Creates a builder with default options.
         public init() {}
@@ -428,6 +432,11 @@ public struct HoneycombOptions {
             return self
         }
 
+        public func setSessionTimeout(_ timeout: TimeInterval) -> Builder {
+            sessionTimeout = timeout
+            return self
+        }
+
         public func build() throws -> HoneycombOptions {
             // If any API key isn't set, consider it a fatal error.
             let defaultApiKey: () throws -> String = {
@@ -531,7 +540,8 @@ public struct HoneycombOptions {
                 logsTimeout: logsTimeout ?? timeout,
                 tracesProtocol: tracesProtocol ?? `protocol`,
                 metricsProtocol: metricsProtocol ?? `protocol`,
-                logsProtocol: logsProtocol ?? `protocol`
+                logsProtocol: logsProtocol ?? `protocol`,
+                sessionTimeout: sessionTimeout
             )
         }
 

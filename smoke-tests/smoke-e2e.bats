@@ -17,6 +17,14 @@ teardown_file() {
   assert_equal "$result" '"test-span"'
 }
 
+@test "SDK can emits session.id" {
+  name="test-span"
+  attr_name="session.id"
+  type="string"
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name $attr_name $type | sort)
+  assert_not_empty "$result"
+}
+
 @test "SDK had default resources" {
   result=$(resource_attributes_received \
       | jq 'select (.key == "telemetry.sdk.language").value.stringValue' \
@@ -99,6 +107,7 @@ mk_attr() {
 
    assert_equal "$result" '"screen.name"
 "screen.path"
+"session.id"
 "signpost.category"
 "signpost.count"
 "signpost.cpu_time"

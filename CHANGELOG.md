@@ -4,6 +4,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### New Features
 
+* Emit session.id using default SessionManager
 * Update to OpenTelemetry Swift 1.12.1.
 * Auto-instrumentation of URLSession.
 * Auto-instrumentation of navigation in UI Kit.

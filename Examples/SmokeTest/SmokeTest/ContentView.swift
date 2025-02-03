@@ -31,6 +31,18 @@ private func flush() {
 }
 
 struct ContentView: View {
+    @State private var sessionId: String = "🐝💭"
+    @State private var sessionStartTime: String = "🐝🕰️"
+    @State private var timer: Timer?
+
+    func updateSessionInfo(session: HoneycombSession) {
+        sessionId =
+            session.id
+        sessionStartTime =
+            session.startTimestamp.ISO8601Format().description
+
+    }
+
     var body: some View {
         TabView {
             VStack(
@@ -42,7 +54,12 @@ struct ContentView: View {
                     .foregroundStyle(.tint)
 
                 Text("This is a sample app.")
-
+                VStack(alignment: .leading) {
+                    Text("Session Id: \(sessionId)")
+                        .font(.caption)
+                    Text("Start Time: \(sessionStartTime)")
+                        .font(.caption)
+                }
                 Button(action: sendSimpleSpan) {
                     Text("Send simple span")
                 }
@@ -93,6 +110,20 @@ struct ContentView: View {
             NavigationExamplesView()
                 .padding()
                 .tabItem { Label("Navigation", systemImage: "globe") }
+        }
+
+        .onAppear {
+            NotificationCenter.default.addObserver(
+                forName: .sessionStarted,
+                object: nil,
+                queue: .main
+            ) { notification in
+                guard let session = notification.object as? HoneycombSession else { return }
+                updateSessionInfo(session: session)
+            }
+        }
+        .onDisappear {
+            NotificationCenter.default.removeObserver(self)
         }
     }
 }
