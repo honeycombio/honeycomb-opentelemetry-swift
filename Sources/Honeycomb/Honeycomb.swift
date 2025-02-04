@@ -110,6 +110,7 @@ public class Honeycomb {
                 )
             )
             .with(resource: resource)
+            .with(sampler: HoneycombDeterministicSampler(sampleRate: options.sampleRate))
             .build()
 
         // Metrics

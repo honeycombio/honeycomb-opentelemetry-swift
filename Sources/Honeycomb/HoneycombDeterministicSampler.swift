@@ -11,10 +11,13 @@ class HoneycombDeterministicSampler: Sampler {
 
         switch sampleRate {
         case Int.min..<1:
+            print("Sample rate too low, not emitting any spans!")
             inner = Samplers.alwaysOff
         case 1:
+            print("Not sampling, emitting all spans")
             inner = Samplers.alwaysOn
         default:
+            print("Sampling enabled: emitting every 1 in \(sampleRate) spans")
             inner = Samplers.traceIdRatio(ratio: 1.0 / Double(sampleRate))
         }
 
