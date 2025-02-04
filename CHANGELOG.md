@@ -4,6 +4,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### New Features
 
+* Add deterministic sampler (configurable through the `sampleRate` option)
 * Emit session.id using default SessionManager
 * Update to OpenTelemetry Swift 1.12.1.
 * Auto-instrumentation of URLSession.
