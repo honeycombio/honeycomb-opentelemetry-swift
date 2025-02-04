@@ -105,7 +105,8 @@ mk_attr() {
 
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
 
-   assert_equal "$result" '"screen.name"
+   assert_equal "$result" '"SampleRate"
+"screen.name"
 "screen.path"
 "session.id"
 "signpost.category"
