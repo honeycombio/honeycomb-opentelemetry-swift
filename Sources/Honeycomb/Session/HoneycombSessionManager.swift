@@ -48,7 +48,7 @@ public class HoneycombSessionManager {
         return elapsedTime >= sessionLifetime
     }
 
-    var sessionId: String {
+    public var sessionId: String {
         // If there is no current session make a new one
         if self.currentSession == nil {
             let newSession = HoneycombSession(
@@ -96,10 +96,11 @@ public class HoneycombSessionManager {
             dump(newSession, name: "Current session")
         }
         var userInfo: [String: Any] = [:]
+        userInfo["session"] = newSession
         userInfo["previousSession"] = previousSession
         NotificationCenter.default.post(
             name: Notification.Name.sessionStarted,
-            object: newSession,
+            object: self,
             userInfo: userInfo
         )
 
@@ -112,7 +113,13 @@ public class HoneycombSessionManager {
             )
             dump(session, name: "Session")
         }
-        NotificationCenter.default.post(name: Notification.Name.sessionEnded, object: session)
+        var userInfo: [String: Any] = [:]
+        userInfo["previousSession"] = session
+        NotificationCenter.default.post(
+            name: Notification.Name.sessionEnded,
+            object: self,
+            userInfo: userInfo
+        )
     }
 
 }

@@ -18,6 +18,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
     var sessionManager: HoneycombSessionManager!
     var storage: SessionStorage!
     var sessionLifetimeSeconds = TimeInterval(60 * 60 * 4)
+
     override func setUp() {
         super.setUp()
         storage = SessionStorage()
@@ -162,8 +163,8 @@ final class HoneycombSessionManagerTests: XCTestCase {
     func testOnSessionStartedOnStartup() {
         let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
             notification in
-            if let session = notification.object as? HoneycombSession {
-                XCTAssertNil(notification.userInfo!["previousSession"])
+            XCTAssertNil(notification.userInfo?["previousSession"])
+            if let session = notification.userInfo?["session"] as? HoneycombSession {
                 XCTAssertNotNil(session.id)
                 XCTAssertNotNil(session.startTimestamp)
                 return true
@@ -219,7 +220,8 @@ final class HoneycombSessionManagerTests: XCTestCase {
         _ = sessionManager.sessionId
 
         wait(for: [expectation, endExpectation], timeout: 1)
-        guard let session = startNotifications.last?.object as? HoneycombSession else {
+        guard let session = startNotifications.last?.userInfo?["session"] as? HoneycombSession
+        else {
             XCTFail("Session not present on start session notification")
             return
         }
@@ -236,7 +238,10 @@ final class HoneycombSessionManagerTests: XCTestCase {
         XCTAssertNotNil(previousSession.id)
         XCTAssertNotNil(previousSession.startTimestamp)
 
-        guard let endedSession = endNotifications.last?.object as? HoneycombSession else {
+        guard
+            let endedSession = endNotifications.last?.userInfo?["previousSession"]
+                as? HoneycombSession
+        else {
             XCTFail("Session not present on end session notification")
             return
         }
