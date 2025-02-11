@@ -10,7 +10,7 @@ extension Notification.Name {
     public static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
 }
 
-public class HoneycombSessionManager {
+class HoneycombSessionManager {
     private var sessionStorage: SessionStorage
     private var currentSession: HoneycombSession?
     private var debug: Bool
@@ -48,7 +48,7 @@ public class HoneycombSessionManager {
         return elapsedTime >= sessionLifetime
     }
 
-    public var sessionId: String {
+    var sessionId: String {
         // If there is no current session make a new one
         if self.currentSession == nil {
             let newSession = HoneycombSession(

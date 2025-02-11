@@ -118,7 +118,9 @@ struct ContentView: View {
                 object: nil,
                 queue: .main
             ) { notification in
-                guard let session = notification.object as? HoneycombSession else { return }
+                guard let session = notification.userInfo?["session"] as? HoneycombSession else {
+                    return
+                }
                 updateSessionInfo(session: session)
             }
         }

@@ -121,10 +121,10 @@ You can call `HoneycombOptions.setSessionTimeout` to set the timeout duration.
 
 You can subscribe to `.sessionStarted` and `sessionEnded` with `NotificationCenter` to be notified of session start and end events. 
 For `.sessionStarted`:
-* `.object` contains the session just created
-* userInfo["previousSession"] contains the previous session or `nil` if there is no previous session. 
+* `userInfo["session"]` contains the session just created
+* `userInfo["previousSession"]` contains the previous session or `nil` if there is no previous session. 
 For `.sessionEnded`:
-* `.object` contains the session just ended.
+* `userInfo["previousSession"]` contains the session just ended.
 
 ## Manual Instrumentation
 ### SwiftUI View Instrumentation
