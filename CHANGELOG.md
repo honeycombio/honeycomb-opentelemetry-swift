@@ -2,18 +2,26 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
-## 0.0.2-alpha (2025-02-11)
+## 0.0.3-alpha (2025-02-11)
 
 ### New Features
 
-* Add deterministic sampler (configurable through the `sampleRate` option)
-* Emit session.id using default SessionManager
 * Update to OpenTelemetry Swift 1.12.1.
-* Auto-instrumentation of URLSession.
+* Add deterministic sampler (configurable through the `sampleRate` option)
 * Auto-instrumentation of navigation in UI Kit.
+* Emit session.id using default SessionManager
+* Include `telemetry.sdk.language` and other default resource fields
+
+## 0.0.2-alpha (2024-12-20)
+
+### New Features
+
+* Update to OpenTelemetry Swift 1.10.1.
+* Auto-instrumentation of URLSession.
 * Auto-instrumentation of "clicks" and touch events in UI Kit.
 * Manual instrumentation of SwiftUI navigation.
 * Manual instrumentation of SwiftUI view rendering.
+* Add baggage span processor
 
 ## 0.0.1-alpha (2024-09-27)
 
