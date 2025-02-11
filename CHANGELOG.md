@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.2-alpha (2025-02-11)
+
 ### New Features
 
 * Add deterministic sampler (configurable through the `sampleRate` option)
