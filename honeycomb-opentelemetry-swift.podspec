@@ -27,8 +27,22 @@ TODO: Add long description of the pod here.
   s.author           = { '' => '' }
   s.source           = { :git => 'https://github.com/honeycombio/honeycomb-opentelemetry-swift', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = "13.0"
+  s.tvos.deployment_target = "13.0"
+  s.watchos.deployment_target = "6.0"
 
   s.source_files = 'Sources/Honeycomb/**/*.swift'
   
+  # s.resource_bundles = {
+  #   'honeycomb-opentelemetry-swift' => ['honeycomb-opentelemetry-swift/Assets/*.png']
+  # }
+
+  # s.public_header_files = 'Pod/Classes/**/*.h'
+  # s.frameworks = 'UIKit', 'MapKit'
+  s.dependency 'OpenTelemetry-Swift-Api', '~> 1.13.0'
+  s.dependency 'OpenTelemetry-Swift-Sdk', '~> 1.13.0'
+  s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Common', '~> 1.13.0'
+  s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Http', '~> 1.13.0'
+  s.dependency 'OpenTelemetry-Swift-SdkResourceExtension', '~> 1.13.0'
+  s.dependency 'OpenTelemetry-Swift-StdoutExporter', '~> 1.13.0'
 end
