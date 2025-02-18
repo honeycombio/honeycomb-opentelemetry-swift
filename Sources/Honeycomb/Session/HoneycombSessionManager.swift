@@ -10,7 +10,7 @@ extension Notification.Name {
     public static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
 }
 
-public class HoneycombSessionManager {
+class HoneycombSessionManager {
     private var sessionStorage: SessionStorage
     private var currentSession: HoneycombSession?
     private var debug: Bool
@@ -96,10 +96,11 @@ public class HoneycombSessionManager {
             dump(newSession, name: "Current session")
         }
         var userInfo: [String: Any] = [:]
+        userInfo["session"] = newSession
         userInfo["previousSession"] = previousSession
         NotificationCenter.default.post(
             name: Notification.Name.sessionStarted,
-            object: newSession,
+            object: self,
             userInfo: userInfo
         )
 
@@ -112,7 +113,13 @@ public class HoneycombSessionManager {
             )
             dump(session, name: "Session")
         }
-        NotificationCenter.default.post(name: Notification.Name.sessionEnded, object: session)
+        var userInfo: [String: Any] = [:]
+        userInfo["previousSession"] = session
+        NotificationCenter.default.post(
+            name: Notification.Name.sessionEnded,
+            object: self,
+            userInfo: userInfo
+        )
     }
 
 }
