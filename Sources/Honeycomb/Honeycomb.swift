@@ -1,12 +1,18 @@
 import Foundation
 import MetricKit
 import OpenTelemetryApi
-import OpenTelemetrySdk
 import OpenTelemetryProtocolExporterCommon
 import OpenTelemetryProtocolExporterHttp
+import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
+
+#if canImport(OpenTelemetryProtocolExporterGrpc)
+    import GRPC
+    import NIO
+    import OpenTelemetryProtocolExporterGrpc
+#endif
 
 private func createAttributeDict(_ dict: [String: String]) -> [String: AttributeValue] {
     var result: [String: AttributeValue] = [:]
@@ -65,7 +71,23 @@ public class Honeycomb {
         // Traces
 
         var traceExporter: SpanExporter
-        if options.tracesProtocol == .httpJSON {
+        if options.tracesProtocol == .grpc {
+            #if canImport(OpenTelemetryProtocolExporterGrpc)
+                // Break down the URL into host and port, or use defaults from the spec.
+                let host = tracesEndpoint.host ?? "api.honeycomb.io"
+                let port = tracesEndpoint.port ?? 4317
+
+                let channel =
+                    ClientConnection.usingPlatformAppropriateTLS(
+                        for: MultiThreadedEventLoopGroup(numberOfThreads: 1)
+                    )
+                    .connect(host: host, port: port)
+
+                traceExporter = OtlpTraceExporter(channel: channel, config: otlpTracesConfig)
+            #else
+                throw HoneycombOptionsError.unsupportedProtocol("gRPC")
+            #endif
+        } else if options.tracesProtocol == .httpJSON {
             throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             traceExporter = OtlpHttpTraceExporter(
@@ -106,7 +128,23 @@ public class Honeycomb {
         // Metrics
 
         var metricExporter: MetricExporter
-        if options.metricsProtocol == .httpJSON {
+        if options.metricsProtocol == .grpc {
+            #if canImport(OpenTelemetryProtocolExporterGrpc)
+                // Break down the URL into host and port, or use defaults from the spec.
+                let host = metricsEndpoint.host ?? "api.honeycomb.io"
+                let port = metricsEndpoint.port ?? 4317
+
+                let channel =
+                    ClientConnection.usingPlatformAppropriateTLS(
+                        for: MultiThreadedEventLoopGroup(numberOfThreads: 1)
+                    )
+                    .connect(host: host, port: port)
+
+                metricExporter = OtlpMetricExporter(channel: channel, config: otlpMetricsConfig)
+            #else
+                throw HoneycombOptionsError.unsupportedProtocol("gRPC")
+            #endif
+        } else if options.metricsProtocol == .httpJSON {
             throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             metricExporter = OtlpHttpMetricExporter(
@@ -124,7 +162,23 @@ public class Honeycomb {
         // Logs
 
         var logExporter: LogRecordExporter
-        if options.logsProtocol == .httpJSON {
+        if options.logsProtocol == .grpc {
+            #if canImport(OpenTelemetryProtocolExporterGrpc)
+                // Break down the URL into host and port, or use defaults from the spec.
+                let host = logsEndpoint.host ?? "api.honeycomb.io"
+                let port = logsEndpoint.port ?? 4317
+
+                let channel =
+                    ClientConnection.usingPlatformAppropriateTLS(
+                        for: MultiThreadedEventLoopGroup(numberOfThreads: 1)
+                    )
+                    .connect(host: host, port: port)
+
+                logExporter = OtlpLogExporter(channel: channel, config: otlpLogsConfig)
+            #else
+                throw HoneycombOptionsError.unsupportedProtocol("gRPC")
+            #endif
+        } else if options.logsProtocol == .httpJSON {
             throw HoneycombOptionsError.unsupportedProtocol("http/json")
         } else {
             logExporter = OtlpHttpLogExporter(endpoint: logsEndpoint, config: otlpLogsConfig)
