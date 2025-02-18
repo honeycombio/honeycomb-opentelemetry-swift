@@ -32,6 +32,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Manual instrumentation of SwiftUI navigation.
 * Manual instrumentation of SwiftUI view rendering.
 * Add baggage span processor.
+* Package is now available on Cocoapods.
 
 ## 0.0.1-alpha (2024-09-27)
 
