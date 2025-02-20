@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.4-alpha
+
 ### Fixes
 
 * Move `HoneycombSession` in `NotificationCenter` from being the sender to `userInfo`.
