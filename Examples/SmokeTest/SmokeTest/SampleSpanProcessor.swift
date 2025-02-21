@@ -15,12 +15,11 @@ internal class SampleSpanProcessor: SpanProcessor {
             value: "extra metadata"
         )
     }
-    
+
     func onEnd(span: any OpenTelemetrySdk.ReadableSpan) {}
-    
+
     func shutdown(explicitTimeout: TimeInterval?) {}
-    
+
     func forceFlush(timeout: TimeInterval?) {}
-    
-        
+
 }
