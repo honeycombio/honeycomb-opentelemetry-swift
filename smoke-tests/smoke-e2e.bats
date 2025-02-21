@@ -106,6 +106,7 @@ mk_attr() {
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
 
    assert_equal "$result" '"SampleRate"
+"app.metadata"
 "screen.name"
 "screen.path"
 "session.id"
@@ -312,4 +313,8 @@ mk_diag_attr() {
 @test "Navigation attributes are correct" {
     result=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" "screen.name" string | uniq)
     assert_equal "$result" '"View Instrumentation"'
+}
+
+@test "Span Processor gets added correctly" {
+    result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "screen.name" string | uniq)
 }

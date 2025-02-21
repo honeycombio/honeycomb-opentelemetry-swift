@@ -11,6 +11,7 @@ struct SmokeTestApp: App {
                 .setServiceName("ios-test")
                 .setDebug(true)
                 .setSessionTimeout(10)
+                .setSpanProcessor(SampleSpanProcessor())
                 .build()
             try Honeycomb.configure(options: options)
         } catch {

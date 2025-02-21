@@ -188,6 +188,8 @@ public struct HoneycombOptions {
     let metricsProtocol: OTLPProtocol
     let logsProtocol: OTLPProtocol
 
+    let spanProcessor: SpanProcessor?
+
     let sessionTimeout: TimeInterval
 
     public class Builder {
@@ -227,6 +229,8 @@ public struct HoneycombOptions {
         private var tracesProtocol: OTLPProtocol? = nil
         private var metricsProtocol: OTLPProtocol? = nil
         private var logsProtocol: OTLPProtocol? = nil
+
+        private var spanProcessor: SpanProcessor? = nil
 
         private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
 
@@ -432,6 +436,11 @@ public struct HoneycombOptions {
             return self
         }
 
+        public func setSpanProcessor(_ processor: SpanProcessor) -> Builder {
+            spanProcessor = `processor`
+            return self
+        }
+
         public func setSessionTimeout(_ timeout: TimeInterval) -> Builder {
             sessionTimeout = timeout
             return self
@@ -541,6 +550,7 @@ public struct HoneycombOptions {
                 tracesProtocol: tracesProtocol ?? `protocol`,
                 metricsProtocol: metricsProtocol ?? `protocol`,
                 logsProtocol: logsProtocol ?? `protocol`,
+                spanProcessor: spanProcessor,
                 sessionTimeout: sessionTimeout
             )
         }

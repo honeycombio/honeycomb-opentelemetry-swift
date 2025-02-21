@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* Add a `setSpanProcessor()` function to `HoneycombOptions` builder to allow clients to supply custom span processors.
+
 ## 0.0.4-alpha
 
 ### Fixes
