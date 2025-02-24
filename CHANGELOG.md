@@ -2,9 +2,9 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
-## 0.0.5-alpha
+### New Features
 
-* Add a `setSpanProcessor()` function to `HoneycombOptions` builder to allow clients to supply custom span processors.
+* Package is now available on Cocoapods.
 
 ## 0.0.4-alpha
 
@@ -32,7 +32,6 @@ Honeycomb OpenTelemetry SDK Changelog
 * Manual instrumentation of SwiftUI navigation.
 * Manual instrumentation of SwiftUI view rendering.
 * Add baggage span processor.
-* Package is now available on Cocoapods.
 
 ## 0.0.1-alpha (2024-09-27)
 
