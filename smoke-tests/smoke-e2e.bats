@@ -316,5 +316,5 @@ mk_diag_attr() {
 }
 
 @test "Span Processor gets added correctly" {
-    result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "screen.name" string | uniq)
+    result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "app.metadata" string | uniq)
 }
