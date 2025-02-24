@@ -4,13 +4,15 @@ import OpenTelemetrySdk
 
 internal class CompositeSpanProcessor: SpanProcessor {
     private var spanProcessors: [SpanProcessor] = []
-    var isStartRequired: Bool = false
-    var isEndRequired: Bool = false
+    var isStartRequired: Bool {
+        spanProcessors.contains(where: { $0.isStartRequired })
+    }
+    var isEndRequired: Bool {
+        spanProcessors.contains(where: { $0.isEndRequired })
+    }
 
     func addSpanProcessor(_ spanProcessor: SpanProcessor) {
         spanProcessors.append(spanProcessor)
-        isStartRequired = spanProcessors.contains(where: { $0.isStartRequired })
-        isEndRequired = spanProcessors.contains(where: { $0.isEndRequired })
     }
 
     func onStart(
