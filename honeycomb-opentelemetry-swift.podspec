@@ -35,4 +35,6 @@ Pod::Spec.new do |s|
   s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Http', '~> 1.13.0'
   s.dependency 'OpenTelemetry-Swift-SdkResourceExtension', '~> 1.13.0'
   s.dependency 'OpenTelemetry-Swift-StdoutExporter', '~> 1.13.0'
+
+  s.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-module-name Honeycomb -package-name honeycomb_opentelemetry_swift" }
 end
