@@ -212,7 +212,7 @@ public class Honeycomb {
         instrumentationScopeName: errorLoggerInstrumentationName
     )
     
-    static func log(
+    public static func log(
         error: NSError,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
@@ -236,7 +236,7 @@ public class Honeycomb {
         logError("", errorAttributes, logger, timestamp)
     }
     
-    static func log(
+    public static func log(
         exception: NSException,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
@@ -260,7 +260,7 @@ public class Honeycomb {
         logError("", errorAttributes, logger, timestamp)
     }
     
-    static func log(
+    public static func log(
         error: Error,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
