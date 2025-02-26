@@ -27,10 +27,6 @@ private let otelServiceNameKey = "OTEL_SERVICE_NAME"
 private let otelServiceNameDefault = "unknown_service"
 private let otelResourceAttributesKey = "OTEL_RESOURCE_ATTRIBUTES"
 
-private let otelTracesSamplerKey = "OTEL_TRACES_SAMPLER"
-private let otelTracesSamplerDefault = "parentbased_always_on"
-private let otelTracesSamplerArgKey = "OTEL_TRACES_SAMPLER_ARG"
-
 private let otelPropagatorsKey = "OTEL_PROPAGATORS"
 private let otelPropagatorsDefault = "tracecontext,baggage"
 
@@ -172,9 +168,6 @@ public struct HoneycombOptions {
 
     let serviceName: String
     let resourceAttributes: [String: String]
-    let tracesSampler: String
-    let tracesSamplerArg: String?
-    let propagators: String
 
     let tracesHeaders: [String: String]
     let metricsHeaders: [String: String]
@@ -211,9 +204,6 @@ public struct HoneycombOptions {
 
         private var serviceName: String? = nil
         private var resourceAttributes: [String: String] = [:]
-        private var tracesSampler: String = otelTracesSamplerDefault
-        private var tracesSamplerArg: String? = nil
-        private var propagators: String = otelPropagatorsDefault
 
         private var headers: [String: String] = [:]
         private var tracesHeaders: [String: String] = [:]
@@ -274,9 +264,6 @@ public struct HoneycombOptions {
             debug = try source.getBool(debugKey) ?? debug
             serviceName = try source.getString(otelServiceNameKey) ?? serviceName
             resourceAttributes = try source.getKeyValueList(otelResourceAttributesKey)
-            tracesSampler = try source.getString(otelTracesSamplerKey) ?? tracesSampler
-            tracesSamplerArg = try source.getString(otelTracesSamplerArgKey)
-            propagators = try source.getString(otelPropagatorsKey) ?? propagators
             headers = try source.getKeyValueList(otlpHeadersKey)
             tracesHeaders = try source.getKeyValueList(otlpTracesHeadersKey)
             metricsHeaders = try source.getKeyValueList(otlpMetricsHeadersKey)
@@ -358,21 +345,6 @@ public struct HoneycombOptions {
 
         public func setResourceAttributes(_ resources: [String: String]) -> Builder {
             resourceAttributes = resources
-            return self
-        }
-
-        public func setTracesSampler(_ sampler: String) -> Builder {
-            tracesSampler = sampler
-            return self
-        }
-
-        public func setTracesSamplerArg(_ arg: String?) -> Builder {
-            tracesSamplerArg = arg
-            return self
-        }
-
-        public func setPropagators(_ propagators: String) -> Builder {
-            self.propagators = propagators
             return self
         }
 
@@ -538,9 +510,6 @@ public struct HoneycombOptions {
                 debug: debug,
                 serviceName: serviceName,
                 resourceAttributes: resourceAttributes,
-                tracesSampler: tracesSampler,
-                tracesSamplerArg: tracesSamplerArg,
-                propagators: propagators,
                 tracesHeaders: tracesHeaders,
                 metricsHeaders: metricsHeaders,
                 logsHeaders: logsHeaders,
