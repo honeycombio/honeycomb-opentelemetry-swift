@@ -208,7 +208,7 @@ public class Honeycomb {
     
     private static let errorLoggerInstrumentationName = "@honeycombio/instrumentation-error-logger"
 
-    private static let defaultErrorLogger = OpenTelemetry.instance.loggerProvider.get(
+    public static let defaultErrorLogger = OpenTelemetry.instance.loggerProvider.get(
         instrumentationScopeName: errorLoggerInstrumentationName
     )
     
