@@ -105,7 +105,7 @@ struct ContentView: View {
                 }
                 .buttonStyle(.bordered)
                 
-                Button(action: sendFakeError) {
+                Button(action: sendFakeErrorData) {
                     Text("Send fake error data")
                 }.buttonStyle(.bordered)
 
