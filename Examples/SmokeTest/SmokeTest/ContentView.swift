@@ -5,7 +5,7 @@ import SwiftUI
 
 private func sendSimpleSpan() {
     let tracerProvider = OpenTelemetry.instance.tracerProvider.get(
-        instrumentationName: "@honeycombio/smoke-test",
+        instrumentationName: "io.honeycomb.smoke-test",
         instrumentationVersion: nil
     )
     let span = tracerProvider.spanBuilder(spanName: "test-span").startSpan()
