@@ -2,7 +2,7 @@ import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
 
-private let navigationInstrumentationName = "io.honeycomb.instrumentation.navigation"
+private let navigationInstrumentationName = "io.honeycomb.navigation"
 private let navigationSpanName = "Navigation"
 private let unencodablePath = "<unencodable path>"
 

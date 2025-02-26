@@ -2,7 +2,7 @@ import Foundation
 import MetricKit
 import OpenTelemetryApi
 
-private let metricKitInstrumentationName = "io.honeycomb.instrumentation.metric-kit"
+private let metricKitInstrumentationName = "io.honeycomb.metric-kit"
 
 @available(iOS 13.0, macOS 12.0, *)
 class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber {
