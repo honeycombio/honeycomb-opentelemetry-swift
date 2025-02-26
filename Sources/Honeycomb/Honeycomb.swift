@@ -230,7 +230,7 @@ public class Honeycomb {
         ].merging(attributes, uniquingKeysWith: {(_, last) in last})
         
         if let name = thread?.name {
-            errorAttributes["exception.thread"] = name.attributeValue()
+            errorAttributes["thread.name"] = name.attributeValue()
         }
         
         logError("", errorAttributes, logger, timestamp)
