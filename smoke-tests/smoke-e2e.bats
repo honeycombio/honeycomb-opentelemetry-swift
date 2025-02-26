@@ -37,7 +37,7 @@ teardown_file() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_attr() {
-  scope="io.honeycomb.metric-kit"
+  scope="io.honeycomb.metrickit"
   span="MXMetricPayload"
   attribute_for_span_key $scope $span $1 $2
 }
@@ -100,7 +100,7 @@ mk_attr() {
 }
 
 @test "MXSignpostMetric data is present" {
-  scope="io.honeycomb.metric-kit"
+  scope="io.honeycomb.metrickit"
   span="MXSignpostMetric"
 
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
@@ -124,7 +124,7 @@ mk_attr() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_diag_attr() {
-  scope="io.honeycomb.metric-kit"
+  scope="io.honeycomb.metrickit"
   attribute_for_log_key $scope $1 $2
 }
 
