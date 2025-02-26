@@ -3,6 +3,10 @@ import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
 
+enum TestErrors: Error {
+    case testError
+}
+
 private func sendSimpleSpan() {
     let tracerProvider = OpenTelemetry.instance.tracerProvider.get(
         instrumentationName: "io.honeycomb.smoke-test",
@@ -28,6 +32,37 @@ private func flush() {
     // fixed, it's necessary to sleep here, to allow the outstanding HTTP requests to be
     // processed.
     Thread.sleep(forTimeInterval: 3.0)
+}
+
+private func sendFakeNSError() {
+    do {
+        throw NSError(domain: "Test Error", code: -1)
+    } catch let error as NSError {
+        Honeycomb.log(error: error, thread: Thread.current)
+    }
+}
+
+private func sendFakeError() {
+    do{
+        throw TestErrors.testError
+    } catch let error {
+        Honeycomb.log(error: error, thread: Thread.current)
+    }
+}
+
+private func sendFakeNSException() {
+    guard let exception = CatchNSException.throwAndCatchNSException() else {
+        return
+    }
+
+    Honeycomb.log(exception: exception, thread: Thread.current)
+    
+}
+
+private func sendFakeErrorData() {
+    sendFakeError()
+    sendFakeNSError()
+    sendFakeNSException()
 }
 
 struct ContentView: View {
@@ -69,6 +104,10 @@ struct ContentView: View {
                     Text("Send fake MetricKit data")
                 }
                 .buttonStyle(.bordered)
+                
+                Button(action: sendFakeError) {
+                    Text("Send fake error data")
+                }.buttonStyle(.bordered)
 
                 Button(action: flush) {
                     Text("Flush")
