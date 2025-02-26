@@ -71,6 +71,37 @@ To manually send a span:
     span.end()
 ```
 
+## Configuration Options
+
+| Option               | Type                           | Required? | Description                                                                                          |
+|----------------------|--------------------------------|-----------|------------------------------------------------------------------------------------------------------|
+| `tracesApiKey`       | String                         | No        | Dedicated API Key to use when sending traces.                                                        |
+| `metricsApiKey`      | String                         | No        | Dedicated API Key to use when sending metrics.                                                       |
+| `logsApiKey`         | String                         | No        | Dedicated API Key to use when sending logs.                                                          |
+| `dataset`            | String                         | No        | Name of Honeycomb dataset to send traces to. Required if sending to a classic Honeycomb environment. |
+| `metricsDataset`     | String                         | No        | Name of Honeycomb dataset to send metrics to, instead of `dataset`.                                  |
+| `tracesEndpoint`     | String                         | No        | API endpoint to send traces to.                                                                      |
+| `metricsEndpoint`    | String                         | No        | API endpoint to send metrics to.                                                                     |
+| `logsEndpoint`       | String                         | No        | API endpoint to send trace to.                                                                       |
+| `sampleRate`         | Int                            | No        | Sample rate to apply (ie. a value of `40` means 1 in 40 traces will be exported).                    |
+| `debug`              | Boolean                        | No        | Enable debug logging.                                                                                |
+| `serviceName`        | String?                        | No        | Name of Honeycomb service to send data to.                                                           |
+| `resourceAttributes` | Map<String, String>            | No        | Attributes to attach to outgoing resources.                                                          |
+| `headers`            | Map<String, String>            | No        | Headers to include on exported data.                                                                 |
+| `tracesHeaders`      | Map<String, String>            | No        | Headers to add to exported trace data.                                                               |
+| `metricsHeaders`     | Map<String, String>            | No        | Headers to add to exported metrics data.                                                             |
+| `logsHeaders`        | Map<String, String>            | No        | Headers to add to exported logs data.                                                                |
+| `timeout`            | Duration                       | No        | Timeout used by exporter when sending data.                                                          |
+| `tracesTimeout`      | Duration                       | No        | Timeout used by traces exporter. Overrides `timeout` for trace data.                                 |
+| `metricsTimeout`     | Duration                       | No        | Timeout used by metrics exporter. Overrides `timeout` for metrics data.                              |
+| `logsTimeout`        | Duration                       | No        | Timeout used by logs exporter. Overrides `timeout` for logs data.                                    |
+| `protocol`           | HoneycombOptions.OtlpProtocol  | No        | Protocol to use when sending data.                                                                   |
+| `tracesProtocol`     | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for trace data.                                                                 |
+| `metricsProtocol`    | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for metrics data.                                                               |
+| `logsProtocol`       | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for logs data.                                                                  |
+| `spanProcessor`      | OpenTelemetryApi.SpanProcessor | No        | Additional span processor to use.                                                                    |
+| `sessionTimeout`     | TimeInterval                   | No        | Maximum length of time for a single user session. Used to generate `session.id` span attribute.      |
+
 ## Auto-instrumentation
 
 The following auto-instrumentation libraries are automatically included:
