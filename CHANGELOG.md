@@ -2,9 +2,14 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* Update instrumentation names to use reverse url notation (`io.honeycomb.instrumentation.*`) instead of `@honeycombio/instrumentation-*` notation. 
+* Package is now available on Cocoapods.
+
+## 0.0.5-alpha
+
 ### New Features
 
-* Package is now available on Cocoapods.
+* Add a `setSpanProcessor()` function to `HoneycombOptions` builder to allow clients to supply custom span processors.
 
 ## 0.0.4-alpha
 
