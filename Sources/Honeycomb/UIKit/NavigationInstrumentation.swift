@@ -3,7 +3,7 @@
     import OpenTelemetryApi
     import UIKit
 
-    internal let honeycombUIKitInstrumentationName = "@honeycombio/instrumentation-uikit"
+    internal let honeycombUIKitInstrumentationName = "io.honeycomb.uikit"
 
     internal func getUIKitViewTracer() -> Tracer {
         return OpenTelemetry.instance.tracerProvider.get(

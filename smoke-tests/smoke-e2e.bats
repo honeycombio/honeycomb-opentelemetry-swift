@@ -3,7 +3,7 @@
 load test_helpers/utilities
 
 CONTAINER_NAME="ios-test"
-SMOKE_TEST_SCOPE="@honeycombio/smoke-test"
+SMOKE_TEST_SCOPE="io.honeycomb.smoke-test"
 
 setup_file() {
   echo "# 🚧 preparing test" >&3
@@ -37,7 +37,7 @@ teardown_file() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_attr() {
-  scope="@honeycombio/instrumentation-metric-kit"
+  scope="io.honeycomb.metrickit"
   span="MXMetricPayload"
   attribute_for_span_key $scope $span $1 $2
 }
@@ -100,7 +100,7 @@ mk_attr() {
 }
 
 @test "MXSignpostMetric data is present" {
-  scope="@honeycombio/instrumentation-metric-kit"
+  scope="io.honeycomb.metrickit"
   span="MXSignpostMetric"
 
   result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
@@ -124,7 +124,7 @@ mk_attr() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_diag_attr() {
-  scope="@honeycombio/instrumentation-metric-kit"
+  scope="io.honeycomb.metrickit"
   attribute_for_log_key $scope $1 $2
 }
 
@@ -145,7 +145,7 @@ mk_diag_attr() {
 }
 
 @test "URLSession all requests are present" {
-  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET request-id string | sort)
+  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET request-id string | sort)
   assert_equal "$result" '"data-async-obj"
 "data-async-obj-session"
 "data-async-url"
@@ -179,21 +179,21 @@ mk_diag_attr() {
 }
 
 @test "URLSession attributes are correct" {
-  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET http.response.status_code int | uniq -c)
+  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET http.response.status_code int | uniq -c)
   assert_equal "$result" '  30 "200"'
 
-  result=$(attribute_for_span_key "@honeycombio/instrumentation-urlsession" GET server.address string | uniq -c)
+  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET server.address string | uniq -c)
   assert_equal "$result" '  30 "localhost"'
 }
 
 @test "Render Instrumentation attributes are correct" {
   # we got the spans we expect
-  result=$(span_names_for "@honeycombio/instrumentation-view" | sort | uniq -c)
+  result=$(span_names_for "io.honeycomb.view" | sort | uniq -c)
   assert_equal "$result" '   7 "View Body"
    7 "View Render"'
    
   # the View Render spans are tracking the views we expect
-  total_duration=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" "view.name" string | sort)
+  total_duration=$(attribute_for_span_key "io.honeycomb.view" "View Render" "view.name" string | sort)
   assert_equal "$total_duration" '"expensive text 1"
 "expensive text 2"
 "expensive text 3"
@@ -204,25 +204,25 @@ mk_diag_attr() {
 }
 
 @test "UIViewController attributes are correct" {
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
+    result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidAppear \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"UIKit Menu"'
 
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
+    result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidDisappear \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"UIKit Menu"'
     
-        result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
+        result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidAppear \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"UI KIT SCREEN OVERRIDE"'
 
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidDisappear \
+    result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidDisappear \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq)
@@ -230,7 +230,7 @@ mk_diag_attr() {
 }
 
 @test "UITabView attributes are correct" {
-    result=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" viewDidAppear \
+    result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidAppear \
         | jq "select (.key == \"view.class\")" \
         | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController\").value.stringValue" \
         | uniq)
@@ -238,36 +238,36 @@ mk_diag_attr() {
 }
 
 @test "UIKit touch events are captured" {
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Began" "Simple Button")
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Began" "accessibleButton")
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Began" "switch")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Began" "Simple Button")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Began" "accessibleButton")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Began" "switch")
 
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Ended" "Simple Button")
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "Touch Ended" "accessibleButton")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Ended" "Simple Button")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Ended" "accessibleButton")
     # UISwitch does not support Touch Ended events at this time. Apple sets the view to null.
     
-    screen_name_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+    screen_name_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq
     )
     assert_equal "$screen_name_attr" '"UI KIT SCREEN OVERRIDE"'
     
-    screen_path_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+    screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.path\")" \
         | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq
     )
     assert_equal "$screen_path_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
     
-    screen_name_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+    screen_name_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq
     )
     assert_equal "$screen_name_attr" '"UIKit Menu"'
     
-    screen_path_attr=$(attributes_from_span_named "@honeycombio/instrumentation-uikit" "Touch Began" \
+    screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.path\")" \
         | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
         | uniq
@@ -276,12 +276,12 @@ mk_diag_attr() {
 }
 
 @test "UIKit click events are captured" {
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "click" "Simple Button")
-    assert_not_empty $(spans_on_view_named "@honeycombio/instrumentation-uikit" "click" "accessibleButton")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "click" "Simple Button")
+    assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "click" "accessibleButton")
 }
 
 @test "UIKit touch events have all attributes" {
-    span=$(spans_on_view_named "@honeycombio/instrumentation-uikit" "click" "accessibleButton")
+    span=$(spans_on_view_named "io.honeycomb.uikit" "click" "accessibleButton")
 
     name=$(echo "$span" | jq '.attributes[] | select(.key == "view.name").value.stringValue')
     assert_equal "$name" '"accessibleButton"'
@@ -300,7 +300,7 @@ mk_diag_attr() {
 }
 
 @test "Navigation spans are correct" {
-    result=$(attribute_for_span_key "@honeycombio/instrumentation-navigation" Navigation "screen.name" string \
+    result=$(attribute_for_span_key "io.honeycomb.navigation" Navigation "screen.name" string \
         | sort \
         | uniq -c)
     root_count=$(echo "$result" | grep "\[\]")
@@ -311,7 +311,7 @@ mk_diag_attr() {
 }
 
 @test "Navigation attributes are correct" {
-    result=$(attribute_for_span_key "@honeycombio/instrumentation-view" "View Render" "screen.name" string | uniq)
+    result=$(attribute_for_span_key "io.honeycomb.view" "View Render" "screen.name" string | uniq)
     assert_equal "$result" '"View Instrumentation"'
 }
 

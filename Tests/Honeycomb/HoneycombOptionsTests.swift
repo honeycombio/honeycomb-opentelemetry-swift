@@ -38,10 +38,6 @@ final class HoneycombOptionsTests: XCTestCase {
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
-        XCTAssertEqual("parentbased_always_on", options.tracesSampler)
-        XCTAssertNil(options.tracesSamplerArg)
-        XCTAssertEqual("tracecontext,baggage", options.propagators)
-
         XCTAssertEqual("https://api.honeycomb.io:443/v1/traces", options.tracesEndpoint)
         XCTAssertEqual("https://api.honeycomb.io:443/v1/metrics", options.metricsEndpoint)
         XCTAssertEqual("https://api.honeycomb.io:443/v1/logs", options.logsEndpoint)
@@ -93,10 +89,6 @@ final class HoneycombOptionsTests: XCTestCase {
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
-        XCTAssertEqual("parentbased_always_on", options.tracesSampler)
-        XCTAssertNil(options.tracesSamplerArg)
-        XCTAssertEqual("tracecontext,baggage", options.propagators)
-
         XCTAssertEqual("https://api.honeycomb.io:443/v1/traces", options.tracesEndpoint)
         XCTAssertEqual("https://api.honeycomb.io:443/v1/metrics", options.metricsEndpoint)
         XCTAssertEqual("https://api.honeycomb.io:443/v1/logs", options.logsEndpoint)
@@ -143,10 +135,6 @@ final class HoneycombOptionsTests: XCTestCase {
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
-        XCTAssertEqual("sampler", options.tracesSampler)
-        XCTAssertEqual("arg", options.tracesSamplerArg)
-        XCTAssertEqual("propagators", options.propagators)
-
         XCTAssertEqual("http://example.com:1234/v1/traces", options.tracesEndpoint)
         XCTAssertEqual("http://example.com:1234/v1/metrics", options.metricsEndpoint)
         XCTAssertEqual("http://example.com:1234/v1/logs", options.logsEndpoint)
@@ -177,9 +165,6 @@ final class HoneycombOptionsTests: XCTestCase {
             .setDebug(true)
             .setServiceName("service")
             .setResourceAttributes(["resource": "aaa"])
-            .setTracesSampler("sampler")
-            .setTracesSamplerArg("arg")
-            .setPropagators("propagators")
             .setTimeout(30)
             .setHeaders(["header": "hhh"])
             .setProtocol(OTLPProtocol.httpJSON)
@@ -193,10 +178,6 @@ final class HoneycombOptionsTests: XCTestCase {
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
-
-        XCTAssertEqual("sampler", options.tracesSampler)
-        XCTAssertEqual("arg", options.tracesSamplerArg)
-        XCTAssertEqual("propagators", options.propagators)
 
         XCTAssertEqual("http://api.example.com:1234/v1/traces", options.tracesEndpoint)
         XCTAssertEqual("http://api.example.com:1234/v1/metrics", options.metricsEndpoint)
@@ -263,10 +244,6 @@ final class HoneycombOptionsTests: XCTestCase {
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
-        XCTAssertEqual("sampler", options.tracesSampler)
-        XCTAssertEqual("arg", options.tracesSamplerArg)
-        XCTAssertEqual("propagators", options.propagators)
-
         XCTAssertEqual("http://traces.example.com:1234", options.tracesEndpoint)
         XCTAssertEqual("http://metrics.example.com:1234", options.metricsEndpoint)
         XCTAssertEqual("http://logs.example.com:1234", options.logsEndpoint)
@@ -325,9 +302,6 @@ final class HoneycombOptionsTests: XCTestCase {
             .setDebug(true)
             .setServiceName("service")
             .setResourceAttributes(["resource": "aaa"])
-            .setTracesSampler("sampler")
-            .setTracesSamplerArg("arg")
-            .setPropagators("propagators")
             .setTracesTimeout(40)
             .setMetricsTimeout(50)
             .setLogsTimeout(60)
@@ -352,10 +326,6 @@ final class HoneycombOptionsTests: XCTestCase {
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
-
-        XCTAssertEqual("sampler", options.tracesSampler)
-        XCTAssertEqual("arg", options.tracesSamplerArg)
-        XCTAssertEqual("propagators", options.propagators)
 
         XCTAssertEqual("http://traces.example.com:1234", options.tracesEndpoint)
         XCTAssertEqual("http://metrics.example.com:1234", options.metricsEndpoint)

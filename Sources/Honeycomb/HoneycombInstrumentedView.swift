@@ -1,7 +1,7 @@
 import OpenTelemetryApi
 import SwiftUI
 
-private let honeycombInstrumentedViewName = "@honeycombio/instrumentation-view"
+private let honeycombInstrumentedViewName = "io.honeycomb.view"
 
 public struct HoneycombInstrumentedView<Content: View>: View {
     private let span: Span

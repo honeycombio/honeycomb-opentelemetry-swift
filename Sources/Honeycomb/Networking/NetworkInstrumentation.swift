@@ -3,7 +3,7 @@ import OpenTelemetryApi
 import SwiftUI
 import UIKit
 
-private let urlSessionInstrumentationName = "@honeycombio/instrumentation-urlsession"
+private let urlSessionInstrumentationName = "io.honeycomb.urlsession"
 
 /// Creates a span with attributes for the given http request.
 internal func createSpan(from request: URLRequest) -> any Span {

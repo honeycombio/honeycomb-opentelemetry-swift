@@ -2,10 +2,20 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+### Fixes
+
+* Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation. 
+
+### New Features
+
+* Add new options to enable/disable built-in auto-instrumentation.
+
+## 0.0.5-alpha
+
 ### New Features
 
 * Package is now available on Cocoapods.
-* Adds new options to enable/disable built-in auto-instrumentation.
+* Add a `setSpanProcessor()` function to `HoneycombOptions` builder to allow clients to supply custom span processors.
 
 ## 0.0.4-alpha
 
