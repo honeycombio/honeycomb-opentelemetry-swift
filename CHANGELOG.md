@@ -8,13 +8,13 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### New Features
 
+* Package is now available on Cocoapods.
 * Add new options to enable/disable built-in auto-instrumentation.
 
 ## 0.0.5-alpha
 
 ### New Features
 
-* Package is now available on Cocoapods.
 * Add a `setSpanProcessor()` function to `HoneycombOptions` builder to allow clients to supply custom span processors.
 
 ## 0.0.4-alpha
