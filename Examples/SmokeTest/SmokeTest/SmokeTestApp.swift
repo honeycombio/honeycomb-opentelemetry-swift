@@ -12,6 +12,7 @@ struct SmokeTestApp: App {
                 .setDebug(true)
                 .setSessionTimeout(10)
                 .setSpanProcessor(SampleSpanProcessor())
+                .setTouchInstrumentationEnabled(true)
                 .build()
             try Honeycomb.configure(options: options)
         } catch {

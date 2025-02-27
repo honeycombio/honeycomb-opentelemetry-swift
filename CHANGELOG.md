@@ -5,6 +5,7 @@ Honeycomb OpenTelemetry SDK Changelog
 ### New Features
 
 * Package is now available on Cocoapods.
+* Adds new options to enable/disable built-in auto-instrumentation.
 
 ## 0.0.4-alpha
 
