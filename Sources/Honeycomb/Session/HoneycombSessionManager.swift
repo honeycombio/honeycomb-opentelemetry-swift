@@ -11,6 +11,8 @@ extension Notification.Name {
 }
 
 class HoneycombSessionManager {
+    private var lock: NSLock = NSLock()
+
     private var sessionStorage: SessionStorage
     private var currentSession: HoneycombSession?
     private var debug: Bool
@@ -49,43 +51,45 @@ class HoneycombSessionManager {
     }
 
     var sessionId: String {
-        // If there is no current session make a new one
-        if self.currentSession == nil {
-            let newSession = HoneycombSession(
-                id: sessionIdProvider(),
-                startTimestamp: dateProvider()
-            )
-            if debug {
-                print("HoneycombSessionManager: No active session, creating session.")
-            }
-            onSessionStarted(newSession: newSession, previousSession: nil)
-            self.currentSession = newSession
-        } else if isSessionExpired {
-            // If the session timeout has elapsed, make a new one
-            if debug {
-                print(
-                    "HoneycombSessionManager: Session timeout after \(sessionLifetime) seconds elapsed, creating new session."
+        return lock.withLock {
+            // If there is no current session make a new one
+            if self.currentSession == nil {
+                let newSession = HoneycombSession(
+                    id: sessionIdProvider(),
+                    startTimestamp: dateProvider()
                 )
-            }
-            let previousSession = self.currentSession
-            let newSession = HoneycombSession(
-                id: sessionIdProvider(),
-                startTimestamp: dateProvider()
-            )
+                if debug {
+                    print("HoneycombSessionManager: No active session, creating session.")
+                }
+                onSessionStarted(newSession: newSession, previousSession: nil)
+                self.currentSession = newSession
+            } else if isSessionExpired {
+                // If the session timeout has elapsed, make a new one
+                if debug {
+                    print(
+                        "HoneycombSessionManager: Session timeout after \(sessionLifetime) seconds elapsed, creating new session."
+                    )
+                }
+                let previousSession = self.currentSession
+                let newSession = HoneycombSession(
+                    id: sessionIdProvider(),
+                    startTimestamp: dateProvider()
+                )
 
-            onSessionStarted(newSession: newSession, previousSession: previousSession)
-            if previousSession != nil {
-                onSessionEnded(session: previousSession!)
+                onSessionStarted(newSession: newSession, previousSession: previousSession)
+                if previousSession != nil {
+                    onSessionEnded(session: previousSession!)
+                }
+                self.currentSession = newSession
             }
-            self.currentSession = newSession
-        }
 
-        guard let currentSession = self.currentSession else {
-            return ""
+            guard let currentSession = self.currentSession else {
+                return ""
+            }
+            // Always return the current session's id
+            sessionStorage.save(session: currentSession)
+            return currentSession.id
         }
-        // Always return the current session's id
-        sessionStorage.save(session: currentSession)
-        return currentSession.id
     }
 
     private func onSessionStarted(newSession: HoneycombSession, previousSession: HoneycombSession?)
