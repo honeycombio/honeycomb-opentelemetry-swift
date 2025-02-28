@@ -344,3 +344,13 @@ mk_diag_attr() {
     assert_equal "$type" '"NSError"'
     assert_equal "$message" "\"The operation couldn’t be completed. (Test Error error -1.)\""
 }
+
+@test "Swift Error attributes are correct" {
+    attrs=$(attributes_for_log_with_value "@honeycombio/instrumentation-error-logger" "TestErrors" string)
+
+    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
+    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+
+    assert_equal "$type" '"TestErrors"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestErrors error 0.)\""
+}
