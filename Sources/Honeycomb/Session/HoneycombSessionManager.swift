@@ -1,7 +1,6 @@
 import Foundation
 import OpenTelemetryApi
 import OpenTelemetrySdk
-import Synchronization
 
 extension Notification.Name {
     public static let sessionStarted = Notification.Name("io.honeycomb.app.session.started")
