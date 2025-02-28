@@ -320,7 +320,7 @@ mk_diag_attr() {
 }
 
 @test "NSException attributes are correct" {
-    attrs=$(attributes_for_log_with_value "@honeycombio/instrumentation-error-logger" "NSException" string)
+    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "NSException" string)
 
     stacktrace=$(echo "$attrs" | jq "select (.key == \"exception.stacktrace\").value | .arrayValue.values[]")
     type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
@@ -334,7 +334,7 @@ mk_diag_attr() {
 }
 
 @test "NSError attributes are correct" {
-    attrs=$(attributes_for_log_with_value "@honeycombio/instrumentation-error-logger" "NSError" string)
+    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "NSError" string)
 
     code=$(echo "$attrs" | jq "select (.key == \"exception.code\").value | .intValue")
     type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
@@ -346,7 +346,7 @@ mk_diag_attr() {
 }
 
 @test "Swift Error attributes are correct" {
-    attrs=$(attributes_for_log_with_value "@honeycombio/instrumentation-error-logger" "TestErrors" string)
+    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "TestErrors" string)
 
     type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
     message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
