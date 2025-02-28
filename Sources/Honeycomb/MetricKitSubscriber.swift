@@ -45,9 +45,9 @@ extension String: AttributeValueConvertable {
     }
 }
 
-extension Array<String>: AttributeValueConvertable {
+extension [String]: AttributeValueConvertable {
     func attributeValue() -> AttributeValue {
-        AttributeValue.array(AttributeArray(values: self.map{AttributeValue.string($0)}))
+        AttributeValue.array(AttributeArray(values: self.map { AttributeValue.string($0) }))
     }
 }
 

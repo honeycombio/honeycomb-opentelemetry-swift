@@ -43,7 +43,7 @@ private func sendFakeNSError() {
 }
 
 private func sendFakeError() {
-    do{
+    do {
         throw TestErrors.testError
     } catch let error {
         Honeycomb.log(error: error, thread: Thread.current)
@@ -56,7 +56,7 @@ private func sendFakeNSException() {
     }
 
     Honeycomb.log(exception: exception, thread: Thread.current)
-    
+
 }
 
 private func sendFakeErrorData() {
@@ -104,10 +104,11 @@ struct ContentView: View {
                     Text("Send fake MetricKit data")
                 }
                 .buttonStyle(.bordered)
-                
+
                 Button(action: sendFakeErrorData) {
                     Text("Send fake error data")
-                }.buttonStyle(.bordered)
+                }
+                .buttonStyle(.bordered)
 
                 Button(action: flush) {
                     Text("Flush")
