@@ -51,6 +51,16 @@ attribute_for_log_key() {
 		jq ".${3}Value"
 }
 
+# Gets all attributes for all logs where a single values matches
+# Arguments:
+#   $1 - scope
+#   $2 - attribute value
+#   $3 - attribute type
+attributes_for_log_with_value() {
+    logs_from_scope_named $1 | \
+        jq "select(.attributes[].value.${3}Value == \"$2\") | .attributes[]"
+}
+
 # All attributes from a span
 # Arguments:
 #   $1 - scope
