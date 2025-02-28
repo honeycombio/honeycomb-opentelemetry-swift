@@ -318,3 +318,17 @@ mk_diag_attr() {
 @test "Span Processor gets added correctly" {
     result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "app.metadata" string | uniq)
 }
+
+@test "NSException attributes are correct" {
+    attrs=$(attributes_for_log_with_value "@honeycombio/instrumentation-error-logger" "NSException" string)
+
+    stacktrace=$(echo "$attrs" | jq "select (.key == \"exception.stacktrace\").value | .arrayValue.values[]")
+    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
+    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+    name=$(echo "$attrs" | jq "select (.key == \"exception.name\").value | .stringValue")
+
+    assert_not_empty "$stacktrace"
+    assert_equal "$type" '"NSException"'
+    assert_equal "$message" '"Exception Handling reason"'
+    assert_equal "$name" '"TestException"'
+}
