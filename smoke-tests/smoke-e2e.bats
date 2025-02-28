@@ -332,3 +332,15 @@ mk_diag_attr() {
     assert_equal "$message" '"Exception Handling reason"'
     assert_equal "$name" '"TestException"'
 }
+
+@test "NSError attributes are correct" {
+    attrs=$(attributes_for_log_with_value "@honeycombio/instrumentation-error-logger" "NSError" string)
+
+    code=$(echo "$attrs" | jq "select (.key == \"exception.code\").value | .intValue")
+    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
+    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+
+    assert_equal "$code" '"-1"'
+    assert_equal "$type" '"NSError"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (Test Error error -1.)\""
+}
