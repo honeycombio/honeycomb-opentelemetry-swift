@@ -233,7 +233,7 @@ public class Honeycomb {
             errorAttributes["thread.name"] = name.attributeValue()
         }
         
-        logError("", errorAttributes, logger, timestamp)
+        logError(errorAttributes, logger, timestamp)
     }
     
     public static func log(
@@ -257,7 +257,7 @@ public class Honeycomb {
             errorAttributes["exception.thread"] = name.attributeValue()
         }
         
-        logError("", errorAttributes, logger, timestamp)
+        logError(errorAttributes, logger, timestamp)
     }
     
     public static func log(
@@ -279,21 +279,17 @@ public class Honeycomb {
             errorAttributes["exception.thread"] = name.attributeValue()
         }
         
-        logError("", errorAttributes, logger, timestamp)
+        logError(errorAttributes, logger, timestamp)
     }
 
     private static func logError(
-        _ namespace: String,
         _ attributes: [String: AttributeValue],
         _ logger: OpenTelemetryApi.Logger = defaultErrorLogger,
         _ timestamp: Date = Date()
     ) {
-        var logAttrs: [String: AttributeValue] = [
-            "name": namespace.attributeValue()
-        ]
+        var logAttrs: [String: AttributeValue] = [:]
         for (key, value) in attributes {
-            let namespacedKey = "\(namespace).\(key)"
-            logAttrs[namespacedKey] = value
+            logAttrs[key] = value
         }
         
         logger.logRecordBuilder()
