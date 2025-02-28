@@ -318,3 +318,39 @@ mk_diag_attr() {
 @test "Span Processor gets added correctly" {
     result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "app.metadata" string | uniq)
 }
+
+@test "NSException attributes are correct" {
+    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "NSException" string)
+
+    stacktrace=$(echo "$attrs" | jq "select (.key == \"exception.stacktrace\").value | .arrayValue.values[]")
+    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
+    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+    name=$(echo "$attrs" | jq "select (.key == \"exception.name\").value | .stringValue")
+
+    assert_not_empty "$stacktrace"
+    assert_equal "$type" '"NSException"'
+    assert_equal "$message" '"Exception Handling reason"'
+    assert_equal "$name" '"TestException"'
+}
+
+@test "NSError attributes are correct" {
+    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "NSError" string)
+
+    code=$(echo "$attrs" | jq "select (.key == \"exception.code\").value | .intValue")
+    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
+    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+
+    assert_equal "$code" '"-1"'
+    assert_equal "$type" '"NSError"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (Test Error error -1.)\""
+}
+
+@test "Swift Error attributes are correct" {
+    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "TestErrors" string)
+
+    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
+    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+
+    assert_equal "$type" '"TestErrors"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestErrors error 0.)\""
+}

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		366309102CE51BDC00B97612 /* UIKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3663090F2CE51BDC00B97612 /* UIKitView.swift */; };
 		366309122CE51EF000B97612 /* UIKitViewStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 366309112CE51EF000B97612 /* UIKitViewStoryboard.storyboard */; };
+		36B8B9BB2D6FB87800DBFDDC /* CatchNSException.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B8B9B82D6FB87800DBFDDC /* CatchNSException.m */; };
 		452B71DD2CE52C8600C27FB2 /* ViewInstrumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */; };
 		452B71E12CE6A52600C27FB2 /* NavigationExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */; };
 		45F3D2892D6903C9007C2225 /* SampleSpanProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F3D2882D6903C3007C2225 /* SampleSpanProcessor.swift */; };
@@ -44,6 +45,9 @@
 /* Begin PBXFileReference section */
 		3663090F2CE51BDC00B97612 /* UIKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitView.swift; sourceTree = "<group>"; };
 		366309112CE51EF000B97612 /* UIKitViewStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UIKitViewStoryboard.storyboard; sourceTree = "<group>"; };
+		36B8B9B72D6FB87800DBFDDC /* CatchNSException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CatchNSException.h; sourceTree = "<group>"; };
+		36B8B9B82D6FB87800DBFDDC /* CatchNSException.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CatchNSException.m; sourceTree = "<group>"; };
+		36B8B9B92D6FB87800DBFDDC /* SmokeTest-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SmokeTest-Bridging-Header.h"; sourceTree = "<group>"; };
 		452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewInstrumentationView.swift; sourceTree = "<group>"; };
 		452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationExamplesView.swift; sourceTree = "<group>"; };
 		45F3D2882D6903C3007C2225 /* SampleSpanProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleSpanProcessor.swift; sourceTree = "<group>"; };
@@ -87,6 +91,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		36B8B9BA2D6FB87800DBFDDC /* ErrorHelpers */ = {
+			isa = PBXGroup;
+			children = (
+				36B8B9B72D6FB87800DBFDDC /* CatchNSException.h */,
+				36B8B9B82D6FB87800DBFDDC /* CatchNSException.m */,
+				36B8B9B92D6FB87800DBFDDC /* SmokeTest-Bridging-Header.h */,
+			);
+			path = ErrorHelpers;
+			sourceTree = "<group>";
+		};
 		AF6DEFDD2C8D3CE000363027 = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +125,7 @@
 		AF6DEFE82C8D3CE000363027 /* SmokeTest */ = {
 			isa = PBXGroup;
 			children = (
+				36B8B9BA2D6FB87800DBFDDC /* ErrorHelpers */,
 				45F3D2882D6903C3007C2225 /* SampleSpanProcessor.swift */,
 				AFA277C32CC71DF5007F8A46 /* NetworkView.swift */,
 				452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */,
@@ -294,6 +309,7 @@
 			files = (
 				45F3D2892D6903C9007C2225 /* SampleSpanProcessor.swift in Sources */,
 				AF6DEFEC2C8D3CE000363027 /* ContentView.swift in Sources */,
+				36B8B9BB2D6FB87800DBFDDC /* CatchNSException.m in Sources */,
 				AFA277C42CC71DF7007F8A46 /* NetworkView.swift in Sources */,
 				366309102CE51BDC00B97612 /* UIKitView.swift in Sources */,
 				452B71E12CE6A52600C27FB2 /* NavigationExamplesView.swift in Sources */,
@@ -480,6 +496,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SmokeTest/ErrorHelpers/SmokeTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -510,6 +527,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SmokeTest/ErrorHelpers/SmokeTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

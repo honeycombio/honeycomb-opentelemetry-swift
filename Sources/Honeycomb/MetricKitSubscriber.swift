@@ -44,6 +44,13 @@ extension String: AttributeValueConvertable {
         AttributeValue.string(self)
     }
 }
+
+extension [String]: AttributeValueConvertable {
+    func attributeValue() -> AttributeValue {
+        AttributeValue.array(AttributeArray(values: self.map { AttributeValue.string($0) }))
+    }
+}
+
 extension TimeInterval: AttributeValueConvertable {
     func attributeValue() -> AttributeValue {
         // The OTel standard for time durations is seconds, which is also what TimeInterval is.
