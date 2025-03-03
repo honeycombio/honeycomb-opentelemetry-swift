@@ -320,12 +320,11 @@ mk_diag_attr() {
 }
 
 @test "NSException attributes are correct" {
-    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "NSException" string)
 
-    stacktrace=$(echo "$attrs" | jq "select (.key == \"exception.stacktrace\").value | .arrayValue.values[]")
-    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
-    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
-    name=$(echo "$attrs" | jq "select (.key == \"exception.name\").value | .stringValue")
+    stacktrace=$(attribute_for_exception_log_of_type "NSException" "exception.stacktrace" string)
+    type=$(attribute_for_exception_log_of_type "NSException" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "NSException" "exception.message" string)
+    name=$(attribute_for_exception_log_of_type "NSException" "exception.name" string)
 
     assert_not_empty "$stacktrace"
     assert_equal "$type" '"NSException"'
@@ -334,11 +333,10 @@ mk_diag_attr() {
 }
 
 @test "NSError attributes are correct" {
-    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "NSError" string)
 
-    code=$(echo "$attrs" | jq "select (.key == \"exception.code\").value | .intValue")
-    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
-    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+    code=$(attribute_for_exception_log_of_type "NSError" "exception.code" int)
+    type=$(attribute_for_exception_log_of_type "NSError" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "NSError" "exception.message" string)
 
     assert_equal "$code" '"-1"'
     assert_equal "$type" '"NSError"'
@@ -346,10 +344,9 @@ mk_diag_attr() {
 }
 
 @test "Swift Error attributes are correct" {
-    attrs=$(attributes_for_log_with_value "io.honeycomb.error" "TestErrors" string)
 
-    type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
-    message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
+    type=$(attribute_for_exception_log_of_type "TestError" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "TestError" "exception.message" string)
 
     assert_equal "$type" '"TestError"'
     assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestError error 0.)\""
