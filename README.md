@@ -75,9 +75,9 @@ To manually send a span:
 
 | Option               | Type                           | Required? | Description                                                                                          |
 |----------------------|--------------------------------|-----------|------------------------------------------------------------------------------------------------------|
-| `tracesApiKey`       | String                         | No        | Dedicated API Key to use when sending traces.                                                        |
-| `metricsApiKey`      | String                         | No        | Dedicated API Key to use when sending metrics.                                                       |
-| `logsApiKey`         | String                         | No        | Dedicated API Key to use when sending logs.                                                          |
+| `tracesAPIKey`       | String                         | No        | Dedicated API Key to use when sending traces.                                                        |
+| `metricsAPIKey`      | String                         | No        | Dedicated API Key to use when sending metrics.                                                       |
+| `logsAPIKey`         | String                         | No        | Dedicated API Key to use when sending logs.                                                          |
 | `dataset`            | String                         | No        | Name of Honeycomb dataset to send traces to. Required if sending to a classic Honeycomb environment. |
 | `metricsDataset`     | String                         | No        | Name of Honeycomb dataset to send metrics to, instead of `dataset`.                                  |
 | `tracesEndpoint`     | String                         | No        | API endpoint to send traces to.                                                                      |
@@ -101,6 +101,11 @@ To manually send a span:
 | `logsProtocol`       | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for logs data.                                                                  |
 | `spanProcessor`      | OpenTelemetryApi.SpanProcessor | No        | Additional span processor to use.                                                                    |
 | `sessionTimeout`     | TimeInterval                   | No        | Maximum length of time for a single user session. Used to generate `session.id` span attribute.      |
+| `metricKitInstrumentationEnabled`          | Bool     | No        | Whether to enable MetricKit instrumentation. (default: true)                                         |
+| `urlSessionInstrumentationEnabled`         | Bool     | No        | Whether to enable URLSession instrumentation. (default: true)                                        |
+| `uiKitInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit view instrumentation. (default: true)                                        |
+| `touchInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit touch instrumentation (default: false)                                       |
+| `unhandledExceptionInstrumentationEnabled` | Bool     | No        | Whether to enable unhandle exception instrumentation. (default: true)                                |
 
 ## Auto-instrumentation
 

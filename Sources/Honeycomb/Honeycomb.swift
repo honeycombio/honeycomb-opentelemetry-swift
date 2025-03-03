@@ -197,12 +197,20 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        installNetworkInstrumentation(options: options)
-        installUINavigationInstrumentation()
-        installWindowInstrumentation()
+        if options.urlSessionInstrumentationEnabled {
+            installNetworkInstrumentation(options: options)
+        }
+        if options.uiKitInstrumentationEnabled {
+            installUINavigationInstrumentation()
+        }
+        if options.touchInstrumentationEnabled {
+            installWindowInstrumentation()
+        }
 
         if #available(iOS 13.0, macOS 12.0, *) {
-            MXMetricManager.shared.add(self.metricKitSubscriber)
+            if options.metricKitInstrumentationEnabled {
+                MXMetricManager.shared.add(self.metricKitSubscriber)
+            }
         }
     }
 
