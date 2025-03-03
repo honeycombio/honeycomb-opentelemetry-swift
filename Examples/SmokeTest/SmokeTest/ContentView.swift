@@ -3,7 +3,7 @@ import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
 
-enum TestErrors: Error {
+enum TestError: Error {
     case testError
 }
 
@@ -44,7 +44,7 @@ private func sendFakeNSError() {
 
 private func sendFakeError() {
     do {
-        throw TestErrors.testError
+        throw TestError.testError
     } catch let error {
         Honeycomb.log(error: error, thread: Thread.current)
     }
