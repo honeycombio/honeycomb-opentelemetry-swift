@@ -253,7 +253,8 @@ public class Honeycomb {
             "exception.type": type.attributeValue(),
             "exception.message": message.attributeValue(),
             "exception.name": exception.name.rawValue.attributeValue(),
-            "exception.stacktrace": exception.callStackSymbols.joined(separator: "\n").attributeValue(),
+            "exception.stacktrace": exception.callStackSymbols.joined(separator: "\n")
+                .attributeValue(),
         ]
         .merging(attributes, uniquingKeysWith: { (_, last) in last })
 
