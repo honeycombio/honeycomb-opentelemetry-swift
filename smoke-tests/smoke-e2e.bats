@@ -351,6 +351,6 @@ mk_diag_attr() {
     type=$(echo "$attrs" | jq "select (.key == \"exception.type\").value | .stringValue")
     message=$(echo "$attrs" | jq "select (.key == \"exception.message\").value | .stringValue")
 
-    assert_equal "$type" '"TestErrors"'
-    assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestErrors error 0.)\""
+    assert_equal "$type" '"TestError"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestError error 0.)\""
 }
