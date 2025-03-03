@@ -68,7 +68,7 @@ attributes_for_log_with_value() {
 #   $3 - attribute type
 attribute_for_exception_log_of_type() {
     attributes_for_log_with_value "io.honeycomb.error" $1 string | \
-        jq "select (.key == \"$2\").value | ${3}Value"
+        jq "select (.key == \"$2\").value | .${3}Value"
 }
 
 # All attributes from a span
