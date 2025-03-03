@@ -57,6 +57,12 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(OTLPProtocol.httpProtobuf, options.tracesProtocol)
         XCTAssertEqual(OTLPProtocol.httpProtobuf, options.metricsProtocol)
         XCTAssertEqual(OTLPProtocol.httpProtobuf, options.logsProtocol)
+
+        XCTAssertTrue(options.metricKitInstrumentationEnabled)
+        XCTAssertTrue(options.urlSessionInstrumentationEnabled)
+        XCTAssertTrue(options.uiKitInstrumentationEnabled)
+        XCTAssertFalse(options.touchInstrumentationEnabled)
+        XCTAssertTrue(options.unhandledExceptionInstrumentationEnabled)
     }
 
     func testOptionsWithEmptyStrings() throws {
@@ -305,6 +311,11 @@ final class HoneycombOptionsTests: XCTestCase {
             .setTracesProtocol(OTLPProtocol.grpc)
             .setMetricsProtocol(OTLPProtocol.grpc)
             .setLogsProtocol(OTLPProtocol.grpc)
+            .setMetricKitInstrumentationEnabled(false)
+            .setURLSessionInstrumentationEnabled(false)
+            .setUIKitInstrumentationEnabled(false)
+            .setTouchInstrumentationEnabled(true)
+            .setUnhandledExceptionInstrumentationEnabled(false)
             .build()
 
         XCTAssertEqual("service", options.serviceName)
@@ -358,6 +369,12 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertTrue(options.debug)
         XCTAssertEqual(42, options.sampleRate)
+
+        XCTAssertFalse(options.metricKitInstrumentationEnabled)
+        XCTAssertFalse(options.urlSessionInstrumentationEnabled)
+        XCTAssertFalse(options.uiKitInstrumentationEnabled)
+        XCTAssertTrue(options.touchInstrumentationEnabled)
+        XCTAssertFalse(options.unhandledExceptionInstrumentationEnabled)
     }
 
     func testDatasetSetWithClassicKey() throws {

@@ -318,3 +318,36 @@ mk_diag_attr() {
 @test "Span Processor gets added correctly" {
     result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "app.metadata" string | uniq)
 }
+
+@test "NSException attributes are correct" {
+
+    stacktrace=$(attribute_for_exception_log_of_type "NSException" "exception.stacktrace" string)
+    type=$(attribute_for_exception_log_of_type "NSException" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "NSException" "exception.message" string)
+    name=$(attribute_for_exception_log_of_type "NSException" "exception.name" string)
+
+    assert_not_empty "$stacktrace"
+    assert_equal "$type" '"NSException"'
+    assert_equal "$message" '"Exception Handling reason"'
+    assert_equal "$name" '"TestException"'
+}
+
+@test "NSError attributes are correct" {
+
+    code=$(attribute_for_exception_log_of_type "NSError" "exception.code" int)
+    type=$(attribute_for_exception_log_of_type "NSError" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "NSError" "exception.message" string)
+
+    assert_equal "$code" '"-1"'
+    assert_equal "$type" '"NSError"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (Test Error error -1.)\""
+}
+
+@test "Swift Error attributes are correct" {
+
+    type=$(attribute_for_exception_log_of_type "TestError" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "TestError" "exception.message" string)
+
+    assert_equal "$type" '"TestError"'
+    assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestError error 0.)\""
+}

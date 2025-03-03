@@ -49,6 +49,14 @@ final class SmokeTestUITests: XCTestCase {
         app.buttons["Flush"].tap()
     }
 
+    func testErrorLogging() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        app.buttons["Send fake error data"].tap()
+        app.buttons["Flush"].tap()
+    }
+
     func testNetworking() throws {
         let app = XCUIApplication()
         app.launch()

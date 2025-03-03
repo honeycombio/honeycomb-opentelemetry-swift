@@ -4,8 +4,16 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### New Features
 
+* Error logging API for manually logging exceptions.
+
+### Fixes
+
 * Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation. 
+
+### New Features
+
 * Package is now available on Cocoapods.
+* Add new options to enable/disable built-in auto-instrumentation.
 
 ### Fixes
 

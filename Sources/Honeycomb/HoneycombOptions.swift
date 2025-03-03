@@ -185,6 +185,12 @@ public struct HoneycombOptions {
 
     let sessionTimeout: TimeInterval
 
+    let metricKitInstrumentationEnabled: Bool
+    let urlSessionInstrumentationEnabled: Bool
+    let uiKitInstrumentationEnabled: Bool
+    let touchInstrumentationEnabled: Bool
+    let unhandledExceptionInstrumentationEnabled: Bool
+
     public class Builder {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
@@ -223,6 +229,12 @@ public struct HoneycombOptions {
         private var spanProcessor: SpanProcessor? = nil
 
         private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
+
+        private var metricKitInstrumentationEnabled: Bool = true
+        private var urlSessionInstrumentationEnabled: Bool = true
+        private var uiKitInstrumentationEnabled: Bool = true
+        private var touchInstrumentationEnabled: Bool = false
+        private var unhandledExceptionInstrumentationEnabled: Bool = true
 
         /// Creates a builder with default options.
         public init() {}
@@ -418,6 +430,27 @@ public struct HoneycombOptions {
             return self
         }
 
+        public func setMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            metricKitInstrumentationEnabled = enabled
+            return self
+        }
+        public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            urlSessionInstrumentationEnabled = enabled
+            return self
+        }
+        public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            uiKitInstrumentationEnabled = enabled
+            return self
+        }
+        public func setTouchInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            touchInstrumentationEnabled = enabled
+            return self
+        }
+        public func setUnhandledExceptionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            unhandledExceptionInstrumentationEnabled = enabled
+            return self
+        }
+
         public func build() throws -> HoneycombOptions {
             // If any API key isn't set, consider it a fatal error.
             let defaultApiKey: () throws -> String = {
@@ -520,7 +553,12 @@ public struct HoneycombOptions {
                 metricsProtocol: metricsProtocol ?? `protocol`,
                 logsProtocol: logsProtocol ?? `protocol`,
                 spanProcessor: spanProcessor,
-                sessionTimeout: sessionTimeout
+                sessionTimeout: sessionTimeout,
+                metricKitInstrumentationEnabled: metricKitInstrumentationEnabled,
+                urlSessionInstrumentationEnabled: urlSessionInstrumentationEnabled,
+                uiKitInstrumentationEnabled: uiKitInstrumentationEnabled,
+                touchInstrumentationEnabled: touchInstrumentationEnabled,
+                unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled
             )
         }
 

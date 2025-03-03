@@ -197,13 +197,119 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        installNetworkInstrumentation(options: options)
-        installUINavigationInstrumentation()
-        installWindowInstrumentation()
+        if options.urlSessionInstrumentationEnabled {
+            installNetworkInstrumentation(options: options)
+        }
+        if options.uiKitInstrumentationEnabled {
+            installUINavigationInstrumentation()
+        }
+        if options.touchInstrumentationEnabled {
+            installWindowInstrumentation()
+        }
 
         if #available(iOS 13.0, macOS 12.0, *) {
-            MXMetricManager.shared.add(self.metricKitSubscriber)
+            if options.metricKitInstrumentationEnabled {
+                MXMetricManager.shared.add(self.metricKitSubscriber)
+            }
         }
+    }
+
+    private static let errorLoggerInstrumentationName = "io.honeycomb.error"
+
+    public static func getDefaultErrorLogger() -> OpenTelemetryApi.Logger {
+        return OpenTelemetry.instance.loggerProvider.get(
+            instrumentationScopeName: errorLoggerInstrumentationName
+        )
+    }
+
+    public static func log(
+        error: NSError,
+        attributes: [String: AttributeValue] = [:],
+        thread: Thread?,
+        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
+    ) {
+        let timestamp = Date()
+        let type = String(describing: Mirror(reflecting: error).subjectType)
+        let code = error.code
+        let message = error.localizedDescription
+
+        var errorAttributes = [
+            "exception.type": type.attributeValue(),
+            "exception.message": message.attributeValue(),
+            "exception.code": code.attributeValue(),
+        ]
+        .merging(attributes, uniquingKeysWith: { (_, last) in last })
+
+        if let name = thread?.name {
+            errorAttributes["thread.name"] = name.attributeValue()
+        }
+
+        logError(errorAttributes, logger, timestamp)
+    }
+
+    public static func log(
+        exception: NSException,
+        attributes: [String: AttributeValue] = [:],
+        thread: Thread?,
+        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
+    ) {
+        let timestamp = Date()
+        let type = String(describing: Mirror(reflecting: exception).subjectType)
+        let message = exception.reason ?? exception.name.rawValue
+
+        var errorAttributes = [
+            "exception.type": type.attributeValue(),
+            "exception.message": message.attributeValue(),
+            "exception.name": exception.name.rawValue.attributeValue(),
+            "exception.stacktrace": exception.callStackSymbols.joined(separator: "\n")
+                .attributeValue(),
+        ]
+        .merging(attributes, uniquingKeysWith: { (_, last) in last })
+
+        if let name = thread?.name {
+            errorAttributes["exception.thread"] = name.attributeValue()
+        }
+
+        logError(errorAttributes, logger, timestamp)
+    }
+
+    public static func log(
+        error: Error,
+        attributes: [String: AttributeValue] = [:],
+        thread: Thread?,
+        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
+    ) {
+        let timestamp = Date()
+        let type = String(describing: Mirror(reflecting: error).subjectType)
+        let message = error.localizedDescription
+
+        var errorAttributes = [
+            "exception.type": type.attributeValue(),
+            "exception.message": message.attributeValue(),
+        ]
+        .merging(attributes, uniquingKeysWith: { (_, last) in last })
+
+        if let name = thread?.name {
+            errorAttributes["exception.thread"] = name.attributeValue()
+        }
+
+        logError(errorAttributes, logger, timestamp)
+    }
+
+    private static func logError(
+        _ attributes: [String: AttributeValue],
+        _ logger: OpenTelemetryApi.Logger = getDefaultErrorLogger(),
+        _ timestamp: Date = Date()
+    ) {
+        var logAttrs: [String: AttributeValue] = [:]
+        for (key, value) in attributes {
+            logAttrs[key] = value
+        }
+
+        logger.logRecordBuilder()
+            .setTimestamp(timestamp)
+            .setAttributes(logAttrs)
+            .emit()
     }
 
     @available(iOS 16.0, macOS 12.0, *)
