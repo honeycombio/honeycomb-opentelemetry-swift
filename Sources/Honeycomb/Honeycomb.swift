@@ -208,15 +208,17 @@ public class Honeycomb {
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
 
-    public static let defaultErrorLogger = OpenTelemetry.instance.loggerProvider.get(
-        instrumentationScopeName: errorLoggerInstrumentationName
-    )
+    public static func getDefaultErrorLogger() -> OpenTelemetryApi.Logger {
+        return OpenTelemetry.instance.loggerProvider.get(
+            instrumentationScopeName: errorLoggerInstrumentationName
+        )
+    }
 
     public static func log(
         error: NSError,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
-        logger: OpenTelemetryApi.Logger = defaultErrorLogger
+        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
     ) {
         let timestamp = Date()
         let type = String(describing: Mirror(reflecting: error).subjectType)
@@ -241,7 +243,7 @@ public class Honeycomb {
         exception: NSException,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
-        logger: OpenTelemetryApi.Logger = defaultErrorLogger
+        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
     ) {
         let timestamp = Date()
         let type = String(describing: Mirror(reflecting: exception).subjectType)
@@ -266,7 +268,7 @@ public class Honeycomb {
         error: Error,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
-        logger: OpenTelemetryApi.Logger = defaultErrorLogger
+        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
     ) {
         let timestamp = Date()
         let type = String(describing: Mirror(reflecting: error).subjectType)
@@ -287,7 +289,7 @@ public class Honeycomb {
 
     private static func logError(
         _ attributes: [String: AttributeValue],
-        _ logger: OpenTelemetryApi.Logger = defaultErrorLogger,
+        _ logger: OpenTelemetryApi.Logger = getDefaultErrorLogger(),
         _ timestamp: Date = Date()
     ) {
         var logAttrs: [String: AttributeValue] = [:]
