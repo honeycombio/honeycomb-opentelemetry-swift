@@ -30,6 +30,46 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
     return result
 }
 
+// This function needs to be outside the class so that
+// the signal handler closures can be converted into C pointers
+private func initializeSigCrashHandlers() {
+    signal(SIGABRT) { _ in
+        handleErrorSignal(error: HoneycombCrashSignal.SIGABRT)
+    }
+    signal(SIGILL) { _ in
+        handleErrorSignal(error: HoneycombCrashSignal.SIGILL)
+    }
+    signal(SIGSEGV) { _ in
+        handleErrorSignal(error: HoneycombCrashSignal.SIGSEGV)
+    }
+    signal(SIGFPE) { _ in
+        handleErrorSignal(error: .SIGFPE)
+    }
+    signal(SIGBUS) { _ in
+        handleErrorSignal(error: .SIGBUS)
+    }
+    signal(SIGPIPE) { _ in
+        handleErrorSignal(error: .SIGPIPE)
+    }
+}
+
+private func handleErrorSignal(error: HoneycombCrashSignal) {
+    do {
+        throw error
+    } catch let err {
+        Honeycomb.log(error: err, thread: Thread.current)
+    }
+}
+
+internal enum HoneycombCrashSignal: Error {
+    case SIGABRT
+    case SIGILL
+    case SIGSEGV
+    case SIGFPE
+    case SIGBUS
+    case SIGPIPE
+}
+
 public class Honeycomb {
     @available(iOS 13.0, macOS 12.0, *)
     static private let metricKitSubscriber = MetricKitSubscriber()
@@ -206,16 +246,22 @@ public class Honeycomb {
         if options.touchInstrumentationEnabled {
             installWindowInstrumentation()
         }
+        
+        initializeUncaughtExceptionHandling()
 
         if #available(iOS 13.0, macOS 12.0, *) {
             if options.metricKitInstrumentationEnabled {
                 MXMetricManager.shared.add(self.metricKitSubscriber)
             }
         }
-        
+    }
+    
+    private static func initializeUncaughtExceptionHandling() {
         NSSetUncaughtExceptionHandler{ exception in
             Honeycomb.log(exception: exception, thread: Thread.current)
         }
+
+        initializeSigCrashHandlers()
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
