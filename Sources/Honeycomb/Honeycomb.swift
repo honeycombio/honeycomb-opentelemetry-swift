@@ -34,22 +34,22 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 // the signal handler closures can be converted into C pointers
 private func initializeSigCrashHandlers() {
     signal(SIGABRT) { _ in
-        handleErrorSignal(error: HoneycombCrashSignal.SIGABRT)
+        handleErrorSignal(error: .sigAbrt)
     }
     signal(SIGILL) { _ in
-        handleErrorSignal(error: HoneycombCrashSignal.SIGILL)
+        handleErrorSignal(error: .sigIll)
     }
     signal(SIGSEGV) { _ in
-        handleErrorSignal(error: HoneycombCrashSignal.SIGSEGV)
+        handleErrorSignal(error: .sigSegv)
     }
     signal(SIGFPE) { _ in
-        handleErrorSignal(error: .SIGFPE)
+        handleErrorSignal(error: .sigFpe)
     }
     signal(SIGBUS) { _ in
-        handleErrorSignal(error: .SIGBUS)
+        handleErrorSignal(error: .sigbus)
     }
     signal(SIGPIPE) { _ in
-        handleErrorSignal(error: .SIGPIPE)
+        handleErrorSignal(error: .sigPipe)
     }
 }
 
@@ -62,12 +62,12 @@ private func handleErrorSignal(error: HoneycombCrashSignal) {
 }
 
 internal enum HoneycombCrashSignal: Error {
-    case SIGABRT
-    case SIGILL
-    case SIGSEGV
-    case SIGFPE
-    case SIGBUS
-    case SIGPIPE
+    case sigAbrt
+    case sigIll
+    case sigSegv
+    case sigFpe
+    case sigbus
+    case sigPipe
 }
 
 public class Honeycomb {
