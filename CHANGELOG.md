@@ -5,6 +5,8 @@ Honeycomb OpenTelemetry SDK Changelog
 ### New Features
 
 * Error logging API for manually logging exceptions.
+* Uncaught exception handler to log crashes.
+
 ### Fixes
 
 * Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation. 
