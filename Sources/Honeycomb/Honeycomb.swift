@@ -30,46 +30,6 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
     return result
 }
 
-// This function needs to be outside the class so that
-// the signal handler closures can be converted into C pointers
-private func initializeSigCrashHandlers() {
-    signal(SIGABRT) { _ in
-        handleErrorSignal(error: .sigAbrt)
-    }
-    signal(SIGILL) { _ in
-        handleErrorSignal(error: .sigIll)
-    }
-    signal(SIGSEGV) { _ in
-        handleErrorSignal(error: .sigSegv)
-    }
-    signal(SIGFPE) { _ in
-        handleErrorSignal(error: .sigFpe)
-    }
-    signal(SIGBUS) { _ in
-        handleErrorSignal(error: .sigbus)
-    }
-    signal(SIGPIPE) { _ in
-        handleErrorSignal(error: .sigPipe)
-    }
-}
-
-private func handleErrorSignal(error: HoneycombCrashSignal) {
-    do {
-        throw error
-    } catch let err {
-        Honeycomb.log(error: err, thread: Thread.current)
-    }
-}
-
-internal enum HoneycombCrashSignal: Error {
-    case sigAbrt
-    case sigIll
-    case sigSegv
-    case sigFpe
-    case sigbus
-    case sigPipe
-}
-
 public class Honeycomb {
     @available(iOS 13.0, macOS 12.0, *)
     static private let metricKitSubscriber = MetricKitSubscriber()
@@ -246,8 +206,9 @@ public class Honeycomb {
         if options.touchInstrumentationEnabled {
             installWindowInstrumentation()
         }
-
-        initializeUncaughtExceptionHandling()
+        if options.unhandledExceptionInstrumentationEnabled {
+            initializeUnhandledExceptionInstrumentation()
+        }
 
         if #available(iOS 13.0, macOS 12.0, *) {
             if options.metricKitInstrumentationEnabled {
@@ -256,12 +217,10 @@ public class Honeycomb {
         }
     }
 
-    private static func initializeUncaughtExceptionHandling() {
+    private static func initializeUnhandledExceptionInstrumentation() {
         NSSetUncaughtExceptionHandler { exception in
             Honeycomb.log(exception: exception, thread: Thread.current)
         }
-
-        initializeSigCrashHandlers()
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
