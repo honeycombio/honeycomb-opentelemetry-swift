@@ -207,19 +207,13 @@ public class Honeycomb {
             installWindowInstrumentation()
         }
         if options.unhandledExceptionInstrumentationEnabled {
-            initializeUnhandledExceptionInstrumentation()
+            HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
         }
 
         if #available(iOS 13.0, macOS 12.0, *) {
             if options.metricKitInstrumentationEnabled {
                 MXMetricManager.shared.add(self.metricKitSubscriber)
             }
-        }
-    }
-
-    private static func initializeUnhandledExceptionInstrumentation() {
-        NSSetUncaughtExceptionHandler { exception in
-            Honeycomb.log(exception: exception, thread: Thread.current)
         }
     }
 
