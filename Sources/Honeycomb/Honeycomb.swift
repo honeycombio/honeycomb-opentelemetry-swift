@@ -246,7 +246,7 @@ public class Honeycomb {
         if options.touchInstrumentationEnabled {
             installWindowInstrumentation()
         }
-        
+
         initializeUncaughtExceptionHandling()
 
         if #available(iOS 13.0, macOS 12.0, *) {
@@ -255,9 +255,9 @@ public class Honeycomb {
             }
         }
     }
-    
+
     private static func initializeUncaughtExceptionHandling() {
-        NSSetUncaughtExceptionHandler{ exception in
+        NSSetUncaughtExceptionHandler { exception in
             Honeycomb.log(exception: exception, thread: Thread.current)
         }
 
