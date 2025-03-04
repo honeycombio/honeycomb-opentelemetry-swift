@@ -212,6 +212,10 @@ public class Honeycomb {
                 MXMetricManager.shared.add(self.metricKitSubscriber)
             }
         }
+        
+        NSSetUncaughtExceptionHandler{ exception in
+            Honeycomb.log(exception: exception, thread: Thread.current)
+        }
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
