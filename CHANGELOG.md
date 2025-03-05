@@ -8,6 +8,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Package is now available on Cocoapods.
 * Add new options to enable/disable built-in auto-instrumentation.
 * Uncaught exception handler to log crashes.
+* Enable telemetry caching for offline support.
 
 ### Fixes
 
