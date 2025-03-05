@@ -13,4 +13,5 @@ Please see our [OSS process document](https://github.com/honeycombio/home/blob/m
 
 ---
 
-- [ ] Changelog is updated
+- [ ] CHANGELOG is updated
+- [ ] README is updated with documentation
