@@ -4,7 +4,6 @@ import OpenTelemetryApi
 import OpenTelemetryProtocolExporterCommon
 import OpenTelemetryProtocolExporterHttp
 import OpenTelemetrySdk
-import PersistenceExporter
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
@@ -30,31 +29,6 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
     }
     return result
 }
-
-private func createCachesSubdirectory(_ path: String) -> URL? {
-    guard
-        let cachesDirectoryURL = FileManager.default
-            .urls(for: .cachesDirectory, in: .userDomainMask).first
-    else {
-        return nil
-    }
-
-    let subdirectoryURL = cachesDirectoryURL.appendingPathComponent(path, isDirectory: true)
-
-    do {
-        try FileManager.default.createDirectory(
-            at: subdirectoryURL,
-            withIntermediateDirectories: true,
-            attributes: nil
-        )
-    } catch {
-        return nil
-    }
-
-    return subdirectoryURL
-}
-var spanSubdirectoryURL = createCachesSubdirectory("honeycomb/span-cache")!
-var metricSubdirectoryURL = createCachesSubdirectory("honeycomb/metric-cache")!
 
 public class Honeycomb {
     @available(iOS 13.0, macOS 12.0, *)
@@ -128,10 +102,7 @@ public class Honeycomb {
             } else {
                 traceExporter
             }
-        let persistenceSpanExporter = try PersistenceSpanExporterDecorator(
-            spanExporter: spanExporter,
-            storageURL: spanSubdirectoryURL
-        )
+        let persistenceSpanExporter = createPersistenceSpanExporter(spanExporter)
 
         let spanProcessor = CompositeSpanProcessor()
         spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: persistenceSpanExporter))
@@ -183,14 +154,11 @@ public class Honeycomb {
             )
         }
 
-        let persistenceMetricExporter = try PersistenceMetricExporterDecorator(
-            metricExporter: metricExporter,
-            storageURL: metricSubdirectoryURL
-        )
+        let persistenceMetricExporter = createPersistenceMetricExporter(metricExporter)
 
         let meterProvider = MeterProviderBuilder()
             .with(processor: MetricProcessorSdk())
-            .with(exporter: metricExporter)
+            .with(exporter: persistenceMetricExporter)
             .with(resource: Resource())
             .build()
 
