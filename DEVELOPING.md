@@ -8,6 +8,23 @@
 
 Development and unit tests are done within Xcode. However, there is also a smoke-test, which must be run using the included Makefile.
 
+## Formatting
+
+`clang-format` is required in order to auto-format Objective-C code. To install:
+
+```sh
+brew install clang-format
+```
+
+To lint and/or auto-format code, use the Makefile:
+
+```sh
+make lint
+make format
+```
+
+This will format both Swift and Objective-C.
+
 ## Smoke Tests
 
 Smoke tests use Xcode Command Line Tools and Docker using `docker-compose`, exporting telemetry to a local collector.

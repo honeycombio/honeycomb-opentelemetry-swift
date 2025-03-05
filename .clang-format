@@ -1,0 +1,22 @@
+# This format defaults to the OpenTelemetry style, which is based on Chromium,
+# but deviates by keeping braces on the same line and using 4 space indents,
+# to be consistent with other Honeycomb source code, especially Swift.
+
+# See Clang docs: http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: Chromium
+
+# Allow double brackets such as std::vector<std::vector<int>>.
+Standard: Cpp11
+
+# Indent 2 spaces at a time.
+IndentWidth: 4
+
+# Keep lines under 100 columns long.
+ColumnLimit: 100
+
+# Indent case labels.
+IndentCaseLabels: true
+
+# Right-align pointers and references
+PointerAlignment: Right
+

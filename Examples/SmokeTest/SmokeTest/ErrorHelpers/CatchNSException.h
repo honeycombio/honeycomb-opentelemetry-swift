@@ -4,6 +4,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CatchNSException: NSObject
+@interface CatchNSException : NSObject
 + (NSException *)throwAndCatchNSException;
 @end

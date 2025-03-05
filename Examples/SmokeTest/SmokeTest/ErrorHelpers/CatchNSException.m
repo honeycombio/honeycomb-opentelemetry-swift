@@ -3,14 +3,14 @@
 @implementation CatchNSException
 
 + (NSException *)throwAndCatchNSException {
-    NSException * exception = nil;
+    NSException *exception = nil;
     @try {
-        @throw [NSException exceptionWithName:@"TestException" reason:@"Exception Handling reason" userInfo: nil];
-    }
-    @catch(NSException * caughtException) {
+        @throw [NSException exceptionWithName:@"TestException"
+                                       reason:@"Exception Handling reason"
+                                     userInfo:nil];
+    } @catch (NSException *caughtException) {
         exception = caughtException;
-    }
-    @finally {
+    } @finally {
         return exception;
     }
 }
