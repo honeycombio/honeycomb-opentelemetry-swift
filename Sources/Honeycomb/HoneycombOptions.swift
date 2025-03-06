@@ -294,7 +294,8 @@ public struct HoneycombOptions {
             tracesProtocol = try source.getOTLPProtocol(otlpTracesProtocolKey)
             metricsProtocol = try source.getOTLPProtocol(otlpMetricsProtocolKey)
             logsProtocol = try source.getOTLPProtocol(otlpLogsProtocolKey)
-            offlineCachingEnabled = try source.getBool(offlineCachingEnabledKey) ?? false
+            offlineCachingEnabled =
+                try source.getBool(offlineCachingEnabledKey) ?? offlineCachingEnabled
         }
 
         public func setAPIKey(_ apiKey: String) -> Builder {
