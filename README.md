@@ -280,7 +280,7 @@ struct ContentView: View {
 
 In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `screen.name: "View A"`.
 
-### Manual Exception Logging Handling
+### Manual Error Logging
 
 Any Errors, NSErrors, or NSExceptions may be recorded as Log records using the `log` method. This can be used for logging 
 any caught exceptions in your own code that will not be logged by our crash instrumentation.
