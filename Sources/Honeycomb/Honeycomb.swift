@@ -96,16 +96,19 @@ public class Honeycomb {
             )
         }
 
-        let spanExporter =
+        var spanExporter =
             if options.debug {
                 MultiSpanExporter(spanExporters: [traceExporter, StdoutSpanExporter()])
             } else {
                 traceExporter
             }
-        let persistenceSpanExporter = createPersistenceSpanExporter(spanExporter)
+        
+        if options.offlineCachingEnabled {
+            spanExporter = createPersistenceSpanExporter(spanExporter)
+        }
 
         let spanProcessor = CompositeSpanProcessor()
-        spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: persistenceSpanExporter))
+        spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: spanExporter))
         if let clientSpanProcessor = options.spanProcessor {
             spanProcessor.addSpanProcessor(clientSpanProcessor)
         }
@@ -154,11 +157,13 @@ public class Honeycomb {
             )
         }
 
-        let persistenceMetricExporter = createPersistenceMetricExporter(metricExporter)
+        if options.offlineCachingEnabled {
+            metricExporter = createPersistenceMetricExporter(metricExporter)
+        }
 
         let meterProvider = MeterProviderBuilder()
             .with(processor: MetricProcessorSdk())
-            .with(exporter: persistenceMetricExporter)
+            .with(exporter: metricExporter)
             .with(resource: Resource())
             .build()
 

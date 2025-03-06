@@ -49,6 +49,8 @@ private let otlpTracesProtocolKey = "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL"
 private let otlpMetricsProtocolKey = "OTEL_EXPORTER_OTLP_METRICS_PROTOCOL"
 private let otlpLogsProtocolKey = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL"
 
+private let offlineCachingEnabledKey = "OFFLINE_CACHING_ENABLED"
+
 /// The protocol for OTLP to use when talking to its backend.
 public enum OTLPProtocol {
     case grpc
@@ -190,6 +192,8 @@ public struct HoneycombOptions {
     let uiKitInstrumentationEnabled: Bool
     let touchInstrumentationEnabled: Bool
     let unhandledExceptionInstrumentationEnabled: Bool
+    
+    let offlineCachingEnabled: Bool
 
     public class Builder {
         private var apiKey: String? = nil
@@ -235,6 +239,8 @@ public struct HoneycombOptions {
         private var uiKitInstrumentationEnabled: Bool = true
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
+        
+        private var offlineCachingEnabled: Bool = false
 
         /// Creates a builder with default options.
         public init() {}
@@ -288,6 +294,7 @@ public struct HoneycombOptions {
             tracesProtocol = try source.getOTLPProtocol(otlpTracesProtocolKey)
             metricsProtocol = try source.getOTLPProtocol(otlpMetricsProtocolKey)
             logsProtocol = try source.getOTLPProtocol(otlpLogsProtocolKey)
+            offlineCachingEnabled = try source.getBool(offlineCachingEnabledKey) ?? false
         }
 
         public func setAPIKey(_ apiKey: String) -> Builder {
@@ -450,6 +457,11 @@ public struct HoneycombOptions {
             unhandledExceptionInstrumentationEnabled = enabled
             return self
         }
+        
+        public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
+            offlineCachingEnabled = enabled
+            return self
+        }
 
         public func build() throws -> HoneycombOptions {
             // If any API key isn't set, consider it a fatal error.
@@ -558,7 +570,8 @@ public struct HoneycombOptions {
                 urlSessionInstrumentationEnabled: urlSessionInstrumentationEnabled,
                 uiKitInstrumentationEnabled: uiKitInstrumentationEnabled,
                 touchInstrumentationEnabled: touchInstrumentationEnabled,
-                unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled
+                unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled,
+                offlineCachingEnabled: offlineCachingEnabled
             )
         }
 
