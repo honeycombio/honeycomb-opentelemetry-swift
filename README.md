@@ -303,10 +303,10 @@ catch let error {
 }
 ```
 
-| Argument        | Type                               | Is Required | Description                                                                                             |
-|-----------------|------------------------------------|-------------|---------------------------------------------------------------------------------------------------------|
-| error/exception | Error/NSError/NSException          | true        | The error or exception itself. Depending on the type of error fields will be automatically added        |
-| attributes      | Dictionary<string, AttributeValue> | false       | Additional attributes you would like to log along with the default ones provided.                       |
-| thread          | Thread                             | false       | Thread where the error occurred. Add this to include additional attributes related to the thread        |
-| logger          | Logger                             | false       | Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger` |
+| Argument        | Type                               | Is Required | Description                                                                                                          |
+|-----------------|------------------------------------|-------------|---------------------------------------------------------------------------------------------------------             |
+| error/exception | Error/NSError/NSException          | true        | The error or exception itself. Depending on the type of error, fields will be automatically added to the log record. |
+| attributes      | Dictionary<string, AttributeValue> | false       | Additional attributes you would like to log along with the default ones provided.                                    |
+| thread          | Thread                             | false       | Thread where the error occurred. Add this to include additional attributes related to the thread                     |
+| logger          | Logger                             | false       | Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`              |
 
