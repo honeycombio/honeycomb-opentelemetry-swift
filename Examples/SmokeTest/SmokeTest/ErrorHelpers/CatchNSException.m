@@ -15,4 +15,10 @@
     }
 }
 
++ (void)crashTheApp {
+    @throw [NSException exceptionWithName:@"IntentionalCrash"
+                                   reason:@"Pushed the crash button"
+                                 userInfo:nil];
+}
+
 @end

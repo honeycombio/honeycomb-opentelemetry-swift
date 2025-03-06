@@ -65,6 +65,10 @@ private func sendFakeErrorData() {
     sendFakeNSException()
 }
 
+private func crashTheApp() {
+    CatchNSException.crashTheApp()
+}
+
 struct ContentView: View {
     @State private var sessionId: String = "🐝💭"
     @State private var sessionStartTime: String = "🐝🕰️"
@@ -102,6 +106,11 @@ struct ContentView: View {
 
                 Button(action: sendFakeMetrics) {
                     Text("Send fake MetricKit data")
+                }
+                .buttonStyle(.bordered)
+                
+                Button(action: crashTheApp) {
+                    Text("Crash the App")
                 }
                 .buttonStyle(.bordered)
 

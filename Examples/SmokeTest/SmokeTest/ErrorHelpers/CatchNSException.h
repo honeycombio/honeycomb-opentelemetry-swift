@@ -6,4 +6,5 @@
 
 @interface CatchNSException : NSObject
 + (NSException *)throwAndCatchNSException;
++ (void)crashTheApp;
 @end
