@@ -2,7 +2,6 @@ import Foundation
 import OpenTelemetrySdk
 import PersistenceExporter
 
-
 private enum PersistenceError: Error {
     case obtainCacheLibraryError
 }
@@ -25,8 +24,6 @@ private func createCachesSubdirectory(_ path: String) throws -> URL {
 
     return subdirectoryURL
 }
-
-
 
 func createPersistenceMetricExporter(_ metricExporter: MetricExporter) -> MetricExporter {
     do {
