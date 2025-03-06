@@ -279,3 +279,34 @@ struct ContentView: View {
 ``` 
 
 In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `screen.name: "View A"`.
+
+### Manual Exception Logging Handling
+
+Any Errors, NSErrors, or NSExceptions may be recorded as Log records using the `log` method. This can be used for logging 
+any caught exceptions in your own code that will not be logged by our crash instrumentation.
+
+Below is an example of logging an Error object using several custom attributes.
+
+```swift
+do {
+    /// ...
+}
+catch let error {
+    Honeycomb.log(
+        error: error,
+        attributes: [
+            "user.name": AttributeValue.string(currentUser.name),
+            "user.id": AttributeValue.int(currentUser.id)
+        ],
+        thread: Thread.current
+    );
+}
+```
+
+| Argument        | Type                               | Is Required | Description                                                                                             |
+|-----------------|------------------------------------|-------------|---------------------------------------------------------------------------------------------------------|
+| error/exception | Error/NSError/NSException          | true        | The error or exception itself. Depending on the type of error fields will be automatically added        |
+| attributes      | Dictionary<string, AttributeValue> | false       | Additional attributes you would like to log along with the default ones provided.                       |
+| thread          | Thread                             | false       | Thread where the error occurred. Add this to include additional attributes related to the thread        |
+| logger          | Logger                             | false       | Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger` |
+
