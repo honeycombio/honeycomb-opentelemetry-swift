@@ -192,7 +192,7 @@ public struct HoneycombOptions {
     let uiKitInstrumentationEnabled: Bool
     let touchInstrumentationEnabled: Bool
     let unhandledExceptionInstrumentationEnabled: Bool
-    
+
     let offlineCachingEnabled: Bool
 
     public class Builder {
@@ -239,7 +239,7 @@ public struct HoneycombOptions {
         private var uiKitInstrumentationEnabled: Bool = true
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
-        
+
         private var offlineCachingEnabled: Bool = false
 
         /// Creates a builder with default options.
@@ -457,7 +457,7 @@ public struct HoneycombOptions {
             unhandledExceptionInstrumentationEnabled = enabled
             return self
         }
-        
+
         public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
             offlineCachingEnabled = enabled
             return self

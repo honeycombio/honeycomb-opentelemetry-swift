@@ -102,7 +102,7 @@ public class Honeycomb {
             } else {
                 traceExporter
             }
-        
+
         if options.offlineCachingEnabled {
             spanExporter = createPersistenceSpanExporter(spanExporter)
         }
