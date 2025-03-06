@@ -108,7 +108,7 @@ struct ContentView: View {
                     Text("Send fake MetricKit data")
                 }
                 .buttonStyle(.bordered)
-                
+
                 Button(action: crashTheApp) {
                     Text("Crash the App")
                 }
