@@ -13,7 +13,6 @@ struct SmokeTestApp: App {
                 .setSessionTimeout(10)
                 .setSpanProcessor(SampleSpanProcessor())
                 .setTouchInstrumentationEnabled(true)
-                .setOfflineCachingEnabled(true)
                 .build()
             try Honeycomb.configure(options: options)
         } catch {
