@@ -222,6 +222,13 @@ public class Honeycomb {
         )
     }
 
+    
+    /// Logs an `NSError`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
+    /// - Parameters:
+    ///   - error: The `NSError` itself
+    ///   - attributes: Additional attributes you would like to log along with the default ones provided.
+    ///   - thread: Thread where the error occurred. Add this to include additional attributes related to the thread
+    ///   - logger: Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`
     public static func log(
         error: NSError,
         attributes: [String: AttributeValue] = [:],
@@ -246,7 +253,13 @@ public class Honeycomb {
 
         logError(errorAttributes, logger, timestamp)
     }
-
+    
+    /// Logs an `NSException`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
+    /// - Parameters:
+    ///   - exception: The `NSException` itself
+    ///   - attributes: Additional attributes you would like to log along with the default ones provided.
+    ///   - thread: Thread where the exception occurred. Add this to include additional attributes related to the thread
+    ///   - logger: Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`
     public static func log(
         exception: NSException,
         attributes: [String: AttributeValue] = [:],
@@ -272,7 +285,13 @@ public class Honeycomb {
 
         logError(errorAttributes, logger, timestamp)
     }
-
+    
+    /// Logs an `Error`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
+    /// - Parameters:
+    ///   - error: The `Error` itself
+    ///   - attributes: Additional attributes you would like to log along with the default ones provided.
+    ///   - thread: Thread where the error occurred. Add this to include additional attributes related to the thread
+    ///   - logger: Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`
     public static func log(
         error: Error,
         attributes: [String: AttributeValue] = [:],
