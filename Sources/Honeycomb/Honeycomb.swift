@@ -96,12 +96,16 @@ public class Honeycomb {
             )
         }
 
-        let spanExporter =
+        var spanExporter =
             if options.debug {
                 MultiSpanExporter(spanExporters: [traceExporter, StdoutSpanExporter()])
             } else {
                 traceExporter
             }
+
+        if options.offlineCachingEnabled {
+            spanExporter = createPersistenceSpanExporter(spanExporter)
+        }
 
         let spanProcessor = CompositeSpanProcessor()
         spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: spanExporter))
@@ -151,6 +155,10 @@ public class Honeycomb {
                 endpoint: metricsEndpoint,
                 config: otlpMetricsConfig
             )
+        }
+
+        if options.offlineCachingEnabled {
+            metricExporter = createPersistenceMetricExporter(metricExporter)
         }
 
         let meterProvider = MeterProviderBuilder()
