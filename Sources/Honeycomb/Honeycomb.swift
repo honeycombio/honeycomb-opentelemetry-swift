@@ -222,7 +222,6 @@ public class Honeycomb {
         )
     }
 
-    
     /// Logs an `NSError`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
     /// - Parameters:
     ///   - error: The `NSError` itself
@@ -253,7 +252,7 @@ public class Honeycomb {
 
         logError(errorAttributes, logger, timestamp)
     }
-    
+
     /// Logs an `NSException`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
     /// - Parameters:
     ///   - exception: The `NSException` itself
@@ -285,7 +284,7 @@ public class Honeycomb {
 
         logError(errorAttributes, logger, timestamp)
     }
-    
+
     /// Logs an `Error`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
     /// - Parameters:
     ///   - error: The `Error` itself
