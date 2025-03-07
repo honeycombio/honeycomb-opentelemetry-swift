@@ -10,8 +10,10 @@ internal class HoneycombUncaughtExceptionHandler {
         NSSetUncaughtExceptionHandler { exception in
             Honeycomb.log(exception: exception, thread: Thread.current)
 
-            if HoneycombUncaughtExceptionHandler.initialUncaughtExceptionHandler != nil {
-                HoneycombUncaughtExceptionHandler.initialUncaughtExceptionHandler!(exception)
+            if let initialHanlder = HoneycombUncaughtExceptionHandler
+                .initialUncaughtExceptionHandler
+            {
+                initialHanlder(exception)
             }
         }
     }
