@@ -63,6 +63,8 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertTrue(options.uiKitInstrumentationEnabled)
         XCTAssertFalse(options.touchInstrumentationEnabled)
         XCTAssertTrue(options.unhandledExceptionInstrumentationEnabled)
+
+        XCTAssertFalse(options.offlineCachingEnabled)
     }
 
     func testOptionsWithEmptyStrings() throws {
@@ -316,6 +318,7 @@ final class HoneycombOptionsTests: XCTestCase {
             .setUIKitInstrumentationEnabled(false)
             .setTouchInstrumentationEnabled(true)
             .setUnhandledExceptionInstrumentationEnabled(false)
+            .setOfflineCachingEnabled(true)
             .build()
 
         XCTAssertEqual("service", options.serviceName)
@@ -375,6 +378,7 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertFalse(options.uiKitInstrumentationEnabled)
         XCTAssertTrue(options.touchInstrumentationEnabled)
         XCTAssertFalse(options.unhandledExceptionInstrumentationEnabled)
+        XCTAssertTrue(options.offlineCachingEnabled)
     }
 
     func testDatasetSetWithClassicKey() throws {
