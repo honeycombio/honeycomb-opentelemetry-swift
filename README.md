@@ -314,6 +314,6 @@ catch let error {
 
  ## Offline Caching
 
- Set the `offlineCachingEnable` option to enable disk buffering for outgoing telemetry. This will cache your telemetry in the event of network failures and continue to retry exporting your telemetry for up to 18 hours. You will also see a minimum delay in exporting telemetry, of at least 5 seconds.
+ Set the `offlineCachingEnabled` option to enable disk buffering for outgoing telemetry. This will cache your telemetry in the event of network failures and continue to retry exporting your telemetry for up to 18 hours. You will also see a minimum delay in exporting telemetry, of at least 5 seconds.
 
  This feature is currently in alpha and may be unstable. It is currently off by default.
