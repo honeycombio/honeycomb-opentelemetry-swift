@@ -1,3 +1,4 @@
+import BaggagePropagationProcessor
 import Foundation
 import MetricKit
 import OpenTelemetryApi
@@ -7,7 +8,6 @@ import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
-import BaggagePropagationProcessor
 
 #if canImport(OpenTelemetryProtocolExporterGrpc)
     import GRPC
