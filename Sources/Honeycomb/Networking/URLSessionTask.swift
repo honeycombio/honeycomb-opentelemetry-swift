@@ -26,7 +26,7 @@ extension URLSessionTask {
                 ProxyURLSessionTaskDelegate.setSpan(span, for: self)
 
                 // In iOS 15+, it's possible to set a delegate for the task that overrides the delegate for the session.
-                if #available(iOS 15.0, *) {
+                if #available(iOS 15, macOS 12, *) {
                     if self.delegate != nil {
                         self.delegate = ProxyURLSessionTaskDelegate(self.delegate)
                     }
