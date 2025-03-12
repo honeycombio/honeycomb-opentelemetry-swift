@@ -7,6 +7,7 @@ import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
+import BaggagePropagationProcessor
 
 #if canImport(OpenTelemetryProtocolExporterGrpc)
     import GRPC
@@ -113,7 +114,7 @@ public class Honeycomb {
             spanProcessor.addSpanProcessor(clientSpanProcessor)
         }
 
-        let baggageSpanProcessor = HoneycombBaggageSpanProcessor(filter: { _ in true })
+        let baggageSpanProcessor = BaggagePropagationProcessor(filter: { _ in true })
 
         let tracerProvider = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
