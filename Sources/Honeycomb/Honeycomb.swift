@@ -342,7 +342,7 @@ public class Honeycomb {
             .emit()
     }
 
-    @available(iOS 16.0, macOS 12.0, *)
+    @available(iOS 16.0, macOS 13.0, *)
     public static func setCurrentScreen(path: NavigationPath) {
         HoneycombNavigationProcessor.shared.reportNavigation(path: path)
     }
