@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import Foundation
 import OpenTelemetryApi
 import SwiftUI
@@ -92,3 +93,4 @@ extension UIWindow {
 func installWindowInstrumentation() {
     UIWindow.swizzle()
 }
+#endif

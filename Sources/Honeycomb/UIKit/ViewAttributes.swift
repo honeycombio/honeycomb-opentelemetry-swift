@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import Foundation
 import OpenTelemetryApi
 import SwiftUI
@@ -67,3 +68,4 @@ struct ViewAttributes {
         }
     }
 }
+#endif
