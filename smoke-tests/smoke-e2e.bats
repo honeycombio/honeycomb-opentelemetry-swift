@@ -25,11 +25,16 @@ teardown_file() {
   assert_not_empty "$result"
 }
 
-@test "SDK had default resources" {
-  result=$(resource_attributes_received \
-      | jq 'select (.key == "telemetry.sdk.language").value.stringValue' \
-      | sort | uniq)
-  assert_equal "$result" '"swift"'
+@test "SDK has default resources" {
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "telemetry.sdk.language").value.stringValue' | uniq)" '"swift"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.name").value.stringValue' | uniq)" '"ios-test"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.version").value.stringValue' | uniq)" '"1.0 (1)"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "device.model.identifier").value.stringValue' | uniq)" '"arm64"'
+  assert_not_empty "$(resource_attributes_received | jq 'select (.key == "device.id").value.stringValue' | uniq)"
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.type").value.stringValue' | uniq)" '"darwin"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.description").value.stringValue' | uniq)" '"iOS Version 17.5 (Build 21F79)"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.name").value.stringValue' | uniq)" '"iOS"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.version").value.stringValue' | uniq)" '"17.5.0"'
 }
 
 # A helper just for MetricKit attributes, because there's so many of them.
