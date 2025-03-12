@@ -209,14 +209,14 @@ public class Honeycomb {
         if options.urlSessionInstrumentationEnabled {
             installNetworkInstrumentation(options: options)
         }
-#if canImport(UIKit)
-        if options.uiKitInstrumentationEnabled {
-            installUINavigationInstrumentation()
-        }
-        if options.touchInstrumentationEnabled {
-            installWindowInstrumentation()
-        }
-#endif
+        #if canImport(UIKit)
+            if options.uiKitInstrumentationEnabled {
+                installUINavigationInstrumentation()
+            }
+            if options.touchInstrumentationEnabled {
+                installWindowInstrumentation()
+            }
+        #endif
         if options.unhandledExceptionInstrumentationEnabled {
             HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
         }
