@@ -24,6 +24,7 @@ private let sampleRateKey = "SAMPLE_RATE"
 private let debugKey = "DEBUG"
 
 private let otelServiceNameKey = "OTEL_SERVICE_NAME"
+private let otelServiceVersionKey = "OTEL_SERVICE_VERSION"
 private let otelServiceNameDefault = "unknown_service"
 private let otelResourceAttributesKey = "OTEL_RESOURCE_ATTRIBUTES"
 
@@ -169,6 +170,7 @@ public struct HoneycombOptions {
     let debug: Bool
 
     let serviceName: String
+    let serviceVersion: String?
     let resourceAttributes: [String: String]
 
     let tracesHeaders: [String: String]
@@ -213,6 +215,7 @@ public struct HoneycombOptions {
         private var debug: Bool = false
 
         private var serviceName: String? = nil
+        private var serviceVersion: String? = nil
         private var resourceAttributes: [String: String] = [:]
 
         private var headers: [String: String] = [:]
@@ -281,6 +284,7 @@ public struct HoneycombOptions {
             sampleRate = try source.getInt(sampleRateKey) ?? sampleRate
             debug = try source.getBool(debugKey) ?? debug
             serviceName = try source.getString(otelServiceNameKey) ?? serviceName
+            serviceVersion = try source.getString(otelServiceVersionKey) ?? serviceVersion
             resourceAttributes = try source.getKeyValueList(otelResourceAttributesKey)
             headers = try source.getKeyValueList(otlpHeadersKey)
             tracesHeaders = try source.getKeyValueList(otlpTracesHeadersKey)
@@ -360,6 +364,11 @@ public struct HoneycombOptions {
 
         public func setServiceName(_ serviceName: String) -> Builder {
             self.serviceName = serviceName
+            return self
+        }
+
+        public func setServiceVersion(_ serviceVersion: String) -> Builder {
+            self.serviceVersion = serviceVersion
             return self
         }
 
@@ -481,12 +490,21 @@ public struct HoneycombOptions {
                 ?? resourceAttributes["service.name"]
                 ?? otelServiceNameDefault
 
+            let serviceVersion: String? =
+                self.serviceVersion
+                ?? resourceAttributes["service.version"]
+
             // Add automatic entries to resource attributes. According to the Honeycomb spec,
             // resource attributes should never be overwritten by automatic values. So, if there are
             // two different service names set, this will use the resource attributes version.
 
             // Make sure the service name is in the resource attributes.
             resourceAttributes.putIfAbsent("service.name", serviceName)
+
+            if serviceVersion != nil {
+                resourceAttributes.putIfAbsent("service.version", serviceVersion!)
+            }
+
             // The SDK version is generated from build.gradle.kts.
             resourceAttributes.putIfAbsent(
                 "honeycomb.distro.version",
@@ -555,6 +573,7 @@ public struct HoneycombOptions {
                 sampleRate: sampleRate,
                 debug: debug,
                 serviceName: serviceName,
+                serviceVersion: serviceVersion,
                 resourceAttributes: resourceAttributes,
                 tracesHeaders: tracesHeaders,
                 metricsHeaders: metricsHeaders,
