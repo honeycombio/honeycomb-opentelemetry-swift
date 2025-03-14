@@ -25,11 +25,21 @@ teardown_file() {
   assert_not_empty "$result"
 }
 
-@test "SDK had default resources" {
-  result=$(resource_attributes_received \
-      | jq 'select (.key == "telemetry.sdk.language").value.stringValue' \
-      | sort | uniq)
+@test "SDK sends correct resource attributes" {
+  result=$(resource_attributes_received | sort | uniq)
+   assert_equal "$result" '"honeycomb.distro.runtime_version"
+"honeycomb.distro.version"
+"service.name"
+"service.version"
+"telemetry.sdk.language"
+"telemetry.sdk.name"
+"telemetry.sdk.version"'
+
+  result=$(resource_attribute_named "telemetry.sdk.language" "string" | uniq)
   assert_equal "$result" '"swift"'
+
+  assert_equal $(resource_attribute_named "service.name" "string" | uniq) '"ios-test"'
+  assert_equal $(resource_attribute_named "service.version" "string" | uniq) '"0.0.1"'
 }
 
 @test "Spans have network attributes" {
