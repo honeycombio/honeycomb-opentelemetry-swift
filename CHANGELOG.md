@@ -11,6 +11,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Enable telemetry caching for offline support.
 * Add network connection type attributes.
 * Documentation added for propagating traces.
+* feat: Add `setServiceVersion()` function to `HoneycombOptions` to allow clients to supply current application version.
 
 ### Fixes
 
