@@ -10,6 +10,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Uncaught exception handler to log crashes.
 * Enable telemetry caching for offline support.
 * Add network connection type attributes.
+* Documentation added for propagating traces.
 
 ### Fixes
 

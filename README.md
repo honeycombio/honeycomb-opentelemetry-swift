@@ -163,6 +163,68 @@ For `.sessionStarted`:
 For `.sessionEnded`:
 * `userInfo["previousSession"]` contains the session just ended.
 
+#### Network
+Network events on `URLSession` will automatically be instrumented. 
+
+##### Trace Propagation 
+If you are connecting your app to a backend service that you wish to view as a unified trace with your app, you
+will need to manually add headers to all your outgoing requests. You must also create a span and set it as the active
+span. The span's context will be used to generate the headers needed for trace propagation.
+
+Below is an example of adding the headers to a network request.
+
+```swift
+
+import OpenTelemetryApi
+
+private struct HttpTextMapSetter: Setter {
+    func set(carrier: inout [String: String], key: String, value: String) {
+        carrier[key] = value
+    }
+}
+
+private let textMapSetter = HttpTextMapSetter()
+
+func makeBackendRequest(data: Data) async throws {
+    let url = URL(string: "https://mybackendservice")
+    var request = URLRequest(url: url!)
+    request.httpMethod = "POST"
+    request.httpBody = data
+
+    let allHeaders: [String: String] = []
+
+    let span = OpenTelemetry.instance.tracerProvider.get(
+        instrumentationName: "mybackendservice.network",
+        instrumentationVersion: getCurrentAppVersion()
+    )
+    .spanBuilder(spanName: "backendRequest")
+    // The span must be made the active span or else the network autoinstrumentation 
+    // will not be attached to the trace.
+    .setActive(true)
+    .startSpan()
+    defer {
+        span.end()
+    }
+
+    // This will add the required headers to the `allHeaders` Dictionary
+    OpenTelemetry.instance.propagators.textMapPropagator.inject(
+        spanContext: span.context,
+        carrier: &allHeaders,
+        setter: textMapSetter
+    )
+
+    allHeaders.forEach({ (key: String, value: String) in
+        request.setValue(value, forHTTPHeaderField: key)
+    })
+
+    let session = URLSession(configuration: URLSessionConfiguration.default)
+
+    let (data, response) = try await session.data(for: request)
+
+     // process your response data as normal
+}
+```
+
 ## Manual Instrumentation
 ### SwiftUI View Instrumentation
 
