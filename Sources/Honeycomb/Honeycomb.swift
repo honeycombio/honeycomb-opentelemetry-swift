@@ -1,6 +1,7 @@
 import BaggagePropagationProcessor
 import Foundation
 import MetricKit
+import NetworkStatus
 import OpenTelemetryApi
 import OpenTelemetryProtocolExporterCommon
 import OpenTelemetryProtocolExporterHttp
@@ -116,7 +117,7 @@ public class Honeycomb {
 
         let baggageSpanProcessor = BaggagePropagationProcessor(filter: { _ in true })
 
-        let tracerProvider = TracerProviderBuilder()
+        var tracerProviderBuilder = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
             .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
@@ -126,6 +127,18 @@ public class Honeycomb {
                     sessionLifetimeSeconds: options.sessionTimeout
                 )
             )
+
+        do {
+            let networkMonitor = try NetworkMonitor()
+            tracerProviderBuilder =
+                tracerProviderBuilder
+                .add(spanProcessor: NetworkStatusSpanProcessor(monitor: networkMonitor))
+        } catch {
+            NSLog("Unable to create NetworkMonitor: \(error)")
+        }
+
+        let tracerProvider =
+            tracerProviderBuilder
             .with(resource: resource)
             .with(sampler: HoneycombDeterministicSampler(sampleRate: options.sampleRate))
             .build()

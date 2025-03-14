@@ -24,6 +24,8 @@ let package = Package(
         .target(
             name: "Honeycomb",
             dependencies: [
+                .product(name: "BaggagePropagationProcessor", package: "opentelemetry-swift"),
+                .product(name: "NetworkStatus", package: "opentelemetry-swift"),
                 .product(name: "OpenTelemetryApi", package: "opentelemetry-swift"),
                 .product(name: "OpenTelemetrySdk", package: "opentelemetry-swift"),
                 .product(name: "OpenTelemetryProtocolExporter", package: "opentelemetry-swift"),
@@ -31,7 +33,6 @@ let package = Package(
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
                 .product(name: "ResourceExtension", package: "opentelemetry-swift"),
                 .product(name: "StdoutExporter", package: "opentelemetry-swift"),
-                .product(name: "BaggagePropagationProcessor", package: "opentelemetry-swift"),
             ]
         ),
         .testTarget(
