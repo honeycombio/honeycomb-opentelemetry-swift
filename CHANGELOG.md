@@ -8,6 +8,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Add new options to enable/disable built-in auto-instrumentation.
 * Uncaught exception handler to log crashes.
 * Enable telemetry caching for offline support.
+* Add network connection type attributes.
 * Documentation added for propagating traces.
 
 ### Fixes

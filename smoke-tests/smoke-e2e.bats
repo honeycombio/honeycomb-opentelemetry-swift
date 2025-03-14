@@ -32,6 +32,14 @@ teardown_file() {
   assert_equal "$result" '"swift"'
 }
 
+@test "Spans have network attributes" {
+  name="test-span"
+  attr_name="network.connection.type"
+  type="string"
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name $attr_name $type | sort)
+  assert_not_empty "$result"
+}
+
 # A helper just for MetricKit attributes, because there's so many of them.
 # Arguments:
 #   $1 - attribute key
@@ -107,6 +115,7 @@ mk_attr() {
 
    assert_equal "$result" '"SampleRate"
 "app.metadata"
+"network.connection.type"
 "screen.name"
 "screen.path"
 "session.id"
@@ -320,7 +329,6 @@ mk_diag_attr() {
 }
 
 @test "NSException attributes are correct" {
-
     stacktrace=$(attribute_for_exception_log_of_type "NSException" "exception.stacktrace" string)
     type=$(attribute_for_exception_log_of_type "NSException" "exception.type" string)
     message=$(attribute_for_exception_log_of_type "NSException" "exception.message" string)
@@ -333,7 +341,6 @@ mk_diag_attr() {
 }
 
 @test "NSError attributes are correct" {
-
     code=$(attribute_for_exception_log_of_type "NSError" "exception.code" int)
     type=$(attribute_for_exception_log_of_type "NSError" "exception.type" string)
     message=$(attribute_for_exception_log_of_type "NSError" "exception.message" string)
@@ -344,7 +351,6 @@ mk_diag_attr() {
 }
 
 @test "Swift Error attributes are correct" {
-
     type=$(attribute_for_exception_log_of_type "TestError" "exception.type" string)
     message=$(attribute_for_exception_log_of_type "TestError" "exception.message" string)
 
