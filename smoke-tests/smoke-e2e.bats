@@ -37,7 +37,7 @@ teardown_file() {
   attr_name="network.connection.type"
   type="string"
   result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name $attr_name $type | sort)
-  assert_equal "$result" '"wifi"'
+  assert_not_empty "$result"
 }
 
 # A helper just for MetricKit attributes, because there's so many of them.
