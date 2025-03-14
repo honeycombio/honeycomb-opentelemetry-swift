@@ -5,7 +5,6 @@ Honeycomb OpenTelemetry SDK Changelog
 ### New Features
 
 * Error logging API for manually logging exceptions.
-* Package is now available on Cocoapods.
 * Add new options to enable/disable built-in auto-instrumentation.
 * Uncaught exception handler to log crashes.
 * Enable telemetry caching for offline support.
