@@ -178,7 +178,6 @@ Below is an example of adding the headers to a network request.
 import OpenTelemetryApi
 
 private struct HttpTextMapSetter: Setter {
-    
     func set(carrier: inout [String: String], key: String, value: String) {
         carrier[key] = value
     }
@@ -186,7 +185,7 @@ private struct HttpTextMapSetter: Setter {
 
 private let textMapSetter = HttpTextMapSetter()
 
-func makeBackendRequest(data: Data) {
+func makeBackendRequest(data: Data) async throws {
     let url = URL(string: "https://mybackendservice")
     var request = URLRequest(url: url!)
     request.httpMethod = "POST"
@@ -207,8 +206,6 @@ func makeBackendRequest(data: Data) {
         span.end()
     }
 
-    var allHeaders: [String: String] = []
-
     // This will add the required headers to the `allHeaders` Dictionary
     OpenTelemetry.instance.propagators.textMapPropagator.inject(
         spanContext: span.context,
@@ -222,7 +219,7 @@ func makeBackendRequest(data: Data) {
 
     let session = URLSession(configuration: URLSessionConfiguration.default)
 
-     let (data, response) = try await session.data(for: request)
+    let (data, response) = try await session.data(for: request)
 
      // process your response data as normal
 }
