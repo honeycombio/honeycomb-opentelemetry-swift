@@ -10,6 +10,7 @@ Honeycomb OpenTelemetry SDK Changelog
 * Uncaught exception handler to log crashes.
 * Enable telemetry caching for offline support.
 * Documentation added for propagating traces.
+* feat: Add `setServiceVersion()` function to `HoneycombOptions` to allow clients to supply current application version.
 
 ### Fixes
 
