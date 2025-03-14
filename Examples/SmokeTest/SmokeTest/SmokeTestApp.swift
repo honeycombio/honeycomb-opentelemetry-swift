@@ -9,6 +9,7 @@ struct SmokeTestApp: App {
                 .setAPIKey("test-key")
                 .setAPIEndpoint("http://localhost:4318")
                 .setServiceName("ios-test")
+                .setServiceVersion("0.0.1")
                 .setDebug(true)
                 .setSessionTimeout(10)
                 .setSpanProcessor(SampleSpanProcessor())
