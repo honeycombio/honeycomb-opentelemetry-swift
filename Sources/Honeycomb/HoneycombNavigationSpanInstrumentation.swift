@@ -19,7 +19,7 @@ internal class HoneycombNavigationProcessor {
 
     private init() {}
 
-    @available(iOS 16.0, macOS 12.0, *)
+    @available(iOS 16.0, macOS 13.0, *)
     func reportNavigation(path: NavigationPath) {
         if let codablePath = path.codable {
             reportNavigation(path: codablePath)
@@ -77,7 +77,7 @@ internal class HoneycombNavigationProcessor {
 }
 
 extension View {
-    @available(iOS 16.0, macOS 12.0, *)
+    @available(iOS 16.0, macOS 13.0, *)
     public func instrumentNavigation(path: NavigationPath) -> some View {
         HoneycombNavigationProcessor.shared.reportNavigation(path: path)
 

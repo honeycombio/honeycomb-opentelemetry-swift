@@ -1,7 +1,6 @@
 import Foundation
 import OpenTelemetryApi
 import SwiftUI
-import UIKit
 
 private let urlSessionInstrumentationName = "io.honeycomb.urlsession"
 
