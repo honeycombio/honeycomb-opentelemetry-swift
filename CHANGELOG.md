@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.6
+
 ### New Features
 
 * Error logging API for manually logging exceptions.

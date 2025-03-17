@@ -5,7 +5,7 @@
 
 Honeycomb wrapper for [OpenTelemetry](https://opentelemetry.io) on iOS and macOS.
 
-**STATUS: this library is EXPERIMENTAL.** Data shapes are unstable and not safe for production. We are actively seeking feedback to ensure usability.
+**STATUS: this library is in BETA.** Data shapes are stable and safe for production. We are actively seeking feedback to ensure usability.
 
 ## Getting started
 
@@ -27,7 +27,7 @@ If you're using `Package.swift` to manage dependencies...
 ```swift
     dependencies: [
         .package(url: "https://github.com/honeycombio/honeycomb-opentelemetry-swift.git",
-                 from: "0.0.1-alpha")
+                 from: "0.0.6")
     ],
 ```
 
