@@ -82,7 +82,7 @@ attributes_from_span_named() {
 
 # All resource attributes
 resource_attributes_received() {
-    spans_received | jq ".resource.attributes[]?.key"
+    spans_received | jq ".resource.attributes[]?"
 }
 
 resource_attribute_named() {

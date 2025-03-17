@@ -28,7 +28,7 @@ teardown_file() {
 @test "SDK has default resources" {
   assert_equal "$(resource_attributes_received | jq 'select (.key == "telemetry.sdk.language").value.stringValue' | uniq)" '"swift"'
   assert_equal "$(resource_attributes_received | jq 'select (.key == "service.name").value.stringValue' | uniq)" '"ios-test"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.version").value.stringValue' | uniq)" '"1.0 (1)"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.version").value.stringValue' | uniq)" '"0.0.1"'
   assert_equal "$(resource_attributes_received | jq 'select (.key == "device.model.identifier").value.stringValue' | uniq)" '"arm64"'
   assert_not_empty "$(resource_attributes_received | jq 'select (.key == "device.id").value.stringValue' | uniq)"
   assert_equal "$(resource_attributes_received | jq 'select (.key == "os.type").value.stringValue' | uniq)" '"darwin"'
@@ -46,9 +46,15 @@ teardown_file() {
 }
 
 @test "SDK sends correct resource attributes" {
-  result=$(resource_attributes_received | sort | uniq)
-  assert_equal "$result" '"honeycomb.distro.runtime_version"
+  result=$(resource_attributes_received | jq ".key" | sort | uniq)
+  assert_equal "$result" '"device.id"
+"device.model.identifier"
+"honeycomb.distro.runtime_version"
 "honeycomb.distro.version"
+"os.description"
+"os.name"
+"os.type"
+"os.version"
 "service.name"
 "service.version"
 "telemetry.sdk.language"
