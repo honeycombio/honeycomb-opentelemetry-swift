@@ -1,7 +1,9 @@
 import Foundation
+import OpenTelemetrySdk
 
 internal class HoneycombUncaughtExceptionHandler {
     private static var initialUncaughtExceptionHandler: ((NSException) -> Void)? = nil
+    private static var logProcessor: LogRecordProcessor? = nil
 
     public static func initializeUnhandledExceptionInstrumentation() {
         HoneycombUncaughtExceptionHandler.initialUncaughtExceptionHandler =
@@ -9,6 +11,9 @@ internal class HoneycombUncaughtExceptionHandler {
 
         NSSetUncaughtExceptionHandler { exception in
             Honeycomb.log(exception: exception, thread: Thread.current)
+            
+            // Wait
+            Thread.sleep(forTimeInterval: 10.0)
 
             if let initialHanlder = HoneycombUncaughtExceptionHandler
                 .initialUncaughtExceptionHandler
