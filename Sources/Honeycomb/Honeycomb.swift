@@ -65,9 +65,7 @@ public class Honeycomb {
             headers: createKeyValueList(options.logsHeaders)
         )
 
-        // The default constructor includes a bunch of automatic values we want,
-        // so it's important to create a default one and then merge our own.
-        let resource = Resource()
+        let resource = DefaultResources().get()
             .merging(other: Resource(attributes: createAttributeDict(options.resourceAttributes)))
 
         // Traces

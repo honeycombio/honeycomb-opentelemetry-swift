@@ -25,11 +25,16 @@ teardown_file() {
   assert_not_empty "$result"
 }
 
-@test "SDK had default resources" {
-  result=$(resource_attributes_received \
-      | jq 'select (.key == "telemetry.sdk.language").value.stringValue' \
-      | sort | uniq)
-  assert_equal "$result" '"swift"'
+@test "SDK has default resources" {
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "telemetry.sdk.language").value.stringValue' | uniq)" '"swift"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.name").value.stringValue' | uniq)" '"ios-test"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.version").value.stringValue' | uniq)" '"0.0.1"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "device.model.identifier").value.stringValue' | uniq)" '"arm64"'
+  assert_not_empty "$(resource_attributes_received | jq 'select (.key == "device.id").value.stringValue' | uniq)"
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.type").value.stringValue' | uniq)" '"darwin"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.description").value.stringValue' | uniq)" '"iOS Version 17.5 (Build 21F79)"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.name").value.stringValue' | uniq)" '"iOS"'
+  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.version").value.stringValue' | uniq)" '"17.5.0"'
 }
 
 @test "Spans have network attributes" {
@@ -38,6 +43,29 @@ teardown_file() {
   type="string"
   result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name $attr_name $type | sort)
   assert_not_empty "$result"
+}
+
+@test "SDK sends correct resource attributes" {
+  result=$(resource_attributes_received | jq ".key" | sort | uniq)
+  assert_equal "$result" '"device.id"
+"device.model.identifier"
+"honeycomb.distro.runtime_version"
+"honeycomb.distro.version"
+"os.description"
+"os.name"
+"os.type"
+"os.version"
+"service.name"
+"service.version"
+"telemetry.sdk.language"
+"telemetry.sdk.name"
+"telemetry.sdk.version"'
+
+  result=$(resource_attribute_named "telemetry.sdk.language" "string" | uniq)
+  assert_equal "$result" '"swift"'
+
+  assert_equal $(resource_attribute_named "service.name" "string" | uniq) '"ios-test"'
+  assert_equal $(resource_attribute_named "service.version" "string" | uniq) '"0.0.1"'
 }
 
 # A helper just for MetricKit attributes, because there's so many of them.
@@ -200,7 +228,7 @@ mk_diag_attr() {
   result=$(span_names_for "io.honeycomb.view" | sort | uniq -c)
   assert_equal "$result" '   7 "View Body"
    7 "View Render"'
-   
+
   # the View Render spans are tracking the views we expect
   total_duration=$(attribute_for_span_key "io.honeycomb.view" "View Render" "view.name" string | sort)
   assert_equal "$total_duration" '"expensive text 1"
@@ -224,7 +252,7 @@ mk_diag_attr() {
         | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq)
     assert_equal "$result" '"UIKit Menu"'
-    
+
         result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidAppear \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
@@ -254,28 +282,28 @@ mk_diag_attr() {
     assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Ended" "Simple Button")
     assert_not_empty $(spans_on_view_named "io.honeycomb.uikit" "Touch Ended" "accessibleButton")
     # UISwitch does not support Touch Ended events at this time. Apple sets the view to null.
-    
+
     screen_name_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq
     )
     assert_equal "$screen_name_attr" '"UI KIT SCREEN OVERRIDE"'
-    
+
     screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.path\")" \
         | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq
     )
     assert_equal "$screen_path_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
-    
+
     screen_name_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
         | uniq
     )
     assert_equal "$screen_name_attr" '"UIKit Menu"'
-    
+
     screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.path\")" \
         | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
@@ -314,7 +342,7 @@ mk_diag_attr() {
         | uniq -c)
     root_count=$(echo "$result" | grep "\[\]")
     yosemite_count=$(echo "$result" | grep "Yosemite")
-    
+
     assert_equal "$root_count" '   1 "[]"'
     assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
 }

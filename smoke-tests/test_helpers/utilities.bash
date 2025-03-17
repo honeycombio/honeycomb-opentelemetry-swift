@@ -17,14 +17,14 @@ spans_on_view_named() {
 # Span names for a given scope
 # Arguments: $1 - scope name
 span_names_for() {
-	spans_from_scope_named $1 | jq '.name'
+    spans_from_scope_named $1 | jq '.name'
 }
 
 # Attributes for a given scope
 # Arguments: $1 - scope name
 span_attributes_for() {
-	spans_from_scope_named $1 | \
-		jq ".attributes[]"
+    spans_from_scope_named $1 | \
+        jq ".attributes[]"
 }
 
 # A single span attribute
@@ -34,9 +34,9 @@ span_attributes_for() {
 #   $3 - attribute key
 #   $4 - attribute type
 attribute_for_span_key() {
-	attributes_from_span_named "$1" "$2" | \
-		jq "select (.key == \"$3\").value" | \
-		jq ".${4}Value"
+    attributes_from_span_named "$1" "$2" | \
+        jq "select (.key == \"$3\").value" | \
+        jq ".${4}Value"
 }
 
 # A single log attribute
@@ -45,10 +45,10 @@ attribute_for_span_key() {
 #   $2 - attribute key
 #   $3 - attribute type
 attribute_for_log_key() {
-	logs_from_scope_named $1 | \
-		jq ".attributes[]" | \
-		jq "select (.key == \"$2\").value" | \
-		jq ".${3}Value"
+    logs_from_scope_named $1 | \
+        jq ".attributes[]" | \
+        jq "select (.key == \"$2\").value" | \
+        jq ".${3}Value"
 }
 
 # Gets all attributes for all logs where a single values matches
@@ -76,35 +76,39 @@ attribute_for_exception_log_of_type() {
 #   $1 - scope
 #   $2 - span name
 attributes_from_span_named() {
-	spans_from_scope_named $1 | \
-		jq "select (.name == \"$2\").attributes[]"
+    spans_from_scope_named $1 | \
+        jq "select (.name == \"$2\").attributes[]"
 }
 
 # All resource attributes
 resource_attributes_received() {
-	spans_received | jq ".resource.attributes[]?"
+    spans_received | jq ".resource.attributes[]?"
+}
+
+resource_attribute_named() {
+    spans_received | jq ".resource.attributes[]? | select(.key == \"$1\").value.${2}Value"
 }
 
 # Spans for a given scope
 # Arguments: $1 - scope name
 spans_from_scope_named() {
-	spans_received | jq ".scopeSpans[] | select(.scope.name == \"$1\").spans[]"
+    spans_received | jq ".scopeSpans[] | select(.scope.name == \"$1\").spans[]"
 }
 
 # Logs for a given scope
 # Arguments: $1 - scope name
 logs_from_scope_named() {
-	logs_received | jq ".scopeLogs[] | select(.scope.name == \"$1\").logRecords[]"
+    logs_received | jq ".scopeLogs[] | select(.scope.name == \"$1\").logRecords[]"
 }
 
 # All spans received
 spans_received() {
-	jq ".resourceSpans[]?" ./collector/data.json
+    jq ".resourceSpans[]?" ./collector/data.json
 }
 
 # All logs received
 logs_received() {
-	jq ".resourceLogs[]?" ./collector/data.json
+    jq ".resourceLogs[]?" ./collector/data.json
 }
 
 # ASSERTION HELPERS
@@ -117,46 +121,46 @@ logs_received() {
 # $1 - actual result
 # $2 - expected result
 assert_equal() {
-	if [[ $1 != "$2" ]]; then
-		{
-			echo
-			echo "-- 💥 values are not equal 💥 --"
-			echo "expected : $2"
-			echo "actual   : $1"
-			echo "--"
-			echo
-		} >&2 # output error to STDERR
-		return 1
-	fi
+    if [[ $1 != "$2" ]]; then
+        {
+            echo
+            echo "-- 💥 values are not equal 💥 --"
+            echo "expected : $2"
+            echo "actual   : $1"
+            echo "--"
+            echo
+        } >&2 # output error to STDERR
+        return 1
+    fi
 }
 
 # Fail and display details if the actual value is empty.
 # Arguments: $1 - actual result
 assert_not_empty_string() {
-	EMPTY=(\"\")
-	if [[ "$1" == "${EMPTY}" ]]; then
-		{
-			echo
-			echo "-- 💥 value is empty 💥 --"
-			echo "value : $1"
-			echo "--"
-			echo
-		} >&2 # output error to STDERR
-		return 1
-	fi
+    EMPTY=(\"\")
+    if [[ "$1" == "${EMPTY}" ]]; then
+        {
+            echo
+            echo "-- 💥 value is empty 💥 --"
+            echo "value : $1"
+            echo "--"
+            echo
+        } >&2 # output error to STDERR
+        return 1
+    fi
 }
 
 # Fail and display details if the actual value is empty.
 # Arguments: $1 - actual result
 assert_not_empty() {
-	if [[ "$1" == "" ]]; then
-		{
-			echo
-			echo "-- 💥 value is empty 💥 --"
-			echo "value : $1"
-			echo "--"
-			echo
-		} >&2 # output error to STDERR
-		return 1
-	fi
+    if [[ "$1" == "" ]]; then
+        {
+            echo
+            echo "-- 💥 value is empty 💥 --"
+            echo "value : $1"
+            echo "--"
+            echo
+        } >&2 # output error to STDERR
+        return 1
+    fi
 }
