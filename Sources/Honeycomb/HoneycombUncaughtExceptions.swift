@@ -13,7 +13,7 @@ internal class HoneycombUncaughtExceptionHandler {
             Honeycomb.log(exception: exception, thread: Thread.current)
             
             // Wait
-            Thread.sleep(forTimeInterval: 10.0)
+            Thread.sleep(forTimeInterval: 3.0)
 
             if let initialHanlder = HoneycombUncaughtExceptionHandler
                 .initialUncaughtExceptionHandler
