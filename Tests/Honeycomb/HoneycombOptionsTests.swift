@@ -84,7 +84,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let options = try HoneycombOptions.Builder(source: source).build()
 
         XCTAssertEqual("unknown_service", options.serviceName)
-        XCTAssertEqual(nil, options.serviceVersion)
+        XCTAssertNil(options.serviceVersion)
         let expectedResources = [
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
