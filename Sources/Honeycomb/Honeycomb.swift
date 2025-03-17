@@ -337,6 +337,7 @@ public class Honeycomb {
         logger.logRecordBuilder()
             .setTimestamp(timestamp)
             .setAttributes(logAttrs)
+            .setSeverity(.fatal)
             .emit()
     }
 
