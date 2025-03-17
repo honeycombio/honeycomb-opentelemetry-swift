@@ -3,7 +3,6 @@ import OpenTelemetrySdk
 
 internal class HoneycombUncaughtExceptionHandler {
     private static var initialUncaughtExceptionHandler: ((NSException) -> Void)? = nil
-    private static var logProcessor: LogRecordProcessor? = nil
 
     public static func initializeUnhandledExceptionInstrumentation() {
         HoneycombUncaughtExceptionHandler.initialUncaughtExceptionHandler =
