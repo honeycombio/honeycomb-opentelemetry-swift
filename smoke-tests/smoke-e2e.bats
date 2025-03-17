@@ -68,6 +68,14 @@ teardown_file() {
   assert_equal $(resource_attribute_named "service.version" "string" | uniq) '"0.0.1"'
 }
 
+@test "Spans have network attributes" {
+  name="test-span"
+  attr_name="network.connection.type"
+  type="string"
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name $attr_name $type | sort)
+  assert_not_empty "$result"
+}
+
 # A helper just for MetricKit attributes, because there's so many of them.
 # Arguments:
 #   $1 - attribute key
