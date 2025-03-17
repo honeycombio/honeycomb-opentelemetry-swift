@@ -584,7 +584,7 @@ final class HoneycombOptionsTests: XCTestCase {
     func testResourceAttributeSetterTakesPrecedenceOverResourceSource() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
-            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource_name,service.version=1",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource_name,service.version=1,other.attr=1",
         ]
         let source = HoneycombOptionsSource(info: data)
         let resourceAttributes = [
@@ -600,6 +600,7 @@ final class HoneycombOptionsTests: XCTestCase {
         let expectedResources = [
             "service.name": "service_name",
             "service.version": "2",
+            "other.attr": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]
