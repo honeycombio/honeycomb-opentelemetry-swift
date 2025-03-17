@@ -523,21 +523,17 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(expected, options.tracesHeaders)
     }
 
-    func testServiceNameTakesPrecedence() throws {
-        let data = [
-            "HONEYCOMB_API_KEY": "key",
-            "OTEL_SERVICE_NAME": "explicit",
-            "OTEL_SERVICE_VERSION": "2",
-            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource,service.version=1",
+    func testServiceNameDefault() throws {
+        let data: [String: String] = [
+            "HONEYCOMB_API_KEY": "key"
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
 
-        XCTAssertEqual("explicit", options.serviceName)
-        XCTAssertEqual("2", options.serviceVersion)
+        XCTAssertEqual("unknown_service", options.serviceName)
+        XCTAssertNil(options.serviceVersion)
         let expectedResources = [
-            "service.name": "resource",
-            "service.version": "1",
+            "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]
@@ -547,15 +543,15 @@ final class HoneycombOptionsTests: XCTestCase {
     func testServiceNameFromResourceAttributes() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
-            "OTEL_RESOURCE_ATTRIBUTES": "service.name=better,service.version=1",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource_name,service.version=1",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
 
-        XCTAssertEqual("better", options.serviceName)
+        XCTAssertEqual("resource_name", options.serviceName)
         XCTAssertEqual("1", options.serviceVersion)
         let expectedResources = [
-            "service.name": "better",
+            "service.name": "resource_name",
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
@@ -563,22 +559,21 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
 
-    func testServiceNameSetterTakesPrecedence() throws {
+    func testIndividualSourceVariablesTakePrecedence() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
-            "OTEL_SERVICE_NAME": "explicit",
-            "OTEL_SERVICE_VERSION": "1",
+            "OTEL_SERVICE_NAME": "service_name",
+            "OTEL_SERVICE_VERSION": "2",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource_name,service.version=1",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source)
-            .setServiceName("override")
-            .setServiceVersion("2")
             .build()
 
-        XCTAssertEqual("override", options.serviceName)
+        XCTAssertEqual("service_name", options.serviceName)
         XCTAssertEqual("2", options.serviceVersion)
         let expectedResources = [
-            "service.name": "override",
+            "service.name": "service_name",
             "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
@@ -586,68 +581,151 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
 
-    func testResourceAttributeSourceTakesPrecedenceOverSetters() throws {
+    func testResourceAttributeSetterTakesPrecedenceOverResourceSource() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
-            "OTEL_SERVICE_NAME": "explicit",
-            "OTEL_SERVICE_VERSION": "2",
-            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource,service.version=1",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource_name,service.version=1",
         ]
         let source = HoneycombOptionsSource(info: data)
+        let resourceAttributes = [
+            "service.name": "service_name",
+            "service.version": "2",
+        ]
         let options = try HoneycombOptions.Builder(source: source)
-            .setServiceName("override")
-            .setServiceVersion("3")
+            .setResourceAttributes(resourceAttributes)
             .build()
 
-        XCTAssertEqual("override", options.serviceName)
-        XCTAssertEqual("3", options.serviceVersion)
+        XCTAssertEqual("service_name", options.serviceName)
+        XCTAssertEqual("2", options.serviceVersion)
         let expectedResources = [
-            "service.name": "resource",
-            "service.version": "1",
+            "service.name": "service_name",
+            "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
 
-    func testResourceAttributesTakePrecedenceOverSetters() throws {
+    func testResourceAttributeSetterTakesPrecedenceOverSource() throws {
         let data = [
             "HONEYCOMB_API_KEY": "key",
-            "OTEL_SERVICE_NAME": "explicit",
-            "OTEL_SERVICE_VERSION": "2",
+            "OTEL_SERVICE_NAME": "resource_name",
+            "OTEL_SERVICE_VERSION": "1",
         ]
         let source = HoneycombOptionsSource(info: data)
         let resourceAttributes = [
-            "service.name": "resource",
+            "service.name": "service_name",
+            "service.version": "2",
+        ]
+        let options = try HoneycombOptions.Builder(source: source)
+            .setResourceAttributes(resourceAttributes)
+            .build()
+
+        XCTAssertEqual("service_name", options.serviceName)
+        XCTAssertEqual("2", options.serviceVersion)
+        let expectedResources = [
+            "service.name": "service_name",
+            "service.version": "2",
+            "honeycomb.distro.version": honeycombLibraryVersion,
+            "honeycomb.distro.runtime_version": runtimeVersion,
+        ]
+        XCTAssertEqual(expectedResources, options.resourceAttributes)
+    }
+
+    func testIndividualSettersTakePrecedenceOverSource() throws {
+        let data = [
+            "HONEYCOMB_API_KEY": "key",
+            "OTEL_SERVICE_NAME": "resource_name",
+            "OTEL_SERVICE_VERSION": "1",
+        ]
+        let source = HoneycombOptionsSource(info: data)
+        let options = try HoneycombOptions.Builder(source: source)
+            .setServiceName("service_name")
+            .setServiceVersion("2")
+            .build()
+
+        XCTAssertEqual("service_name", options.serviceName)
+        XCTAssertEqual("2", options.serviceVersion)
+        let expectedResources = [
+            "service.name": "service_name",
+            "service.version": "2",
+            "honeycomb.distro.version": honeycombLibraryVersion,
+            "honeycomb.distro.runtime_version": runtimeVersion,
+        ]
+        XCTAssertEqual(expectedResources, options.resourceAttributes)
+    }
+
+    func testIndividualSettersTakePrecedenceOverSources() throws {
+        let data = [
+            "HONEYCOMB_API_KEY": "key",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=resource_name,service.version=1",
+            "OTEL_SERVICE_NAME": "service_name",
+            "OTEL_SERVICE_VERSION": "2",
+        ]
+        let source = HoneycombOptionsSource(info: data)
+        let options = try HoneycombOptions.Builder(source: source)
+            .setServiceName("override_name")
+            .setServiceVersion("3")
+            .build()
+
+        XCTAssertEqual("override_name", options.serviceName)
+        XCTAssertEqual("3", options.serviceVersion)
+        let expectedResources = [
+            "service.name": "override_name",
+            "service.version": "3",
+            "honeycomb.distro.version": honeycombLibraryVersion,
+            "honeycomb.distro.runtime_version": runtimeVersion,
+        ]
+        XCTAssertEqual(expectedResources, options.resourceAttributes)
+    }
+
+    func testIndividualSettersTakePrecedenceOverResourceAttributeSetter() throws {
+        let data = [
+            "HONEYCOMB_API_KEY": "key"
+        ]
+        let source = HoneycombOptionsSource(info: data)
+        let resourceAttributes = [
+            "service.name": "resource_name",
             "service.version": "1",
         ]
         let options = try HoneycombOptions.Builder(source: source)
             .setResourceAttributes(resourceAttributes)
-            .setServiceName("override")
-            .setServiceVersion("3")
+            .setServiceName("service_name")
+            .setServiceVersion("2")
             .build()
 
-        XCTAssertEqual("override", options.serviceName)
-        XCTAssertEqual("3", options.serviceVersion)
+        XCTAssertEqual("service_name", options.serviceName)
+        XCTAssertEqual("2", options.serviceVersion)
         let expectedResources = [
-            "service.name": "resource",
-            "service.version": "1",
+            "service.name": "service_name",
+            "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
 
-    func testServiceNameDefault() throws {
-        let data: [String: String] = [
+    // very similar to the test above, but note the ordering of the setResourceAttributes() call vs. the setServiceName() call
+    func testResourceAttributeSetterTakesPrecedenceOverIndividualSetters() throws {
+        let data = [
             "HONEYCOMB_API_KEY": "key"
         ]
         let source = HoneycombOptionsSource(info: data)
-        let options = try HoneycombOptions.Builder(source: source).build()
+        let resourceAttributes = [
+            "service.name": "resource_name",
+            "service.version": "1",
+        ]
+        let options = try HoneycombOptions.Builder(source: source)
+            .setServiceName("service_name")
+            .setServiceVersion("2")
+            .setResourceAttributes(resourceAttributes)
+            .build()
 
-        XCTAssertEqual("unknown_service", options.serviceName)
+        XCTAssertEqual("resource_name", options.serviceName)
+        XCTAssertEqual("1", options.serviceVersion)
         let expectedResources = [
-            "service.name": "unknown_service",
+            "service.name": "resource_name",
+            "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
         ]

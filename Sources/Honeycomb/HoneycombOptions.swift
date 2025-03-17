@@ -373,7 +373,17 @@ public struct HoneycombOptions {
         }
 
         public func setResourceAttributes(_ resources: [String: String]) -> Builder {
-            resourceAttributes = resources
+            for (key, value) in resources {
+                resourceAttributes[key] = value
+            }
+
+            if resources.keys.contains("service.name") {
+                serviceName = resourceAttributes["service.name"]
+            }
+            if resources.keys.contains("service.version") {
+                serviceVersion = resourceAttributes["service.version"]
+            }
+
             return self
         }
 
@@ -499,10 +509,10 @@ public struct HoneycombOptions {
             // two different service names set, this will use the resource attributes version.
 
             // Make sure the service name is in the resource attributes.
-            resourceAttributes.putIfAbsent("service.name", serviceName)
+            resourceAttributes["service.name"] = serviceName
 
             if serviceVersion != nil {
-                resourceAttributes.putIfAbsent("service.version", serviceVersion!)
+                resourceAttributes["service.version"] = serviceVersion!
             }
 
             // The SDK version is generated from build.gradle.kts.
