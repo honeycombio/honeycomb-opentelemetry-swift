@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+### Fixes
+
+* Wait for flush to avoid missed crash logs
+
 ## 0.0.6
 
 ### New Features
