@@ -11,7 +11,7 @@ internal class HoneycombUncaughtExceptionHandler {
 
         NSSetUncaughtExceptionHandler { exception in
             Honeycomb.log(exception: exception, thread: Thread.current)
-            
+
             // Wait
             Thread.sleep(forTimeInterval: 3.0)
 
