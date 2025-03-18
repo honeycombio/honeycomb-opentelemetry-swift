@@ -1,5 +1,4 @@
 import Foundation
-import OpenTelemetrySdk
 
 internal class HoneycombUncaughtExceptionHandler {
     private static var initialUncaughtExceptionHandler: ((NSException) -> Void)? = nil
