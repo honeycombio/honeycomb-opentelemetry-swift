@@ -241,7 +241,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "OTEL_EXPORTER_OTLP_LOGS_TIMEOUT": "60000",
             "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL": "grpc",
             "SAMPLE_RATE": "42",
-            "BATTERY_STATE_ATTRIBUTES_ENABLED": "true"
+            "BATTERY_STATE_ATTRIBUTES_ENABLED": "true",
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -299,7 +299,7 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertTrue(options.debug)
         XCTAssertEqual(42, options.sampleRate)
-        
+
         XCTAssertTrue(options.batteryStateAttributesEnabled)
     }
 

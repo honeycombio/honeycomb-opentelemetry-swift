@@ -307,7 +307,8 @@ public struct HoneycombOptions {
             offlineCachingEnabled =
                 try source.getBool(offlineCachingEnabledKey) ?? offlineCachingEnabled
             batteryStateAttributesEnabled =
-                try source.getBool(batteryStateAttributesEnabledKey) ?? batteryStateAttributesEnabled
+                try source.getBool(batteryStateAttributesEnabledKey)
+                ?? batteryStateAttributesEnabled
         }
 
         public func setAPIKey(_ apiKey: String) -> Builder {

@@ -10,7 +10,7 @@ public struct UIDeviceSpanProcessor: SpanProcessor {
     private let device: UIDevice
     init(_ collectBatteryState: Bool = false) {
         device = UIDevice.current
-        if (collectBatteryState) {
+        if collectBatteryState {
             device.isBatteryMonitoringEnabled = true
         }
     }
