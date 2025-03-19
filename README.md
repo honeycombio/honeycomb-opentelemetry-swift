@@ -109,6 +109,34 @@ To manually send a span:
 | `unhandledExceptionInstrumentationEnabled` | Bool     | No        | Whether to enable unhandle exception instrumentation. (default: true)                                                                                      |
 | `offlineCachingEnabled` | Bool | No | Whether to enable offline caching for telemetry (default: false). Warning: this feature is still in alpha and may be unstable. For more details, see [Offline Caching](#offline-caching) |
 
+## Default Attributes
+All spans will include the following attributes
+
+- `honeycomb.distro.runtime_version`: Version of iOS on the device. See also `os.description`.
+- `honeycomb.distro.version`: Version of the Honeycomb SDK being used.
+- `os.description`: String containing iOS version, build ID, and SDK level.
+- `os.name`: "iOS"
+- `os.type`: "darwin"
+- `os.version`: Current iOS Version
+- `service.name`: The name of your application, as provided via `setServiceName()`, or inferred from your bundle if unset.
+- `service.version`: Optional. The version of your application, as provided via `setServiceVersion(), or inferred from your bundle if unset.
+- `telemetry.sdk.language`: "swift"
+- `telemetry.sdk.name`: "opentelemetry"
+- `telemetry.sdk.version`: Version of the OpenTelemetry Swift SDK being used.
+- [UIDevice](https://developer.apple.com/documentation/uikit/uidevice) attributes:
+    - `device.id`: [UIDevice.identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/identifierforvendor)
+    - `device.name` - [UIDevice.name](https://developer.apple.com/documentation/uikit/uidevice/name)
+    - `device.systemName` - [UIDevice.systemName](https://developer.apple.com/documentation/uikit/uidevice/systemname)
+    - `device.systemVersion` - [UIDevice.systemVersion](https://developer.apple.com/documentation/uikit/uidevice/systemversion)
+    - `device.model` - [UIDevice.model](https://developer.apple.com/documentation/uikit/uidevice/model)
+    - `device.localizedModel` - [UIDevice.localizedModel](https://developer.apple.com/documentation/uikit/uidevice/localizedmodel)
+    - `device.userInterfaceIdiom` - [UIDevice.userInterfaceIdiom](https://developer.apple.com/documentation/uikit/uidevice/userinterfaceidiom)
+    - `device.isMultitaskingSupported` - [UIDevice.isMultitaskingSupported](https://developer.apple.com/documentation/uikit/uidevice/ismultitaskingsupported)
+    - `device.orientation` - [UIDevice.orientation](https://developer.apple.com/documentation/uikit/uidevice/orientation)
+    - `device.isBatteryMonitoringEnabled` - [UIDevice.isBatteryMonitoringEnabled](https://developer.apple.com/documentation/uikit/uidevice/isbatterymonitoringenabled)
+    - `device.batteryLevel` - [UIDevice.batteryLevel](https://developer.apple.com/documentation/uikit/uidevice/batterylevel), only included if `isBatteryMonitoringEnabled` is `true`.
+    - `device.batteryState` - [UIDevice.batteryState](https://developer.apple.com/documentation/uikit/uidevice/batterystate-swift.property), only included if `isBatteryMonitoringEnabled` is `true`.
+
 ## Auto-instrumentation
 
 The following auto-instrumentation libraries are automatically included:

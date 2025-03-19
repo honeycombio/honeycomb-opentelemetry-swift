@@ -102,6 +102,7 @@ public class Honeycomb {
 
         let spanProcessor = CompositeSpanProcessor()
         spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: spanExporter))
+        spanProcessor.addSpanProcessor(UIDeviceSpanProcessor())
         if let clientSpanProcessor = options.spanProcessor {
             spanProcessor.addSpanProcessor(clientSpanProcessor)
         }

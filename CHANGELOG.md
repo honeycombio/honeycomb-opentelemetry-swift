@@ -5,6 +5,7 @@ Honeycomb OpenTelemetry SDK Changelog
 ### Fixes
 
 * Wait for flush to avoid missed crash logs
+* Add [UIDevice](https://developer.apple.com/documentation/uikit/uidevice) attributes to spans
 
 ## 0.0.6
 
