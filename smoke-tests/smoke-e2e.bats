@@ -143,8 +143,6 @@ mk_attr() {
 
    assert_equal "$result" '"SampleRate"
 "app.metadata"
-"device.batteryLevel"
-"device.batteryState"
 "device.isBatteryMonitoringEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
