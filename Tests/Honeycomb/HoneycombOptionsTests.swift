@@ -241,6 +241,7 @@ final class HoneycombOptionsTests: XCTestCase {
             "OTEL_EXPORTER_OTLP_LOGS_TIMEOUT": "60000",
             "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL": "grpc",
             "SAMPLE_RATE": "42",
+            "BATTERY_STATE_ATTRIBUTES_ENABLED": "true"
         ]
         let source = HoneycombOptionsSource(info: data)
         let options = try HoneycombOptions.Builder(source: source).build()
@@ -298,6 +299,8 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertTrue(options.debug)
         XCTAssertEqual(42, options.sampleRate)
+        
+        XCTAssertTrue(options.batteryStateAttributesEnabled)
     }
 
     func testOptionsSetValues() throws {
@@ -330,6 +333,7 @@ final class HoneycombOptionsTests: XCTestCase {
             .setTouchInstrumentationEnabled(true)
             .setUnhandledExceptionInstrumentationEnabled(false)
             .setOfflineCachingEnabled(true)
+            .setBatteryStateAttributesEnabled(true)
             .build()
 
         XCTAssertEqual("service", options.serviceName)
@@ -392,6 +396,7 @@ final class HoneycombOptionsTests: XCTestCase {
         XCTAssertTrue(options.touchInstrumentationEnabled)
         XCTAssertFalse(options.unhandledExceptionInstrumentationEnabled)
         XCTAssertTrue(options.offlineCachingEnabled)
+        XCTAssertTrue(options.batteryStateAttributesEnabled)
     }
 
     func testDatasetSetWithClassicKey() throws {

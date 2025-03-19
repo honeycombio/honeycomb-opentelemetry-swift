@@ -108,6 +108,7 @@ To manually send a span:
 | `touchInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit touch instrumentation (default: false)                                                                                             |
 | `unhandledExceptionInstrumentationEnabled` | Bool     | No        | Whether to enable unhandle exception instrumentation. (default: true)                                                                                      |
 | `offlineCachingEnabled` | Bool | No | Whether to enable offline caching for telemetry (default: false). Warning: this feature is still in alpha and may be unstable. For more details, see [Offline Caching](#offline-caching) |
+| `batteryStateAttributesEnabled`            | Bool     | No        | Whether UIDevice telemetry should include battery information                                                                                              |
 
 ## Default Attributes
 All spans will include the following attributes
@@ -134,8 +135,8 @@ All spans will include the following attributes
     - `device.isMultitaskingSupported` - [UIDevice.isMultitaskingSupported](https://developer.apple.com/documentation/uikit/uidevice/ismultitaskingsupported)
     - `device.orientation` - [UIDevice.orientation](https://developer.apple.com/documentation/uikit/uidevice/orientation)
     - `device.isBatteryMonitoringEnabled` - [UIDevice.isBatteryMonitoringEnabled](https://developer.apple.com/documentation/uikit/uidevice/isbatterymonitoringenabled)
-    - `device.batteryLevel` - [UIDevice.batteryLevel](https://developer.apple.com/documentation/uikit/uidevice/batterylevel), only included if `isBatteryMonitoringEnabled` is `true`.
-    - `device.batteryState` - [UIDevice.batteryState](https://developer.apple.com/documentation/uikit/uidevice/batterystate-swift.property), only included if `isBatteryMonitoringEnabled` is `true`.
+    - `device.batteryLevel` - [UIDevice.batteryLevel](https://developer.apple.com/documentation/uikit/uidevice/batterylevel). Only included if `batteryStateAttributesEnabled` is set to `true` when the SDK is initialized.
+    - `device.batteryState` - [UIDevice.batteryState](https://developer.apple.com/documentation/uikit/uidevice/batterystate-swift.property). Only included if `batteryStateAttributesEnabled` is set to `true` when the SDK is initialized.
 
 ## Auto-instrumentation
 

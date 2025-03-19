@@ -1,12 +1,9 @@
 import Honeycomb
 import SwiftUI
-import UIKit
 
 @main
 struct SmokeTestApp: App {
     init() {
-        UIDevice.current.isBatteryMonitoringEnabled = true
-
         do {
             let options = try HoneycombOptions.Builder()
                 .setAPIKey("test-key")
@@ -17,6 +14,7 @@ struct SmokeTestApp: App {
                 .setSessionTimeout(10)
                 .setSpanProcessor(SampleSpanProcessor())
                 .setTouchInstrumentationEnabled(true)
+                .setBatteryStateAttributesEnabled(true)
                 .build()
             try Honeycomb.configure(options: options)
         } catch {

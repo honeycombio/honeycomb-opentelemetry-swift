@@ -52,6 +52,8 @@ private let otlpLogsProtocolKey = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL"
 
 private let offlineCachingEnabledKey = "OFFLINE_CACHING_ENABLED"
 
+private let batteryStateAttributesEnabledKey = "BATTERY_STATE_ATTRIBUTES_ENABLED"
+
 /// The protocol for OTLP to use when talking to its backend.
 public enum OTLPProtocol {
     case grpc
@@ -197,6 +199,8 @@ public struct HoneycombOptions {
 
     let offlineCachingEnabled: Bool
 
+    let batteryStateAttributesEnabled: Bool
+
     public class Builder {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
@@ -244,6 +248,8 @@ public struct HoneycombOptions {
         private var unhandledExceptionInstrumentationEnabled: Bool = true
 
         private var offlineCachingEnabled: Bool = false
+
+        private var batteryStateAttributesEnabled: Bool = false
 
         /// Creates a builder with default options.
         public init() {}
@@ -300,6 +306,8 @@ public struct HoneycombOptions {
             logsProtocol = try source.getOTLPProtocol(otlpLogsProtocolKey)
             offlineCachingEnabled =
                 try source.getBool(offlineCachingEnabledKey) ?? offlineCachingEnabled
+            batteryStateAttributesEnabled =
+                try source.getBool(batteryStateAttributesEnabledKey) ?? batteryStateAttributesEnabled
         }
 
         public func setAPIKey(_ apiKey: String) -> Builder {
@@ -483,6 +491,11 @@ public struct HoneycombOptions {
             return self
         }
 
+        public func setBatteryStateAttributesEnabled(_ enabled: Bool) -> Builder {
+            batteryStateAttributesEnabled = enabled
+            return self
+        }
+
         public func build() throws -> HoneycombOptions {
             // If any API key isn't set, consider it a fatal error.
             let defaultApiKey: () throws -> String = {
@@ -601,7 +614,8 @@ public struct HoneycombOptions {
                 uiKitInstrumentationEnabled: uiKitInstrumentationEnabled,
                 touchInstrumentationEnabled: touchInstrumentationEnabled,
                 unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled,
-                offlineCachingEnabled: offlineCachingEnabled
+                offlineCachingEnabled: offlineCachingEnabled,
+                batteryStateAttributesEnabled: batteryStateAttributesEnabled
             )
         }
 
