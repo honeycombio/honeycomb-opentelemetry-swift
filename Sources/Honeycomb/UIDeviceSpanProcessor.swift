@@ -49,6 +49,8 @@ public struct UIDeviceSpanProcessor: SpanProcessor {
                 value: device.batteryState.description
             )
         }
+        
+        span.setAttribute(key: "device.isLowPowerModeEnabled", value: ProcessInfo.processInfo.isLowPowerModeEnabled)
     }
 
     public func onEnd(span: any ReadableSpan) {}

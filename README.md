@@ -134,6 +134,7 @@ All spans will include the following attributes
     - `device.userInterfaceIdiom` - [UIDevice.userInterfaceIdiom](https://developer.apple.com/documentation/uikit/uidevice/userinterfaceidiom)
     - `device.isMultitaskingSupported` - [UIDevice.isMultitaskingSupported](https://developer.apple.com/documentation/uikit/uidevice/ismultitaskingsupported)
     - `device.orientation` - [UIDevice.orientation](https://developer.apple.com/documentation/uikit/uidevice/orientation)
+    - `device.isLowPowerModeEnabled` - If the user has Low Power Mode enabled on their device.
     - `device.isBatteryMonitoringEnabled` - [UIDevice.isBatteryMonitoringEnabled](https://developer.apple.com/documentation/uikit/uidevice/isbatterymonitoringenabled)
     - `device.batteryLevel` - [UIDevice.batteryLevel](https://developer.apple.com/documentation/uikit/uidevice/batterylevel). Only included if `batteryStateAttributesEnabled` is set to `true` when the SDK is initialized.
     - `device.batteryState` - [UIDevice.batteryState](https://developer.apple.com/documentation/uikit/uidevice/batterystate-swift.property). Only included if `batteryStateAttributesEnabled` is set to `true` when the SDK is initialized.
