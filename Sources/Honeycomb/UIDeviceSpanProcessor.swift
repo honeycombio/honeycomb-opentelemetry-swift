@@ -7,18 +7,12 @@ public struct UIDeviceSpanProcessor: SpanProcessor {
     public let isStartRequired = true
     public let isEndRequired = false
 
-    private let device: UIDevice
-    init(_ collectBatteryState: Bool = false) {
-        device = UIDevice.current
-        if collectBatteryState {
-            device.isBatteryMonitoringEnabled = true
-        }
-    }
-
     public func onStart(
         parentContext: SpanContext?,
         span: any ReadableSpan
     ) {
+        let device = UIDevice.current
+
         span.setAttribute(key: "device.name", value: device.name)
         span.setAttribute(key: "device.systemName", value: device.systemName)
         span.setAttribute(key: "device.systemVersion", value: device.systemVersion)
@@ -49,8 +43,11 @@ public struct UIDeviceSpanProcessor: SpanProcessor {
                 value: device.batteryState.description
             )
         }
-        
-        span.setAttribute(key: "device.isLowPowerModeEnabled", value: ProcessInfo.processInfo.isLowPowerModeEnabled)
+
+        span.setAttribute(
+            key: "device.isLowPowerModeEnabled",
+            value: ProcessInfo.processInfo.isLowPowerModeEnabled
+        )
     }
 
     public func onEnd(span: any ReadableSpan) {}

@@ -105,7 +105,7 @@ public class Honeycomb {
 
         #if canImport(UIKit)
             spanProcessor.addSpanProcessor(
-                UIDeviceSpanProcessor(options.batteryStateAttributesEnabled)
+                UIDeviceSpanProcessor()
             )
         #endif
 
