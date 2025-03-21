@@ -16,6 +16,8 @@ func getTracer() -> Tracer {
 internal class HoneycombNavigationProcessor {
     static let shared = HoneycombNavigationProcessor()
     var currentNavigationPath: [String] = []
+    var lastNavigationTime: Date? = nil
+    var lastNavigationSpan: Span? = nil
 
     private init() {}
 
@@ -32,10 +34,20 @@ internal class HoneycombNavigationProcessor {
         currentNavigationPath = [path]
 
         // emit a span that says we've navigated to this path
-        getTracer().spanBuilder(spanName: navigationSpanName)
+        let navigationSpan = getTracer().spanBuilder(spanName: navigationSpanName)
             .setAttribute(key: "screen.name", value: path)
-            .startSpan()
-            .end()
+
+        if lastNavigationTime != nil && lastNavigationSpan != nil {
+            let lastScreenNavigationTime = Date().timeIntervalSince(lastNavigationTime!)
+            lastNavigationSpan!
+                .setAttribute(key: "screen.active.time", value: Double(lastScreenNavigationTime))
+
+            // todo: hook into lifecycle to ensure this span always ends?
+            lastNavigationSpan!.end()
+        }
+
+        lastNavigationSpan = navigationSpan.startSpan()
+        lastNavigationTime = Date()
     }
 
     func reportNavigation(path: Encodable) {
