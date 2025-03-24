@@ -4,7 +4,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### New Features
 
-* Enhanced navigation tracking with paired `NavigationTo` and `NavigationFrom` spans for better visibility into screen transitions and time spent on screens
+* Navigation instrumenation now emits paired `NavigationTo` and `NavigationFrom` spans for better visibility into screen transitions and time spent on screens
 
 ### Fixes
 
