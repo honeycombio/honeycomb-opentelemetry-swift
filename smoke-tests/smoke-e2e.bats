@@ -342,6 +342,15 @@ mk_diag_attr() {
         | uniq -c)
     root_count=$(echo "$result" | grep "\[\]")
     yosemite_count=$(echo "$result" | grep "Yosemite")
+    
+    navigation_to_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationTo" | jq .key | sort | uniq)
+    assert_equal "$navigation_to_attributes" '"SampleRate"
+"app.metadata"
+"navigation.trigger"
+"network.connection.type"
+"screen.name"
+"screen.path"
+"session.id"'
 
     assert_equal "$root_count" '   1 "[]"'
     assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
@@ -351,6 +360,16 @@ mk_diag_attr() {
         | uniq -c)
     yosemite_count=$(echo "$result" | grep "Yosemite")
     assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
+    
+    navigation_from_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationFrom" | jq .key | sort | uniq)
+    assert_equal "$navigation_from_attributes" '"SampleRate"
+"app.metadata"
+"navigation.trigger"
+"network.connection.type"
+"screen.active.time"
+"screen.name"
+"screen.path"
+"session.id"'
 }
 
 @test "Navigation attributes are correct" {
