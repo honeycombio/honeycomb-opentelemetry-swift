@@ -347,13 +347,19 @@ mk_diag_attr() {
 }
 
 @test "Navigation spans are correct" {
-    result=$(attribute_for_span_key "io.honeycomb.navigation" Navigation "screen.name" string \
+    result=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationTo" "screen.name" string \
         | sort \
         | uniq -c)
     root_count=$(echo "$result" | grep "\[\]")
     yosemite_count=$(echo "$result" | grep "Yosemite")
 
     assert_equal "$root_count" '   1 "[]"'
+    assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
+    
+    result=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.name" string \
+        | sort \
+        | uniq -c)
+    yosemite_count=$(echo "$result" | grep "Yosemite")
     assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
 }
 
