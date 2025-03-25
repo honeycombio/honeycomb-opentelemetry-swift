@@ -72,7 +72,7 @@ struct NavigationStackExample: View {
                 ParkDetails(park: park)
             }
         }
-        .instrumentNavigation(path: presentedParks)
+        .instrumentNavigation(path: presentedParks, reason: "visiting parks list")
     }
 }
 
@@ -93,7 +93,7 @@ struct NavigationSplitExample: View {
                 ParkDetails(park: park)
                     .onAppear {
                         let path: [Encodable] = ["Split View", park]
-                        Honeycomb.setCurrentScreen(path: path)
+                        Honeycomb.setCurrentScreen(path: path, reason: "visiting \(park)")
                     }
                 List(trees, selection: $selectedTree) { tree in
                     Text(tree.name)
