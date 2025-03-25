@@ -72,7 +72,11 @@ struct NavigationStackExample: View {
                 ParkDetails(park: park)
             }
         }
-        .instrumentNavigation(path: presentedParks, reason: "visiting parks list")
+        .instrumentNavigation(
+            prefix: "NavigationStackRoot",
+            path: presentedParks,
+            reason: "visiting parks list"
+        )
     }
 }
 
