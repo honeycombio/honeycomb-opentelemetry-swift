@@ -221,6 +221,17 @@ final class SmokeTestUITests: XCTestCase {
         XCTAssert(app.buttons["Yosemite"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Yosemite"].tap()
 
+        app.setToggle("Use Split View", to: true)
+
+        XCTAssert(app.staticTexts["Yosemite"].waitForExistence(timeout: uiUpdateTimeout))
+        app.staticTexts["Yosemite"].tap()
+
+        XCTAssert(app.staticTexts["Oak Tree"].waitForExistence(timeout: uiUpdateTimeout))
+        app.staticTexts["Oak Tree"].tap()
+
+        XCTAssert(app.buttons["Back"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Back"].tap()
+
         // make sure the metrics get flushed
         app.buttons["Core"].tap()
 
