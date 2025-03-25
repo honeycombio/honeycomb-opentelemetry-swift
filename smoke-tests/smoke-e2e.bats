@@ -357,8 +357,8 @@ mk_diag_attr() {
 
     split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationTo" "screen.path" string | sort | uniq -c | grep "Split View")
     assert_equal "$split_view_paths" '   1 "Split View Parks Root"
-   2 "\"Split View\"/{\"name\":\"Yosemite\"}"
-   1 "\"Split View\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
+   2 "\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
+   1 "\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
 
     navigation_to_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationTo" | jq .key | sort | uniq)
     assert_equal "$navigation_to_attributes" '"SampleRate"

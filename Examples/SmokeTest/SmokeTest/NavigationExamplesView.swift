@@ -76,6 +76,7 @@ struct NavigationStackExample: View {
     }
 }
 
+let NavigationSplitExampleRoot = "Split View Parks Root"
 struct NavigationSplitExample: View {
     @State private var selectedPark: Park.ID? = nil
     @State private var selectedTree: Park.ID? = nil
@@ -86,13 +87,13 @@ struct NavigationSplitExample: View {
                 Text(park.name)
             }
             .onAppear {
-                Honeycomb.setCurrentScreen(path: "Split View Parks Root")
+                Honeycomb.setCurrentScreen(path: NavigationSplitExampleRoot)
             }
         } content: {
             if let park = park(from: selectedPark) {
                 ParkDetails(park: park)
                     .onAppear {
-                        let path: [Encodable] = ["Split View", park]
+                        let path: [Encodable] = [NavigationSplitExampleRoot, park]
                         Honeycomb.setCurrentScreen(path: path, reason: "visiting \(park)")
                     }
                 List(trees, selection: $selectedTree) { tree in
@@ -105,7 +106,7 @@ struct NavigationSplitExample: View {
             if let park = park(from: selectedPark), let tree = tree(from: selectedTree) {
                 TreeDetails(park: park, tree: tree)
                     .onAppear {
-                        let path: [Encodable] = ["Split View", park, tree]
+                        let path: [Encodable] = [NavigationSplitExampleRoot, park, tree]
                         Honeycomb.setCurrentScreen(path: path)
                     }
             } else {
