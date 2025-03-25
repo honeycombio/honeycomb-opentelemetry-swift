@@ -387,8 +387,8 @@ mk_diag_attr() {
 "session.id"'
 
     split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string | sort | uniq -c | grep "Split View")
-    assert_equal "$split_view_paths" '   2 "\"Split View\"/{\"name\":\"Yosemite\"}"
-   1 "\"Split View\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
+    assert_equal "$split_view_paths" '   2 "\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
+   1 "\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
 }
 
 @test "Navigation attributes are correct" {
