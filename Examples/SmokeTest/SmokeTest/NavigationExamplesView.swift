@@ -62,8 +62,10 @@ struct TreeDetails: View {
 
 struct NavigationStackExample: View {
     @State private var presentedParks: [Park] = []
+    @State private var usePrefix = false
 
     var body: some View {
+        Toggle("Include path prefix", isOn: $usePrefix)
         NavigationStack(path: $presentedParks) {
             List(parks) { park in
                 NavigationLink(park.name, value: park)
@@ -73,7 +75,7 @@ struct NavigationStackExample: View {
             }
         }
         .instrumentNavigation(
-            prefix: "NavigationStackRoot",
+            prefix: usePrefix ? "NavigationStackRoot" : nil,
             path: presentedParks,
             reason: "visiting parks list"
         )

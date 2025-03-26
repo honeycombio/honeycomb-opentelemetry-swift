@@ -219,6 +219,8 @@ final class SmokeTestUITests: XCTestCase {
         app.launch()
         app.buttons["Navigation"].tap()
         XCTAssert(app.buttons["Yosemite"].waitForExistence(timeout: uiUpdateTimeout))
+
+        app.setToggle("Include path prefix", to: true)
         app.buttons["Yosemite"].tap()
 
         app.setToggle("Use Split View", to: true)

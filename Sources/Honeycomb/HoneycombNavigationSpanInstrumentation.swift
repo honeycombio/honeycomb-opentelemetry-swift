@@ -151,18 +151,16 @@ internal class HoneycombNavigationProcessor {
     }
 
     private func navigationStart(reason: String) {
-        if !self.currentNavigationPath.isEmpty,
-            let screenName = self.currentNavigationPath.last
-        {
-            // Emit a NavigationTo span to indicate we're returning to this screen
-            let span = getTracer().spanBuilder(spanName: navigationToSpanName).startSpan()
-            span.setAttribute(key: "screen.name", value: screenName)
-            span.setAttribute(key: "navigation.trigger", value: reason)
-            span.end()
+        let screenName = self.currentNavigationPath.last ?? "/"
 
-            // Update the last navigation time to now
-            self.lastNavigationTime = Date()
-        }
+        // Emit a NavigationTo span to indicate we're returning to this screen
+        let span = getTracer().spanBuilder(spanName: navigationToSpanName).startSpan()
+        span.setAttribute(key: "screen.name", value: screenName)
+        span.setAttribute(key: "navigation.trigger", value: reason)
+        span.end()
+
+        // Update the last navigation time to now
+        self.lastNavigationTime = Date()
     }
 }
 
@@ -211,18 +209,14 @@ public struct HoneycombNavigationPathSpanProcessor: SpanProcessor {
                 key: "screen.name",
                 value: currentViewPath.last!
             )
-            span.setAttribute(
-                key: "screen.path",
-                value: serializePath(currentViewPath)
-            )
         }
+        span.setAttribute(
+            key: "screen.path",
+            value: serializePath(currentViewPath)
+        )
     }
 
     private func serializePath(_ path: [String]) -> String {
-        if path.isEmpty {
-            return "/"
-        }
-
         return "/"
             + path
             .filter { str in
