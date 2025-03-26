@@ -320,6 +320,8 @@ If coming from another screen, we will also emit a `NavigationFrom` span with th
 - `screen.active.time` (double): time in seconds spent on that previous screen.
 - `navigation.trigger`: Normally `navigation`. May also be `appWillResignActive`, `appDidEnterBackground`, or `appWillTerminate` if the navigation is due to the app closing. 
 
+Note that navigation spans due to application lifecycle changes are only available on platforms with UIKit.
+
 When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`), we offer a utility function `Honeycomb.setCurrentScreen(path: Any)`. This will immediately emit `NavigationTo` and `NavigationFrom` spans as documented above. As with the View Modifier form, if the `path` is `Encodable`, that will be included as an attribute on the span. Otherwise the `screen.name` attribute on the span will have the value `<unencodable path>`.
 
 This function can be called from a view's `onAppear`, or inside a button's `action`, or wherever you decide to manage your navigation.

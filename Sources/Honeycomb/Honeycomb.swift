@@ -349,19 +349,52 @@ public class Honeycomb {
     }
 
     @available(iOS 16.0, macOS 13.0, *)
-    public static func setCurrentScreen(path: NavigationPath, reason: String? = nil) {
-        HoneycombNavigationProcessor.shared.reportNavigation(path: path, reason: reason)
+    public static func setCurrentScreen(
+        prefix: String? = nil,
+        path: NavigationPath,
+        reason: String? = nil
+    ) {
+        HoneycombNavigationProcessor.shared.reportNavigation(
+            prefix: prefix,
+            path: path,
+            reason: reason
+        )
     }
-    public static func setCurrentScreen(path: String, reason: String? = nil) {
-        HoneycombNavigationProcessor.shared.reportNavigation(path: path, reason: reason)
+    public static func setCurrentScreen(prefix: String? = nil, path: String, reason: String? = nil)
+    {
+        HoneycombNavigationProcessor.shared.reportNavigation(
+            prefix: prefix,
+            path: path,
+            reason: reason
+        )
     }
-    public static func setCurrentScreen(path: Encodable, reason: String? = nil) {
-        HoneycombNavigationProcessor.shared.reportNavigation(path: path, reason: reason)
+    public static func setCurrentScreen(
+        prefix: String? = nil,
+        path: Encodable,
+        reason: String? = nil
+    ) {
+        HoneycombNavigationProcessor.shared.reportNavigation(
+            prefix: prefix,
+            path: path,
+            reason: reason
+        )
     }
-    public static func setCurrentScreen(path: [Encodable], reason: String? = nil) {
-        HoneycombNavigationProcessor.shared.reportNavigation(path: path, reason: reason)
+    public static func setCurrentScreen(
+        prefix: String? = nil,
+        path: [Encodable],
+        reason: String? = nil
+    ) {
+        HoneycombNavigationProcessor.shared.reportNavigation(
+            prefix: prefix,
+            path: path,
+            reason: reason
+        )
     }
-    public static func setCurrentScreen(path: Any, reason: String? = nil) {
-        HoneycombNavigationProcessor.shared.reportNavigation(path: path, reason: reason)
+    public static func setCurrentScreen(prefix: String? = nil, path: Any, reason: String? = nil) {
+        HoneycombNavigationProcessor.shared.reportNavigation(
+            prefix: prefix,
+            path: path,
+            reason: reason
+        )
     }
 }
