@@ -11,6 +11,7 @@ import OpenTelemetryProtocolExporterHttp
 import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
+import URLSessionInstrumentation
 import SwiftUI
 
 private func createAttributeDict(_ dict: [String: String]) -> [String: AttributeValue] {
@@ -210,7 +211,8 @@ public class Honeycomb {
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
         if options.urlSessionInstrumentationEnabled {
-            installNetworkInstrumentation(options: options)
+//            installNetworkInstrumentation(options: options)
+            let _ = URLSessionInstrumentation(configuration: URLSessionInstrumentationConfiguration())
         }
         #if canImport(UIKit)
             if options.uiKitInstrumentationEnabled {

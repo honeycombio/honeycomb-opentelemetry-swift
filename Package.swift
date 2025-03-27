@@ -33,6 +33,7 @@ let package = Package(
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
                 .product(name: "ResourceExtension", package: "opentelemetry-swift"),
                 .product(name: "StdoutExporter", package: "opentelemetry-swift"),
+                .product(name: "URLSessionInstrumentation", package: "opentelemetry-swift"),
             ]
         ),
         .testTarget(
