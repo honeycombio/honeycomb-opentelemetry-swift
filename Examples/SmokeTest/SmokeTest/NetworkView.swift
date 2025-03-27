@@ -102,136 +102,43 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
     guard let url = URL(string: requestSpec.address) else {
         return "invalid url"
     }
-    let session = createSession(useSessionDelegate: requestSpec.useSessionDelegate)
-    let request = URLRequest(url: url)
+    let session = URLSession(
+        configuration: URLSessionConfiguration.default,
+        delegate: sessionDelegate,
+        delegateQueue: OperationQueue.main
+    )
 
-    do {
-        switch requestSpec.requestType {
-        case .dataTask:
-            switch requestSpec.useAsync {
-            case true:
-                let (_, response) =
-                    switch requestSpec.useRequestObject {
-                    case true:
-                        switch requestSpec.useTaskDelegate {
-                        case true:
-                            try await session.data(for: request, delegate: taskDelegate)
-                        case false:
-                            try await session.data(for: request)
-                        }
-                    case false:
-                        switch requestSpec.useTaskDelegate {
-                        case true:
-                            try await session.data(from: url, delegate: taskDelegate)
-                        case false:
-                            try await session.data(from: url)
-                        }
-                    }
-                return summarize(response: response, error: nil)
-            case false:
-                return await withCheckedContinuation { continuation in
-                    let callback = {
-                        @Sendable (data: Data?, response: URLResponse?, error: Error?) in
-                        let summary = summarize(response: response, error: error)
-                        continuation.resume(returning: summary)
-                    }
-                    let task =
-                        switch requestSpec.useRequestObject {
-                        case true:
-                            session.dataTask(with: request, completionHandler: callback)
-                        case false:
-                            session.dataTask(with: url, completionHandler: callback)
-                        }
-                    if requestSpec.useTaskDelegate {
-                        task.delegate = taskDelegate
-                    }
-                    task.resume()
+    if (requestSpec.useAsync) {
+        //        Task {
+        //            let callback = { @Sendable (data: Data?, response: URLResponse?, error: Error?) in
+        //                print("session delegate called? \(sessionDelegate.wasCalled)")
+        //                print("response: \(summarize(response: response, error: error))")
+        //            }
+        //            let task = session.dataTask(with: url, completionHandler: callback)
+        //            task.resume()
+        //        }
+        Task {
+            await withCheckedContinuation { continuation in
+                let callback = { @Sendable (data: Data?, response: URLResponse?, error: Error?) in
+                    print("Task session delegate called? \(sessionDelegate.wasCalled)")
+                    print("response: \(summarize(response: response, error: error))")
+                    continuation.resume()
                 }
-            }
-        case .downloadTask:
-            switch requestSpec.useAsync {
-            case true:
-                let (_, response) =
-                    switch requestSpec.useRequestObject {
-                    case true:
-                        switch requestSpec.useTaskDelegate {
-                        case true:
-                            try await session.download(for: request, delegate: taskDelegate)
-                        case false:
-                            try await session.download(for: request)
-                        }
-                    case false:
-                        switch requestSpec.useTaskDelegate {
-                        case true:
-                            try await session.download(from: url, delegate: taskDelegate)
-                        case false:
-                            try await session.download(from: url)
-                        }
-                    }
-                return summarize(response: response, error: nil)
-            case false:
-                return await withCheckedContinuation { continuation in
-                    let callback = { @Sendable (url: URL?, response: URLResponse?, error: Error?) in
-                        let summary = summarize(response: response, error: error)
-                        continuation.resume(returning: summary)
-                    }
-                    let task =
-                        switch requestSpec.useRequestObject {
-                        case true:
-                            session.downloadTask(with: request, completionHandler: callback)
-                        case false:
-                            session.downloadTask(with: url, completionHandler: callback)
-                        }
-                    if requestSpec.useTaskDelegate {
-                        task.delegate = taskDelegate
-                    }
-                    task.resume()
-                }
-            }
-
-        case .uploadTask:
-            switch requestSpec.useRequestObject {
-            case false:
-                return "upload with URL unsupported"
-            case true:
-                let dataToUpload = Data()
-                switch requestSpec.useAsync {
-                case true:
-                    let (_, response) =
-                        switch requestSpec.useTaskDelegate {
-                        case true:
-                            try await session.upload(
-                                for: request,
-                                from: dataToUpload,
-                                delegate: taskDelegate
-                            )
-                        case false:
-                            try await session.upload(for: request, from: dataToUpload)
-                        }
-                    return summarize(response: response, error: nil)
-                case false:
-                    return await withCheckedContinuation { continuation in
-                        let callback = {
-                            @Sendable (data: Data?, response: URLResponse?, error: Error?) in
-                            let summary = summarize(response: response, error: error)
-                            continuation.resume(returning: summary)
-                        }
-                        let task = session.uploadTask(
-                            with: request,
-                            from: dataToUpload,
-                            completionHandler: callback
-                        )
-                        if requestSpec.useTaskDelegate {
-                            task.delegate = taskDelegate
-                        }
-                        task.resume()
-                    }
-                }
+                
+                let task = session.dataTask(with: url, completionHandler: callback)
+                task.resume()
             }
         }
-    } catch {
-        return summarize(response: nil, error: error)
+    } else {
+        let callback = { @Sendable (data: Data?, response: URLResponse?, error: Error?) in
+            print("session delegate called? \(sessionDelegate.wasCalled)")
+            print("response: \(summarize(response: response, error: error))")
+        }
+        let task = session.dataTask(with: url, completionHandler: callback)
+        task.resume()
     }
+    
+    return ""
 }
 
 struct NetworkView: View {
@@ -265,18 +172,6 @@ struct NetworkView: View {
                 Text("Use async function")
             }
             .accessibilityIdentifier("useAsync")
-            Toggle(isOn: $request.useRequestObject) {
-                Text("Use URLRequest object")
-            }
-            .accessibilityIdentifier("useRequestObject")
-            Toggle(isOn: $request.useTaskDelegate) {
-                Text("Use a task delegate")
-            }
-            .accessibilityIdentifier("useTaskDelegate")
-            Toggle(isOn: $request.useSessionDelegate) {
-                Text("Use a session delegate")
-            }
-            .accessibilityIdentifier("useSessionDelegate")
 
             Button(action: {
                 responseSummary = "..."
