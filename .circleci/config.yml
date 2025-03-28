@@ -113,6 +113,15 @@ workflows:
     jobs:
       - lint:
           <<: *filters_always
+      - build:
+          <<: *filters_always
+          matrix:
+            parameters:
+              destination:
+                - generic/platform=macOS
+                - generic/platform=iOS
+                - generic/platform=tvOS
+                - generic/platform=watchOS
       - tests:
           <<: *filters_always
       - smoke_tests:
