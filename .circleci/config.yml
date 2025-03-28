@@ -29,7 +29,7 @@ jobs:
     steps:
       - checkout
       - run: xcodebuild -version
-      - run: xcodebuild test -scheme honeycomb-opentelemetry-swift -destination << parameters.destination >>
+      - run: xcodebuild -scheme honeycomb-opentelemetry-swift -destination << parameters.destination >>
 
   tests:
     macos:
