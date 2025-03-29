@@ -30,9 +30,11 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
+    #if canImport(MXMetricManager)
     @available(iOS 13.0, macOS 12.0, *)
     static private let metricKitSubscriber = MetricKitSubscriber()
-
+    #endif
+    
     static public func configure(options: HoneycombOptions) throws {
 
         if options.debug {
@@ -226,11 +228,13 @@ public class Honeycomb {
             HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
         }
 
-        if #available(iOS 13.0, macOS 12.0, *) {
+        #if canImport(MXMetricManager)
+        if #available(tvOS 16.0, iOS 13.0, macOS 12.0, *) {
             if options.metricKitInstrumentationEnabled {
                 MXMetricManager.shared.add(self.metricKitSubscriber)
             }
         }
+        #endif
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
@@ -350,7 +354,7 @@ public class Honeycomb {
             .emit()
     }
 
-    @available(iOS 16.0, macOS 13.0, *)
+    @available(tvOS 16.0, iOS 16.0, macOS 13.0, *)
     public static func setCurrentScreen(
         prefix: String? = nil,
         path: NavigationPath,

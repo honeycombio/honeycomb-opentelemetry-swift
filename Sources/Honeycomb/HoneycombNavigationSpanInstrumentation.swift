@@ -27,7 +27,7 @@ internal class HoneycombNavigationProcessor {
         setupAppLifecycleTracking()
     }
 
-    @available(iOS 16.0, macOS 13.0, *)
+    @available(tvOS 16.0, iOS 16.0, macOS 13.0, *)
     func reportNavigation(prefix: String? = nil, path: NavigationPath, reason: String? = nil) {
         if let codablePath = path.codable {
             reportNavigation(path: codablePath, reason: reason)
@@ -165,7 +165,7 @@ internal class HoneycombNavigationProcessor {
 }
 
 extension View {
-    @available(iOS 16.0, macOS 13.0, *)
+    @available(tvOS 16.0, iOS 16.0, macOS 13.0, *)
     public func instrumentNavigation(
         prefix: String? = nil,
         path: NavigationPath,

@@ -27,8 +27,9 @@
                 key: "device.isMultitaskingSupported",
                 value: device.isMultitaskingSupported
             )
+            
+            #if os(iOS)
             span.setAttribute(key: "device.orientation", value: device.orientation.description)
-
             span.setAttribute(
                 key: "device.isBatteryMonitoringEnabled",
                 value: device.isBatteryMonitoringEnabled
@@ -44,6 +45,7 @@
                     value: device.batteryState.description
                 )
             }
+            #endif
 
             span.setAttribute(
                 key: "device.isLowPowerModeEnabled",
@@ -58,6 +60,7 @@
         public func forceFlush(timeout: TimeInterval? = nil) {}
     }
 
+#if os(iOS)
     extension UIDeviceOrientation {
         fileprivate var description: String {
             switch self {
@@ -90,6 +93,7 @@
             }
         }
     }
+#endif
 
     extension UIUserInterfaceIdiom {
         fileprivate var description: String {
