@@ -1,3 +1,4 @@
+#if os(iOS) && !targetEnvironment(macCatalyst)
 import Foundation
 import NetworkStatus
 import OpenTelemetryApi
@@ -28,3 +29,4 @@ public struct NetworkStatusSpanProcessor: SpanProcessor {
 
     public func forceFlush(timeout: TimeInterval? = nil) {}
 }
+#endif

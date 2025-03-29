@@ -126,6 +126,7 @@ public class Honeycomb {
                 )
             )
 
+        #if os(iOS) && !targetEnvironment(macCatalyst)
         do {
             let networkMonitor = try NetworkMonitor()
             tracerProviderBuilder =
@@ -134,6 +135,7 @@ public class Honeycomb {
         } catch {
             NSLog("Unable to create NetworkMonitor: \(error)")
         }
+        #endif
 
         let tracerProvider =
             tracerProviderBuilder
