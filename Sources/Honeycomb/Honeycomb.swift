@@ -1,7 +1,6 @@
 import BaggagePropagationProcessor
 import Foundation
 import GRPC
-import MetricKit
 import NIO
 import NetworkStatus
 import OpenTelemetryApi
@@ -12,6 +11,10 @@ import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
+
+#if canImport(MetricKit)
+    import MetricKit
+#endif
 
 private func createAttributeDict(_ dict: [String: String]) -> [String: AttributeValue] {
     var result: [String: AttributeValue] = [:]
@@ -30,8 +33,10 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
-    @available(iOS 13.0, macOS 12.0, *)
-    static private let metricKitSubscriber = MetricKitSubscriber()
+    #if canImport(MXMetricManager)
+        @available(iOS 13.0, macOS 12.0, *)
+        static private let metricKitSubscriber = MetricKitSubscriber()
+    #endif
 
     static public func configure(options: HoneycombOptions) throws {
 
@@ -103,7 +108,7 @@ public class Honeycomb {
         let spanProcessor = CompositeSpanProcessor()
         spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: spanExporter))
 
-        #if canImport(UIKit)
+        #if canImport(UIKit) && !os(watchOS)
             spanProcessor.addSpanProcessor(
                 UIDeviceSpanProcessor()
             )
@@ -126,14 +131,16 @@ public class Honeycomb {
                 )
             )
 
-        do {
-            let networkMonitor = try NetworkMonitor()
-            tracerProviderBuilder =
-                tracerProviderBuilder
-                .add(spanProcessor: NetworkStatusSpanProcessor(monitor: networkMonitor))
-        } catch {
-            NSLog("Unable to create NetworkMonitor: \(error)")
-        }
+        #if os(iOS) && !targetEnvironment(macCatalyst)
+            do {
+                let networkMonitor = try NetworkMonitor()
+                tracerProviderBuilder =
+                    tracerProviderBuilder
+                    .add(spanProcessor: NetworkStatusSpanProcessor(monitor: networkMonitor))
+            } catch {
+                NSLog("Unable to create NetworkMonitor: \(error)")
+            }
+        #endif
 
         let tracerProvider =
             tracerProviderBuilder
@@ -212,7 +219,7 @@ public class Honeycomb {
         if options.urlSessionInstrumentationEnabled {
             installNetworkInstrumentation(options: options)
         }
-        #if canImport(UIKit)
+        #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
                 installUINavigationInstrumentation()
             }
@@ -224,11 +231,13 @@ public class Honeycomb {
             HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
         }
 
-        if #available(iOS 13.0, macOS 12.0, *) {
-            if options.metricKitInstrumentationEnabled {
-                MXMetricManager.shared.add(self.metricKitSubscriber)
+        #if canImport(MXMetricManager)
+            if #available(tvOS 16.0, iOS 13.0, macOS 12.0, *) {
+                if options.metricKitInstrumentationEnabled {
+                    MXMetricManager.shared.add(self.metricKitSubscriber)
+                }
             }
-        }
+        #endif
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
@@ -348,7 +357,7 @@ public class Honeycomb {
             .emit()
     }
 
-    @available(iOS 16.0, macOS 13.0, *)
+    @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
     public static func setCurrentScreen(
         prefix: String? = nil,
         path: NavigationPath,
