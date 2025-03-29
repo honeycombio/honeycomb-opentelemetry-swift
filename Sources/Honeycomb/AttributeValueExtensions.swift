@@ -1,5 +1,7 @@
 import OpenTelemetryApi
+#if canImport(MetricKit)
 import MetricKit
+#endif
 
 /// A protocol to make it easier to write generic functions for AttributeValues.
 protocol AttributeValueConvertable {
@@ -28,6 +30,7 @@ extension [String]: AttributeValueConvertable {
     }
 }
 
+#if canImport(MetricKit)
 extension TimeInterval: AttributeValueConvertable {
     func attributeValue() -> AttributeValue {
         // The OTel standard for time durations is seconds, which is also what TimeInterval is.
@@ -47,3 +50,4 @@ extension Measurement: AttributeValueConvertable {
         return AttributeValue.double(value)
     }
 }
+#endif

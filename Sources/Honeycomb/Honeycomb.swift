@@ -1,7 +1,9 @@
 import BaggagePropagationProcessor
 import Foundation
 import GRPC
+#if canImport(MetricKit)
 import MetricKit
+#endif
 import NIO
 import NetworkStatus
 import OpenTelemetryApi
@@ -105,7 +107,7 @@ public class Honeycomb {
         let spanProcessor = CompositeSpanProcessor()
         spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: spanExporter))
 
-        #if canImport(UIKit)
+        #if canImport(UIKit) && !os(watchOS)
             spanProcessor.addSpanProcessor(
                 UIDeviceSpanProcessor()
             )
@@ -216,7 +218,7 @@ public class Honeycomb {
         if options.urlSessionInstrumentationEnabled {
             installNetworkInstrumentation(options: options)
         }
-        #if canImport(UIKit)
+        #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
                 installUINavigationInstrumentation()
             }
@@ -354,7 +356,7 @@ public class Honeycomb {
             .emit()
     }
 
-    @available(tvOS 16.0, iOS 16.0, macOS 13.0, *)
+    @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
     public static func setCurrentScreen(
         prefix: String? = nil,
         path: NavigationPath,

@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
     import Foundation
     import OpenTelemetryApi
     import OpenTelemetrySdk
@@ -13,7 +13,7 @@
             span: any ReadableSpan
         ) {
             let device = UIDevice.current
-
+            
             span.setAttribute(key: "device.name", value: device.name)
             span.setAttribute(key: "device.systemName", value: device.systemName)
             span.setAttribute(key: "device.systemVersion", value: device.systemVersion)
