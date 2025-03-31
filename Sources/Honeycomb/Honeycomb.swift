@@ -33,8 +33,9 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
-    @available(iOS 13.0, macOS 12.0, *)
-    static private let metricKitSubscriber = MetricKitSubscriber()
+    #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
+        static private let metricKitSubscriber = MetricKitSubscriber()
+    #endif
 
     static public func configure(options: HoneycombOptions) throws {
 
@@ -229,11 +230,13 @@ public class Honeycomb {
             HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
         }
 
-        if #available(tvOS 16.0, iOS 13.0, macOS 12.0, *) {
-            if options.metricKitInstrumentationEnabled {
-                MXMetricManager.shared.add(self.metricKitSubscriber)
+        #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
+            if #available(iOS 13.0, *) {
+                if options.metricKitInstrumentationEnabled {
+                    MXMetricManager.shared.add(self.metricKitSubscriber)
+                }
             }
-        }
+        #endif
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
