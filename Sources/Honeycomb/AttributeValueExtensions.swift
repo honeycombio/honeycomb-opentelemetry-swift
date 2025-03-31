@@ -1,8 +1,5 @@
+import Foundation
 import OpenTelemetryApi
-
-#if canImport(MetricKit)
-    import MetricKit
-#endif
 
 /// A protocol to make it easier to write generic functions for AttributeValues.
 protocol AttributeValueConvertable {
@@ -31,24 +28,23 @@ extension [String]: AttributeValueConvertable {
     }
 }
 
-#if canImport(MetricKit)
-    extension TimeInterval: AttributeValueConvertable {
-        func attributeValue() -> AttributeValue {
-            // The OTel standard for time durations is seconds, which is also what TimeInterval is.
-            // https://opentelemetry.io/docs/specs/semconv/general/metrics/
-            AttributeValue.double(self)
-        }
+extension TimeInterval: AttributeValueConvertable {
+    func attributeValue() -> AttributeValue {
+        // The OTel standard for time durations is seconds, which is also what TimeInterval is.
+        // https://opentelemetry.io/docs/specs/semconv/general/metrics/
+        AttributeValue.double(self)
     }
-    extension Measurement: AttributeValueConvertable {
-        func attributeValue() -> AttributeValue {
-            // Convert to the "base unit", such as seconds or bytes.
-            let value =
-                if let unit = self.unit as? Dimension {
-                    unit.converter.baseUnitValue(fromValue: self.value)
-                } else {
-                    self.value
-                }
-            return AttributeValue.double(value)
-        }
+}
+
+extension Measurement: AttributeValueConvertable {
+    func attributeValue() -> AttributeValue {
+        // Convert to the "base unit", such as seconds or bytes.
+        let value =
+            if let unit = self.unit as? Dimension {
+                unit.converter.baseUnitValue(fromValue: self.value)
+            } else {
+                self.value
+            }
+        return AttributeValue.double(value)
     }
-#endif
+}
