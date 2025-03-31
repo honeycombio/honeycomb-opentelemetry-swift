@@ -28,7 +28,7 @@
                 value: device.isMultitaskingSupported
             )
 
-            #if os(iOS)
+            #if !os(tvOS)
                 span.setAttribute(key: "device.orientation", value: device.orientation.description)
                 span.setAttribute(
                     key: "device.isBatteryMonitoringEnabled",
@@ -60,7 +60,7 @@
         public func forceFlush(timeout: TimeInterval? = nil) {}
     }
 
-    #if os(iOS)
+    #if !os(tvOS)
         extension UIDeviceOrientation {
             fileprivate var description: String {
                 switch self {
