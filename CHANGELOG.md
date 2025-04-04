@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.7
+
 ### New Features
 
 * Enhanced navigation instrumentation:  
