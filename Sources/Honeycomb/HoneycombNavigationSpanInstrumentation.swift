@@ -40,12 +40,12 @@ internal class HoneycombNavigationProcessor {
             let decodedPath = try! JSONDecoder().decode([String].self, from: encodedPath)
             reportNavigation(prefix: prefix, path: decodedPath, reason: reason)
         } else {
-            reportNavigation(path: unencodablePath, reason: reason)
+            reportNavigation(prefix: prefix, path: unencodablePath, reason: reason)
         }
     }
 
     func reportNavigation(prefix: String? = nil, path: String, reason: String? = nil) {
-        reportNavigation(path: [path], reason: reason)
+        reportNavigation(prefix: prefix, path: [path], reason: reason)
     }
 
     func reportNavigation(prefix: String? = nil, path: Encodable, reason: String? = nil) {
@@ -54,9 +54,9 @@ internal class HoneycombNavigationProcessor {
             let data = try encoder.encode(path)
             let pathStr = String(decoding: data, as: UTF8.self)
 
-            reportNavigation(path: pathStr, reason: reason)
+            reportNavigation(prefix: prefix, path: pathStr, reason: reason)
         } catch {
-            reportNavigation(path: unencodablePath, reason: reason)
+            reportNavigation(prefix: prefix, path: unencodablePath, reason: reason)
         }
     }
 
