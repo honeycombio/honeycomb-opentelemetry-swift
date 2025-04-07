@@ -36,9 +36,13 @@ internal class HoneycombNavigationProcessor {
             // the class name and then the actual object
             // but since this is an entirely undocumented internal structure, we're not going to make any assumptions there
             // and will just encode the full path as we get it
-            let encodedPath = try! JSONEncoder().encode(codablePath)
-            let decodedPath = try! JSONDecoder().decode([String].self, from: encodedPath)
-            reportNavigation(prefix: prefix, path: decodedPath, reason: reason)
+            do {
+                let encodedPath = try JSONEncoder().encode(codablePath)
+                let decodedPath = try JSONDecoder().decode([String].self, from: encodedPath)
+                reportNavigation(prefix: prefix, path: decodedPath, reason: reason)
+            } catch {
+                reportNavigation(prefix: prefix, path: unencodablePath, reason: reason)
+            }
         } else {
             reportNavigation(prefix: prefix, path: unencodablePath, reason: reason)
         }
