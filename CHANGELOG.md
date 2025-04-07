@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+### Fixes
+* NavigationStack root paths now get serialized as `/` instead of `[]`, even when using NavigationPath.
+* Ensure navigation instrumention passes `prefix` param correctly.
+
 ## 0.0.7
 
 ### New Features
