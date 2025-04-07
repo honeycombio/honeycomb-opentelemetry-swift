@@ -30,7 +30,15 @@ internal class HoneycombNavigationProcessor {
     @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
     func reportNavigation(prefix: String? = nil, path: NavigationPath, reason: String? = nil) {
         if let codablePath = path.codable {
-            reportNavigation(path: codablePath, reason: reason)
+            // Janky hack: round trip the NavigationPath to get the individual elements in an array
+            // NavigationPath doesn't offer a API for this
+            // it also (from our testing) seems like it tends to encode each step of the path as two items:
+            // the class name and then the actual object
+            // but since this is an entirely undocumented internal structure, we're not going to make any assumptions there
+            // and will just encode the full path as we get it
+            let encodedPath = try! JSONEncoder().encode(codablePath)
+            let decodedPath = try! JSONDecoder().decode([String].self, from: encodedPath)
+            reportNavigation(prefix: prefix, path: decodedPath, reason: reason)
         } else {
             reportNavigation(path: unencodablePath, reason: reason)
         }

@@ -61,7 +61,7 @@ struct TreeDetails: View {
 }
 
 struct NavigationStackExample: View {
-    @State private var presentedParks: [Park] = []
+    @State private var presentedParks = NavigationPath()
     @State private var usePrefix = false
 
     var body: some View {
