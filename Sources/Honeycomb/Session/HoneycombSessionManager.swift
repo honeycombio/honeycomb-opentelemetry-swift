@@ -39,6 +39,9 @@ class HoneycombSessionManager {
         self.debug = debug
         self.currentSession = nil
         self.sessionStorage.clear()
+
+        // Generate an initial sessionId for listeners.
+        let _ = self.sessionId
     }
 
     private var isSessionExpired: Bool {
