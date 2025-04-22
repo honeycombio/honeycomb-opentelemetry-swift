@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+### New Features
+
+* Allow optional API key for custom endpoint
+
 ## 0.0.7
 
 ### New Features
