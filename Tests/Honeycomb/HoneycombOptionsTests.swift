@@ -751,12 +751,12 @@ final class HoneycombOptionsTests: XCTestCase {
                 .missingAPIKey("missing API key: call setAPIKey() or setTracesAPIKey()")
             )
         }
-        
+
         data = [
-            "HONEYCOMB_API_ENDPOINT" : "https://custom.collector:443",
+            "HONEYCOMB_API_ENDPOINT": "https://custom.collector:443"
         ]
         source = HoneycombOptionsSource(info: data)
-        
+
         XCTAssertNoThrow(try HoneycombOptions.Builder(source: source).build())
     }
 

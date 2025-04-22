@@ -71,7 +71,7 @@ private func isClassic(key: String?) -> Bool {
     guard let key = key else {
         return false
     }
-    
+
     return switch key.count {
     case 0: false
     case 32: matchesRegex(pattern: classicKeyRegex, string: key)
@@ -84,11 +84,11 @@ private func isHoneycombEndpoint(endpoint: String) -> Bool {
     guard let url = URL(string: endpoint) else {
         return false
     }
-    
+
     guard let host = url.host else {
         return false
     }
-    
+
     return host.hasSuffix(".honeycomb.io")
 }
 
@@ -137,7 +137,7 @@ private func getHeaders(
 ) -> [String: String] {
     var headers = ["x-otlp-version": otlpVersion]
     headers.merge(generalHeaders, uniquingKeysWith: takeSecond)
-    
+
     if let apiKey = apiKey {
         headers.merge(["x-honeycomb-team": apiKey], uniquingKeysWith: takeSecond)
     }
@@ -536,7 +536,7 @@ public struct HoneycombOptions {
                 "honeycomb.distro.runtime_version",
                 runtimeVersion
             )
-            
+
             let tracesEndpoint = getHoneycombEndpoint(
                 endpoint: self.tracesEndpoint,
                 fallback: apiEndpoint,
@@ -559,19 +559,25 @@ public struct HoneycombOptions {
             let tracesApiKey = self.tracesApiKey ?? self.apiKey
             let metricsApiKey = self.metricsApiKey ?? self.apiKey
             let logsApiKey = self.logsApiKey ?? self.apiKey
-            
+
             if isHoneycombEndpoint(endpoint: tracesEndpoint) && tracesApiKey == nil {
-                throw HoneycombOptionsError.missingAPIKey("missing API key: call setAPIKey() or setTracesAPIKey()")
+                throw HoneycombOptionsError.missingAPIKey(
+                    "missing API key: call setAPIKey() or setTracesAPIKey()"
+                )
             }
-            
+
             if isHoneycombEndpoint(endpoint: metricsEndpoint) && metricsApiKey == nil {
-                throw HoneycombOptionsError.missingAPIKey("missing API key: call setAPIKey() or setMetricsAPIKey()")
+                throw HoneycombOptionsError.missingAPIKey(
+                    "missing API key: call setAPIKey() or setMetricsAPIKey()"
+                )
             }
-            
+
             if isHoneycombEndpoint(endpoint: logsEndpoint) && logsApiKey == nil {
-                throw HoneycombOptionsError.missingAPIKey("missing API key: call setAPIKey() or setLogsAPIKey()")
+                throw HoneycombOptionsError.missingAPIKey(
+                    "missing API key: call setAPIKey() or setLogsAPIKey()"
+                )
             }
-            
+
             let tracesHeaders =
                 getHeaders(
                     apiKey: tracesApiKey,
