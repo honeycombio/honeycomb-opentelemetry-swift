@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+### New Features
+
+* Allow optional API key for custom endpoint
+
 ### Fixes
 * NavigationStack root paths now get serialized as `/` instead of `[]`, even when using NavigationPath.
 * Ensure navigation instrumention passes `prefix` param correctly.

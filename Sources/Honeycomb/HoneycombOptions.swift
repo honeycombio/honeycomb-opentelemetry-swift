@@ -67,13 +67,29 @@ private func matchesRegex(pattern: String, string: String) -> Bool {
 }
 
 /// Returns whether the passed in API key is classic or not.
-private func isClassic(key: String) -> Bool {
+private func isClassic(key: String?) -> Bool {
+    guard let key = key else {
+        return false
+    }
+
     return switch key.count {
     case 0: false
     case 32: matchesRegex(pattern: classicKeyRegex, string: key)
     case 64: matchesRegex(pattern: ingestClassicKeyRegex, string: key)
     default: false
     }
+}
+
+private func isHoneycombEndpoint(endpoint: String) -> Bool {
+    guard let url = URL(string: endpoint) else {
+        return false
+    }
+
+    guard let host = url.host else {
+        return false
+    }
+
+    return host.hasSuffix(".honeycomb.io")
 }
 
 /// Gets the endpoint to use for a particular signal.
@@ -114,7 +130,7 @@ private func takeSecond(_: String, second: String) -> String {
 
 /// Gets the headers to use for a particular exporter.
 private func getHeaders(
-    apiKey: String,
+    apiKey: String?,
     dataset: String?,
     generalHeaders: [String: String],
     signalHeaders: [String: String]
@@ -122,7 +138,10 @@ private func getHeaders(
     var headers = ["x-otlp-version": otlpVersion]
     headers.merge(generalHeaders, uniquingKeysWith: takeSecond)
 
-    headers.merge(["x-honeycomb-team": apiKey], uniquingKeysWith: takeSecond)
+    if let apiKey = apiKey {
+        headers.merge(["x-honeycomb-team": apiKey], uniquingKeysWith: takeSecond)
+    }
+
     if let dataset = dataset {
         headers.merge(["x-honeycomb-dataset": dataset], uniquingKeysWith: takeSecond)
     }
@@ -158,9 +177,9 @@ extension Dictionary {
 /// https://opentelemetry.io/docs/languages/sdk-configuration/general/
 /// https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/
 public struct HoneycombOptions {
-    let tracesApiKey: String
-    let metricsApiKey: String
-    let logsApiKey: String
+    let tracesApiKey: String?
+    let metricsApiKey: String?
+    let logsApiKey: String?
     let dataset: String?
     let metricsDataset: String?
     let tracesEndpoint: String
@@ -484,14 +503,6 @@ public struct HoneycombOptions {
         }
 
         public func build() throws -> HoneycombOptions {
-            // If any API key isn't set, consider it a fatal error.
-            let defaultApiKey: () throws -> String = {
-                if self.apiKey == nil {
-                    throw HoneycombOptionsError.missingAPIKey("missing API key: call setAPIKey()")
-                }
-                return self.apiKey!
-            }
-
             // Collect the non-exporter-specific values.
             var resourceAttributes = self.resourceAttributes
             // Any explicit service name overrides the one in the resource attributes.
@@ -526,9 +537,46 @@ public struct HoneycombOptions {
                 runtimeVersion
             )
 
-            let tracesApiKey: String = try self.tracesApiKey ?? defaultApiKey()
-            let metricsApiKey: String = try self.metricsApiKey ?? defaultApiKey()
-            let logsApiKey: String = try self.logsApiKey ?? defaultApiKey()
+            let tracesEndpoint = getHoneycombEndpoint(
+                endpoint: self.tracesEndpoint,
+                fallback: apiEndpoint,
+                proto: tracesProtocol ?? `protocol`,
+                suffix: "v1/traces"
+            )
+            let metricsEndpoint = getHoneycombEndpoint(
+                endpoint: self.metricsEndpoint,
+                fallback: apiEndpoint,
+                proto: metricsProtocol ?? `protocol`,
+                suffix: "v1/metrics"
+            )
+            let logsEndpoint = getHoneycombEndpoint(
+                endpoint: self.logsEndpoint,
+                fallback: apiEndpoint,
+                proto: logsProtocol ?? `protocol`,
+                suffix: "v1/logs"
+            )
+
+            let tracesApiKey = self.tracesApiKey ?? self.apiKey
+            let metricsApiKey = self.metricsApiKey ?? self.apiKey
+            let logsApiKey = self.logsApiKey ?? self.apiKey
+
+            if isHoneycombEndpoint(endpoint: tracesEndpoint) && tracesApiKey == nil {
+                throw HoneycombOptionsError.missingAPIKey(
+                    "missing API key: call setAPIKey() or setTracesAPIKey()"
+                )
+            }
+
+            if isHoneycombEndpoint(endpoint: metricsEndpoint) && metricsApiKey == nil {
+                throw HoneycombOptionsError.missingAPIKey(
+                    "missing API key: call setAPIKey() or setMetricsAPIKey()"
+                )
+            }
+
+            if isHoneycombEndpoint(endpoint: logsEndpoint) && logsApiKey == nil {
+                throw HoneycombOptionsError.missingAPIKey(
+                    "missing API key: call setAPIKey() or setLogsAPIKey()"
+                )
+            }
 
             let tracesHeaders =
                 getHeaders(
@@ -551,25 +599,6 @@ public struct HoneycombOptions {
                     generalHeaders: headers,
                     signalHeaders: self.logsHeaders
                 )
-
-            let tracesEndpoint = getHoneycombEndpoint(
-                endpoint: self.tracesEndpoint,
-                fallback: apiEndpoint,
-                proto: tracesProtocol ?? `protocol`,
-                suffix: "v1/traces"
-            )
-            let metricsEndpoint = getHoneycombEndpoint(
-                endpoint: self.metricsEndpoint,
-                fallback: apiEndpoint,
-                proto: metricsProtocol ?? `protocol`,
-                suffix: "v1/metrics"
-            )
-            let logsEndpoint = getHoneycombEndpoint(
-                endpoint: self.logsEndpoint,
-                fallback: apiEndpoint,
-                proto: logsProtocol ?? `protocol`,
-                suffix: "v1/logs"
-            )
 
             return HoneycombOptions(
                 tracesApiKey: tracesApiKey,
