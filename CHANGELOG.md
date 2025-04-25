@@ -2,11 +2,14 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.8
+
 ### New Features
 
 * Allow optional API key for custom endpoint
 
 ### Fixes
+
 * NavigationStack root paths now get serialized as `/` instead of `[]`, even when using NavigationPath.
 * Ensure navigation instrumention passes `prefix` param correctly.
 
@@ -14,7 +17,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### New Features
 
-* Enhanced navigation instrumentation:  
+* Enhanced navigation instrumentation:
   * Now emits paired `NavigationTo` and `NavigationFrom` spans for better visibility into screen transitions and time spent on screens.
   * Now accepts optional `reason: String` param for tagging navigations.
   * Now accepts optional `prefix: String` param to allow clients to disambiguate between different NavigationStacks within a singular application.
@@ -40,7 +43,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### Fixes
 
-* Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation. 
+* Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation.
 * Make session id management threadsafe.
 
 ## 0.0.5-alpha
