@@ -19,6 +19,18 @@ jobs:
       - checkout
       - run: make lint
 
+  build:
+    parameters:
+      destination:
+        type: string
+    macos:
+      xcode: 15.4.0
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - checkout
+      - run: xcodebuild -version
+      - run: xcodebuild -scheme honeycomb-opentelemetry-swift -destination << parameters.destination >>
+
   tests:
     macos:
       xcode: 15.4.0
@@ -86,6 +98,14 @@ workflows:
                 - main
     jobs:
       - lint
+      - build:
+          matrix:
+            parameters:
+              destination:
+                - generic/platform=macOS
+                - generic/platform=iOS
+                - generic/platform=tvOS
+                - generic/platform=watchOS
       - tests
       - smoke_tests
 
@@ -93,6 +113,15 @@ workflows:
     jobs:
       - lint:
           <<: *filters_always
+      - build:
+          <<: *filters_always
+          matrix:
+            parameters:
+              destination:
+                - generic/platform=macOS
+                - generic/platform=iOS
+                - generic/platform=tvOS
+                - generic/platform=watchOS
       - tests:
           <<: *filters_always
       - smoke_tests:

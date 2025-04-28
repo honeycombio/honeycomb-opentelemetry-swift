@@ -1,110 +1,59 @@
-import Foundation
-import MetricKit
-import OpenTelemetryApi
+#if canImport(MetricKit) && !os(tvOS) && !os(macOS)
+    import Foundation
+    import MetricKit
+    import OpenTelemetryApi
 
-private let metricKitInstrumentationName = "io.honeycomb.metrickit"
+    private let metricKitInstrumentationName = "io.honeycomb.metrickit"
 
-@available(iOS 13.0, macOS 12.0, *)
-class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber {
-    #if os(iOS)
+    @available(iOS 13.0, *)
+    class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber {
         func didReceive(_ payloads: [MXMetricPayload]) {
             for payload in payloads {
                 reportMetrics(payload: payload)
             }
         }
-    #endif
 
-    @available(iOS 14.0, macOS 12.0, *)
-    func didReceive(_ payloads: [MXDiagnosticPayload]) {
-        for payload in payloads {
-            reportDiagnostics(payload: payload)
+        @available(iOS 14.0, *)
+        func didReceive(_ payloads: [MXDiagnosticPayload]) {
+            for payload in payloads {
+                reportDiagnostics(payload: payload)
+            }
         }
     }
-}
 
-// MARK: - AttributeValue helpers
+    // MARK: - MetricKit helpers
 
-/// A protocol to make it easier to write generic functions for AttributeValues.
-protocol AttributeValueConvertable {
-    func attributeValue() -> AttributeValue
-}
+    // TODO: Figure out how to set OTel Metrics as well.
 
-extension Int: AttributeValueConvertable {
-    func attributeValue() -> AttributeValue {
-        AttributeValue.int(self)
+    func getMetricKitTracer() -> Tracer {
+        return OpenTelemetry.instance.tracerProvider.get(
+            instrumentationName: metricKitInstrumentationName,
+            instrumentationVersion: honeycombLibraryVersion
+        )
     }
-}
-extension Bool: AttributeValueConvertable {
-    func attributeValue() -> AttributeValue {
-        AttributeValue.bool(self)
+
+    /// Estimates the average value of the whole histogram.
+    @available(iOS 13.0, *)
+    func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> Measurement<
+        UnitType
+    >? {
+        var estimatedSum: Measurement<UnitType>?
+        var sampleCount = 0.0
+        for bucket in histogram.bucketEnumerator {
+            let bucket = bucket as! MXHistogramBucket<UnitType>
+            let estimatedValue = (bucket.bucketStart + bucket.bucketEnd) / 2.0
+            let count = Double(bucket.bucketCount)
+            estimatedSum =
+                if let previousSum = estimatedSum {
+                    previousSum + estimatedValue * count
+                } else {
+                    estimatedValue * count
+                }
+            sampleCount += count
+        }
+        return estimatedSum.map { $0 / sampleCount }
     }
-}
-extension String: AttributeValueConvertable {
-    func attributeValue() -> AttributeValue {
-        AttributeValue.string(self)
-    }
-}
 
-extension [String]: AttributeValueConvertable {
-    func attributeValue() -> AttributeValue {
-        AttributeValue.array(AttributeArray(values: self.map { AttributeValue.string($0) }))
-    }
-}
-
-extension TimeInterval: AttributeValueConvertable {
-    func attributeValue() -> AttributeValue {
-        // The OTel standard for time durations is seconds, which is also what TimeInterval is.
-        // https://opentelemetry.io/docs/specs/semconv/general/metrics/
-        AttributeValue.double(self)
-    }
-}
-extension Measurement: AttributeValueConvertable {
-    func attributeValue() -> AttributeValue {
-        // Convert to the "base unit", such as seconds or bytes.
-        let value =
-            if let unit = self.unit as? Dimension {
-                unit.converter.baseUnitValue(fromValue: self.value)
-            } else {
-                self.value
-            }
-        return AttributeValue.double(value)
-    }
-}
-
-// MARK: - MetricKit helpers
-
-// TODO: Figure out how to set OTel Metrics as well.
-
-func getMetricKitTracer() -> Tracer {
-    return OpenTelemetry.instance.tracerProvider.get(
-        instrumentationName: metricKitInstrumentationName,
-        instrumentationVersion: honeycombLibraryVersion
-    )
-}
-
-/// Estimates the average value of the whole histogram.
-@available(iOS 13.0, macOS 12.0, *)
-func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> Measurement<
-    UnitType
->? {
-    var estimatedSum: Measurement<UnitType>?
-    var sampleCount = 0.0
-    for bucket in histogram.bucketEnumerator {
-        let bucket = bucket as! MXHistogramBucket<UnitType>
-        let estimatedValue = (bucket.bucketStart + bucket.bucketEnd) / 2.0
-        let count = Double(bucket.bucketCount)
-        estimatedSum =
-            if let previousSum = estimatedSum {
-                previousSum + estimatedValue * count
-            } else {
-                estimatedValue * count
-            }
-        sampleCount += count
-    }
-    return estimatedSum.map { $0 / sampleCount }
-}
-
-#if os(iOS)
     public func reportMetrics(payload: MXMetricPayload) {
         let span = getMetricKitTracer().spanBuilder(spanName: "MXMetricPayload")
             .setStartTime(time: payload.timeStampBegin)
@@ -144,8 +93,14 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
             key: "includes_multiple_application_versions",
             value: payload.includesMultipleApplicationVersions
         )
-        captureMetric(key: "latest_application_version", value: payload.latestApplicationVersion)
-        captureMetric(key: "timestamp_begin", value: payload.timeStampBegin.timeIntervalSince1970)
+        captureMetric(
+            key: "latest_application_version",
+            value: payload.latestApplicationVersion
+        )
+        captureMetric(
+            key: "timestamp_begin",
+            value: payload.timeStampBegin.timeIntervalSince1970
+        )
         captureMetric(key: "timestamp_end", value: payload.timeStampEnd.timeIntervalSince1970)
 
         withCategory(payload.metaData, "metadata") {
@@ -163,7 +118,10 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
             }
         }
         withCategory(payload.applicationLaunchMetrics, "app_launch") {
-            captureMetric(key: "time_to_first_draw_average", value: $0.histogrammedTimeToFirstDraw)
+            captureMetric(
+                key: "time_to_first_draw_average",
+                value: $0.histogrammedTimeToFirstDraw
+            )
             captureMetric(
                 key: "app_resume_time_average",
                 value: $0.histogrammedApplicationResumeTime
@@ -175,7 +133,10 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
                 )
             }
             if #available(iOS 16.0, *) {
-                captureMetric(key: "extended_launch_average", value: $0.histogrammedExtendedLaunch)
+                captureMetric(
+                    key: "extended_launch_average",
+                    value: $0.histogrammedExtendedLaunch
+                )
             }
         }
         withCategory(payload.applicationResponsivenessMetrics, "app_responsiveness") {
@@ -194,9 +155,15 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
                 key: "accuracy_10m_time",
                 value: $0.cumulativeNearestTenMetersAccuracyTime
             )
-            captureMetric(key: "accuracy_100m_time", value: $0.cumulativeHundredMetersAccuracyTime)
+            captureMetric(
+                key: "accuracy_100m_time",
+                value: $0.cumulativeHundredMetersAccuracyTime
+            )
             captureMetric(key: "accuracy_1km_time", value: $0.cumulativeKilometerAccuracyTime)
-            captureMetric(key: "accuracy_3km_time", value: $0.cumulativeThreeKilometersAccuracyTime)
+            captureMetric(
+                key: "accuracy_3km_time",
+                value: $0.cumulativeThreeKilometersAccuracyTime
+            )
         }
         withCategory(payload.networkTransferMetrics, "network_transfer") {
             captureMetric(key: "cellular_download", value: $0.cumulativeCellularDownload)
@@ -341,7 +308,10 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
                 let span = getMetricKitTracer().spanBuilder(spanName: "MXSignpostMetric")
                     .startSpan()
                 span.setAttribute(key: "signpost.name", value: signpostMetric.signpostName)
-                span.setAttribute(key: "signpost.category", value: signpostMetric.signpostCategory)
+                span.setAttribute(
+                    key: "signpost.category",
+                    value: signpostMetric.signpostCategory
+                )
                 span.setAttribute(key: "signpost.count", value: signpostMetric.totalCount)
                 if let intervalData = signpostMetric.signpostIntervalData {
                     if let cpuTime = intervalData.cumulativeCPUTime {
@@ -375,46 +345,44 @@ func estimateHistogramAverage<UnitType>(_ histogram: MXHistogram<UnitType>) -> M
             }
         }
     }
-#endif
 
-@available(iOS 14.0, macOS 12.0, *)
-public func reportDiagnostics(payload: MXDiagnosticPayload) {
-    let span = getMetricKitTracer().spanBuilder(spanName: "MXDiagnosticPayload")
-        .setStartTime(time: payload.timeStampBegin)
-        .startSpan()
-    defer { span.end() }
+    @available(iOS 14.0, *)
+    public func reportDiagnostics(payload: MXDiagnosticPayload) {
+        let span = getMetricKitTracer().spanBuilder(spanName: "MXDiagnosticPayload")
+            .setStartTime(time: payload.timeStampBegin)
+            .startSpan()
+        defer { span.end() }
 
-    let logger = OpenTelemetry.instance.loggerProvider.get(
-        instrumentationScopeName: metricKitInstrumentationName
-    )
+        let logger = OpenTelemetry.instance.loggerProvider.get(
+            instrumentationScopeName: metricKitInstrumentationName
+        )
 
-    let now = Date()
+        let now = Date()
 
-    // A helper for looping over the items in an optional list and logging each one.
-    func logForEach<T>(
-        _ parent: [T]?,
-        _ namespace: String,
-        using closure: (T) -> [String: AttributeValueConvertable]
-    ) {
-        if let arr = parent {
-            for item in arr {
-                var attributes: [String: AttributeValue] = [
-                    "name": "metrickit.diagnostic.\(namespace)".attributeValue()
-                ]
-                for (key, value) in closure(item) {
-                    let namespacedKey = "metrickit.diagnostic.\(namespace).\(key)"
-                    attributes[namespacedKey] = value.attributeValue()
+        // A helper for looping over the items in an optional list and logging each one.
+        func logForEach<T>(
+            _ parent: [T]?,
+            _ namespace: String,
+            using closure: (T) -> [String: AttributeValueConvertable]
+        ) {
+            if let arr = parent {
+                for item in arr {
+                    var attributes: [String: AttributeValue] = [
+                        "name": "metrickit.diagnostic.\(namespace)".attributeValue()
+                    ]
+                    for (key, value) in closure(item) {
+                        let namespacedKey = "metrickit.diagnostic.\(namespace).\(key)"
+                        attributes[namespacedKey] = value.attributeValue()
+                    }
+                    logger.logRecordBuilder()
+                        .setTimestamp(payload.timeStampEnd)
+                        .setObservedTimestamp(now)
+                        .setAttributes(attributes)
+                        .emit()
                 }
-                logger.logRecordBuilder()
-                    .setTimestamp(payload.timeStampEnd)
-                    .setObservedTimestamp(now)
-                    .setAttributes(attributes)
-                    .emit()
             }
         }
-    }
 
-    #if os(iOS)
         if #available(iOS 16.0, *) {
             logForEach(payload.appLaunchDiagnostics, "app_launch") {
                 [
@@ -422,45 +390,45 @@ public func reportDiagnostics(payload: MXDiagnosticPayload) {
                 ]
             }
         }
-    #endif
-    logForEach(payload.diskWriteExceptionDiagnostics, "disk_write_exception") {
-        [
-            "total_writes_caused": $0.totalWritesCaused
-        ]
-    }
-    logForEach(payload.hangDiagnostics, "hang") {
-        [
-            "hang_duration": $0.hangDuration
-        ]
-    }
-    logForEach(payload.cpuExceptionDiagnostics, "cpu_exception") {
-        [
-            "total_cpu_time": $0.totalCPUTime,
-            "total_sampled_time": $0.totalSampledTime,
-        ]
-    }
-    logForEach(payload.crashDiagnostics, "crash") {
-        var attrs: [String: AttributeValueConvertable] = [:]
-        if let exceptionCode = $0.exceptionCode {
-            attrs["exception.code"] = exceptionCode.intValue
+        logForEach(payload.diskWriteExceptionDiagnostics, "disk_write_exception") {
+            [
+                "total_writes_caused": $0.totalWritesCaused
+            ]
         }
-        if let exceptionType = $0.exceptionType {
-            attrs["exception.mach_execution_type"] = exceptionType.intValue
+        logForEach(payload.hangDiagnostics, "hang") {
+            [
+                "hang_duration": $0.hangDuration
+            ]
         }
-        if let signal = $0.signal {
-            attrs["exception.signal"] = signal.intValue
+        logForEach(payload.cpuExceptionDiagnostics, "cpu_exception") {
+            [
+                "total_cpu_time": $0.totalCPUTime,
+                "total_sampled_time": $0.totalSampledTime,
+            ]
         }
-        if let terminationReason = $0.terminationReason {
-            attrs["exception.termination_reason"] = terminationReason
-        }
-        if #available(iOS 17.0, macOS 14.0, *) {
-            if let exceptionReason = $0.exceptionReason {
-                attrs["exception.objc.type"] = exceptionReason.exceptionType
-                attrs["exception.objc.message"] = exceptionReason.composedMessage
-                attrs["exception.objc.classname"] = exceptionReason.className
-                attrs["exception.objc.name"] = exceptionReason.exceptionName
+        logForEach(payload.crashDiagnostics, "crash") {
+            var attrs: [String: AttributeValueConvertable] = [:]
+            if let exceptionCode = $0.exceptionCode {
+                attrs["exception.code"] = exceptionCode.intValue
             }
+            if let exceptionType = $0.exceptionType {
+                attrs["exception.mach_execution_type"] = exceptionType.intValue
+            }
+            if let signal = $0.signal {
+                attrs["exception.signal"] = signal.intValue
+            }
+            if let terminationReason = $0.terminationReason {
+                attrs["exception.termination_reason"] = terminationReason
+            }
+            if #available(iOS 17.0, *) {
+                if let exceptionReason = $0.exceptionReason {
+                    attrs["exception.objc.type"] = exceptionReason.exceptionType
+                    attrs["exception.objc.message"] = exceptionReason.composedMessage
+                    attrs["exception.objc.classname"] = exceptionReason.className
+                    attrs["exception.objc.name"] = exceptionReason.exceptionName
+                }
+            }
+            return attrs
         }
-        return attrs
     }
-}
+#endif

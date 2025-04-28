@@ -2,12 +2,38 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.8
+
+### New Features
+
+* Allow optional API key for custom endpoint
+
+### Fixes
+
+* NavigationStack root paths now get serialized as `/` instead of `[]`, even when using NavigationPath.
+* Ensure navigation instrumention passes `prefix` param correctly.
+
+## 0.0.7
+
+### New Features
+
+* Enhanced navigation instrumentation:
+  * Now emits paired `NavigationTo` and `NavigationFrom` spans for better visibility into screen transitions and time spent on screens.
+  * Now accepts optional `reason: String` param for tagging navigations.
+  * Now accepts optional `prefix: String` param to allow clients to disambiguate between different NavigationStacks within a singular application.
+  * Fix: NavigationStack root paths now get serialized as `/` instead of `[]`.
+  * Fix: Navigation instrumentation now correctly identifies the `screen.name` attribute for paths, instead of using the full path.
+
+### Fixes
+
+* Wait for flush to avoid missed crash logs
+* Add [UIDevice](https://developer.apple.com/documentation/uikit/uidevice) attributes to spans
+
 ## 0.0.6
 
 ### New Features
 
 * Error logging API for manually logging exceptions.
-* Package is now available on Cocoapods.
 * Add new options to enable/disable built-in auto-instrumentation.
 * Uncaught exception handler to log crashes.
 * Enable telemetry caching for offline support.
@@ -17,7 +43,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### Fixes
 
-* Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation. 
+* Update instrumentation names to use reverse url notation (`io.honeycomb.*`) instead of `@honeycombio/instrumentation-*` notation.
 * Make session id management threadsafe.
 
 ## 0.0.5-alpha

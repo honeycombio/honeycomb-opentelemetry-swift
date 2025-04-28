@@ -143,6 +143,16 @@ mk_attr() {
 
    assert_equal "$result" '"SampleRate"
 "app.metadata"
+"device.isBatteryMonitoringEnabled"
+"device.isLowPowerModeEnabled"
+"device.isMultitaskingSupported"
+"device.localizedModel"
+"device.model"
+"device.name"
+"device.orientation"
+"device.systemName"
+"device.systemVersion"
+"device.userInterfaceIdiom"
 "network.connection.type"
 "screen.name"
 "screen.path"
@@ -292,10 +302,10 @@ mk_diag_attr() {
 
     screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.path\")" \
-        | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE\").value.stringValue" \
+        | jq "select (.value.stringValue == \"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq
     )
-    assert_equal "$screen_path_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
+    assert_equal "$screen_path_attr" '"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
 
     screen_name_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.name\")" \
@@ -306,10 +316,10 @@ mk_diag_attr() {
 
     screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.path\")" \
-        | jq "select (.value.stringValue == \"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
+        | jq "select (.value.stringValue == \"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
         | uniq
     )
-    assert_equal "$screen_path_attr" '"SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu"'
+    assert_equal "$screen_path_attr" '"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu"'
 }
 
 @test "UIKit click events are captured" {
@@ -337,14 +347,68 @@ mk_diag_attr() {
 }
 
 @test "Navigation spans are correct" {
-    result=$(attribute_for_span_key "io.honeycomb.navigation" Navigation "screen.name" string \
-        | sort \
-        | uniq -c)
-    root_count=$(echo "$result" | grep "\[\]")
+    result=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationTo" "screen.name" string | sort | uniq -c)
+    root_count=$(echo "$result" | grep "\/")
+    stack_root_count=$(echo "$result" | grep "NavigationStackRoot")
     yosemite_count=$(echo "$result" | grep "Yosemite")
 
-    assert_equal "$root_count" '   1 "[]"'
-    assert_equal "$yosemite_count" '   1 "[{\"name\":\"Yosemite\"}]"'
+    assert_equal "$root_count" '   1 "/"'
+    assert_equal "$stack_root_count" '   1 "NavigationStackRoot"'
+    assert_equal "$yosemite_count" '   3 "{\"name\":\"Yosemite\"}"'
+
+    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationTo" "screen.path" string | sort | uniq -c | grep "Split View")
+    assert_equal "$split_view_paths" '   1 "/Split View Parks Root"
+   2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
+   1 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
+
+    navigation_to_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationTo" | jq .key | sort | uniq)
+    assert_equal "$navigation_to_attributes" '"SampleRate"
+"app.metadata"
+"device.isBatteryMonitoringEnabled"
+"device.isLowPowerModeEnabled"
+"device.isMultitaskingSupported"
+"device.localizedModel"
+"device.model"
+"device.name"
+"device.orientation"
+"device.systemName"
+"device.systemVersion"
+"device.userInterfaceIdiom"
+"navigation.trigger"
+"network.connection.type"
+"screen.name"
+"screen.path"
+"session.id"'
+
+    result=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.name" string \
+        | sort \
+        | uniq -c)
+    yosemite_count=$(echo "$result" | grep "Yosemite")
+    assert_equal "$yosemite_count" '   3 "{\"name\":\"Yosemite\"}"'
+
+    navigation_from_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationFrom" | jq .key | sort | uniq)
+    assert_equal "$navigation_from_attributes" '"SampleRate"
+"app.metadata"
+"device.isBatteryMonitoringEnabled"
+"device.isLowPowerModeEnabled"
+"device.isMultitaskingSupported"
+"device.localizedModel"
+"device.model"
+"device.name"
+"device.orientation"
+"device.systemName"
+"device.systemVersion"
+"device.userInterfaceIdiom"
+"navigation.trigger"
+"network.connection.type"
+"screen.active.time"
+"screen.name"
+"screen.path"
+"session.id"'
+
+    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string | sort | uniq -c | grep "Split View")
+    assert_equal "$split_view_paths" '   2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
+   1 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
 }
 
 @test "Navigation attributes are correct" {

@@ -61,9 +61,11 @@ struct TreeDetails: View {
 }
 
 struct NavigationStackExample: View {
-    @State private var presentedParks: [Park] = []
+    @State private var presentedParks = NavigationPath()
+    @State private var usePrefix = false
 
     var body: some View {
+        Toggle("Include path prefix", isOn: $usePrefix)
         NavigationStack(path: $presentedParks) {
             List(parks) { park in
                 NavigationLink(park.name, value: park)
@@ -72,10 +74,15 @@ struct NavigationStackExample: View {
                 ParkDetails(park: park)
             }
         }
-        .instrumentNavigation(path: presentedParks)
+        .instrumentNavigation(
+            prefix: usePrefix ? "NavigationStackRoot" : nil,
+            path: presentedParks,
+            reason: "visiting parks list"
+        )
     }
 }
 
+let navigationSplitExampleRoot = "Split View Parks Root"
 struct NavigationSplitExample: View {
     @State private var selectedPark: Park.ID? = nil
     @State private var selectedTree: Park.ID? = nil
@@ -86,14 +93,14 @@ struct NavigationSplitExample: View {
                 Text(park.name)
             }
             .onAppear {
-                Honeycomb.setCurrentScreen(path: "Split View Parks Root")
+                Honeycomb.setCurrentScreen(path: navigationSplitExampleRoot)
             }
         } content: {
             if let park = park(from: selectedPark) {
                 ParkDetails(park: park)
                     .onAppear {
-                        let path: [Encodable] = ["Split View", park]
-                        Honeycomb.setCurrentScreen(path: path)
+                        let path: [Encodable] = [navigationSplitExampleRoot, park]
+                        Honeycomb.setCurrentScreen(path: path, reason: "visiting \(park)")
                     }
                 List(trees, selection: $selectedTree) { tree in
                     Text(tree.name)
@@ -105,7 +112,7 @@ struct NavigationSplitExample: View {
             if let park = park(from: selectedPark), let tree = tree(from: selectedTree) {
                 TreeDetails(park: park, tree: tree)
                     .onAppear {
-                        let path: [Encodable] = ["Split View", park, tree]
+                        let path: [Encodable] = [navigationSplitExampleRoot, park, tree]
                         Honeycomb.setCurrentScreen(path: path)
                     }
             } else {

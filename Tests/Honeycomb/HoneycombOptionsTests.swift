@@ -741,16 +741,23 @@ final class HoneycombOptionsTests: XCTestCase {
     }
 
     func testMissingAPIKey() throws {
-        let data: [String: String] = [:]
-        let source = HoneycombOptionsSource(info: data)
+        var data: [String: String] = [:]
+        var source = HoneycombOptionsSource(info: data)
 
         XCTAssertThrowsError(try HoneycombOptions.Builder(source: source).build()) { e in
             XCTAssert(e is HoneycombOptionsError)
             XCTAssertEqual(
                 e as? HoneycombOptionsError,
-                .missingAPIKey("missing API key: call setAPIKey()")
+                .missingAPIKey("missing API key: call setAPIKey() or setTracesAPIKey()")
             )
         }
+
+        data = [
+            "HONEYCOMB_API_ENDPOINT": "https://custom.collector:443"
+        ]
+        source = HoneycombOptionsSource(info: data)
+
+        XCTAssertNoThrow(try HoneycombOptions.Builder(source: source).build())
     }
 
     func testIncorrectType() throws {
