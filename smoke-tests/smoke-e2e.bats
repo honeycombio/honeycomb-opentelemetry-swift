@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
 
+export LC_ALL=C
+
 load test_helpers/utilities
 
 CONTAINER_NAME="ios-test"

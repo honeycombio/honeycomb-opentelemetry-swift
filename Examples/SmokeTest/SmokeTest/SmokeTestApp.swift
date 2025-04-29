@@ -3,7 +3,22 @@ import SwiftUI
 
 @main
 struct SmokeTestApp: App {
+    // @State private var session: HoneycombSession? = nil
+
     init() {
+        /*
+        NotificationCenter.default.addObserver(
+            forName: .sessionStarted,
+            object: nil,
+            queue: .main
+        ) { notification in
+            guard let session = notification.userInfo?["session"] as? HoneycombSession else {
+                return
+            }
+            self.session = session
+        }
+        */
+
         do {
             let options = try HoneycombOptions.Builder()
                 .setAPIKey("test-key")

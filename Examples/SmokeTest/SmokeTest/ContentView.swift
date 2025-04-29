@@ -75,11 +75,8 @@ struct ContentView: View {
     @State private var timer: Timer?
 
     func updateSessionInfo(session: HoneycombSession) {
-        sessionId =
-            session.id
-        sessionStartTime =
-            session.startTimestamp.ISO8601Format().description
-
+        sessionId = session.id
+        sessionStartTime = session.startTimestamp.ISO8601Format().description
     }
 
     var body: some View {
@@ -170,6 +167,9 @@ struct ContentView: View {
                 guard let session = notification.userInfo?["session"] as? HoneycombSession else {
                     return
                 }
+                updateSessionInfo(session: session)
+            }
+            if let session = Honeycomb.currentSession() {
                 updateSessionInfo(session: session)
             }
         }

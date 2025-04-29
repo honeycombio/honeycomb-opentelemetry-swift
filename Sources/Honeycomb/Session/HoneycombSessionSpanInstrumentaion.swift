@@ -2,19 +2,13 @@ import Foundation
 import OpenTelemetryApi
 import OpenTelemetrySdk
 
-public struct HoneycombSessionIdSpanProcessor: SpanProcessor {
+struct HoneycombSessionIdSpanProcessor: SpanProcessor {
     public let isStartRequired = true
     public let isEndRequired = false
     private var sessionManager: HoneycombSessionManager
 
-    public init(
-        debug: Bool = false,
-        sessionLifetimeSeconds: TimeInterval
-    ) {
-        self.sessionManager = HoneycombSessionManager(
-            debug: debug,
-            sessionLifetimeSeconds: sessionLifetimeSeconds
-        )
+    init(sessionManager: HoneycombSessionManager) {
+        self.sessionManager = sessionManager
     }
 
     public func onStart(
@@ -23,7 +17,7 @@ public struct HoneycombSessionIdSpanProcessor: SpanProcessor {
     ) {
         span.setAttribute(
             key: "session.id",
-            value: sessionManager.sessionId
+            value: sessionManager.session.id
         )
     }
 

@@ -33,12 +33,13 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
+    static private var sessionManager: HoneycombSessionManager? = nil
+
     #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
         static private let metricKitSubscriber = MetricKitSubscriber()
     #endif
-
+    
     static public func configure(options: HoneycombOptions) throws {
-
         if options.debug {
             configureDebug(options: options)
         }
@@ -119,16 +120,13 @@ public class Honeycomb {
 
         let baggageSpanProcessor = BaggagePropagationProcessor(filter: { _ in true })
 
+        sessionManager = HoneycombSessionManager(debug: options.debug, sessionLifetimeSeconds: options.sessionTimeout)
+        
         var tracerProviderBuilder = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
             .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
-            .add(
-                spanProcessor: HoneycombSessionIdSpanProcessor(
-                    debug: options.debug,
-                    sessionLifetimeSeconds: options.sessionTimeout
-                )
-            )
+            .add(spanProcessor: HoneycombSessionIdSpanProcessor(sessionManager: sessionManager!))
 
         #if os(iOS) && !targetEnvironment(macCatalyst)
             do {
@@ -239,6 +237,10 @@ public class Honeycomb {
         #endif
     }
 
+    public static func currentSession() -> HoneycombSession? {
+        sessionManager?.session
+    }
+    
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
 
     public static func getDefaultErrorLogger() -> OpenTelemetryApi.Logger {
