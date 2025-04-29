@@ -38,7 +38,7 @@ public class Honeycomb {
     #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
         static private let metricKitSubscriber = MetricKitSubscriber()
     #endif
-    
+
     static public func configure(options: HoneycombOptions) throws {
         if options.debug {
             configureDebug(options: options)
@@ -120,8 +120,11 @@ public class Honeycomb {
 
         let baggageSpanProcessor = BaggagePropagationProcessor(filter: { _ in true })
 
-        sessionManager = HoneycombSessionManager(debug: options.debug, sessionLifetimeSeconds: options.sessionTimeout)
-        
+        sessionManager = HoneycombSessionManager(
+            debug: options.debug,
+            sessionLifetimeSeconds: options.sessionTimeout
+        )
+
         var tracerProviderBuilder = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
@@ -240,7 +243,7 @@ public class Honeycomb {
     public static func currentSession() -> HoneycombSession? {
         sessionManager?.session
     }
-    
+
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"
 
     public static func getDefaultErrorLogger() -> OpenTelemetryApi.Logger {

@@ -85,17 +85,17 @@ class HoneycombSessionManager {
 
             // The previous block guarantees currentSession isn't nil.
             let currentSession: HoneycombSession = self.currentSession!
-            
+
             // Always return the current session's id
             sessionStorage.save(session: currentSession)
             return currentSession
         }
     }
-    
+
     var sessionId: String {
         return session.id
     }
-    
+
     private func onSessionStarted(newSession: HoneycombSession, previousSession: HoneycombSession?)
     {
         if debug {
