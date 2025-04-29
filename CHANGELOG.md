@@ -2,11 +2,16 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
-## 0.0.8
+## 0.0.9
 
 ### New Features
 
 * Add `Honeycomb.currentSession()` method for getting the session ID.
+
+## 0.0.8
+
+### New Features
+
 * Make API key optional when using a custom endpoint.
 
 ### Fixes
