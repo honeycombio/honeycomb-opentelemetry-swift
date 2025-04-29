@@ -41,7 +41,7 @@ class HoneycombSessionManager {
         self.sessionStorage.clear()
 
         // Generate an initial sessionId for listeners.
-        let _ = self.session
+        // let _ = self.session
     }
 
     private var isSessionExpired: Bool {

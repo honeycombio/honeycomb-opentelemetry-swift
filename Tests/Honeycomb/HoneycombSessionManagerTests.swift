@@ -18,30 +18,14 @@ final class HoneycombSessionManagerTests: XCTestCase {
     var sessionManager: HoneycombSessionManager!
     var storage: SessionStorage!
     var sessionLifetimeSeconds = TimeInterval(60 * 60 * 4)
-    var initialNotification: Notification!
 
     override func setUp() {
         super.setUp()
         storage = SessionStorage()
-
-        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
-            notification in
-            self.initialNotification = notification
-            XCTAssertNil(notification.userInfo?["previousSession"])
-            if let session = notification.userInfo?["session"] as? HoneycombSession {
-                XCTAssertNotNil(session.id)
-                XCTAssertNotNil(session.startTimestamp)
-                return true
-            }
-            return false
-        }
-
         sessionManager = HoneycombSessionManager(
             debug: true,
             sessionLifetimeSeconds: sessionLifetimeSeconds
         )
-
-        self.wait(for: [expectation], timeout: 1)
     }
 
     override func tearDown() {
@@ -50,18 +34,20 @@ final class HoneycombSessionManagerTests: XCTestCase {
     }
 
     func testSessionCreationOnStartup() {
-        let sessionIdAtStartup = sessionManager.sessionId
+        let sessionBeforeId = storage.read()?.id
+        XCTAssertNil(sessionBeforeId, "Session should be cleared on startup.")
+        let sessionIdAfter = sessionManager.sessionId
         XCTAssertNotNil(
-            sessionIdAtStartup,
+            sessionIdAfter,
             "A new session should be created"
         )
-        XCTAssert(!sessionIdAtStartup.isEmpty, "A new session ID should not be empty.")
+        XCTAssert(!sessionIdAfter.isEmpty, "A new session ID should not be empty.")
 
         // The new sessionId should be stored
         let storedSessionId = storage.read()?.id
         XCTAssertEqual(
             storedSessionId,
-            sessionIdAtStartup,
+            sessionIdAfter,
             "the stored session ID should match the newly created one."
         )
 
@@ -174,6 +160,23 @@ final class HoneycombSessionManagerTests: XCTestCase {
         )
     }
 
+    func testOnSessionStartedOnStartup() {
+        let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
+            notification in
+            XCTAssertNil(notification.userInfo?["previousSession"])
+            if let session = notification.userInfo?["session"] as? HoneycombSession {
+                XCTAssertNotNil(session.id)
+                XCTAssertNotNil(session.startTimestamp)
+                return true
+            }
+            return false
+        }
+
+        _ = sessionManager.sessionId
+
+        wait(for: [expectation], timeout: 1)
+    }
+
     func testOnSessionEndedOnStartupShouldNotBeEmitted() {
         let expectation = self.expectation(
             forNotification: .sessionEnded,
@@ -198,7 +201,7 @@ final class HoneycombSessionManagerTests: XCTestCase {
             dateProvider: dateProvider.provider
 
         )
-        var startNotifications: [Notification] = [initialNotification]
+        var startNotifications: [Notification] = []
         let expectation = self.expectation(forNotification: .sessionStarted, object: nil) {
             notification in
             startNotifications.append(notification)
