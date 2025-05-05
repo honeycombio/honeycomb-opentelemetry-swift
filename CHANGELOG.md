@@ -2,6 +2,12 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.10
+
+### New Features
+
+* Update to OpenTelemetry Swift 1.15.0.
+
 ## 0.0.9
 
 ### New Features
