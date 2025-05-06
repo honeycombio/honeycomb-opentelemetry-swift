@@ -544,7 +544,7 @@ public struct HoneycombOptions {
 
             resourceAttributes.putIfAbsent(
                 "telemetry.distro.name",
-                "@honeycombio/opentelemetry-web"
+                "honeycomb-opentelemetry-swift"
             )
 
             let tracesEndpoint = getHoneycombEndpoint(
