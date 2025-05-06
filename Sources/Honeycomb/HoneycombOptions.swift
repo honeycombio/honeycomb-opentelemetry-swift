@@ -536,12 +536,12 @@ public struct HoneycombOptions {
                 "honeycomb.distro.runtime_version",
                 runtimeVersion
             )
-            
+
             resourceAttributes.putIfAbsent(
                 "telemetry.distro.version",
                 honeycombLibraryVersion
             )
-            
+
             resourceAttributes.putIfAbsent(
                 "telemetry.distro.name",
                 "@honeycombio/opentelemetry-web"
