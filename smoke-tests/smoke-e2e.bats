@@ -182,6 +182,7 @@ mk_diag_attr() {
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.cpu_exception.total_sampled_time" double)" 194400  # 54 hours
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.disk_write_exception.total_writes_caused" double)" 55000000  # 55 MB
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.hang.hang_duration" double)" 56
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.hang.exception.stacktrace_json" string)" '"fake json stacktrace"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_execution_type" int)" '"57"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.code" int)" '"58"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.signal" int)" '"59"'
@@ -190,6 +191,7 @@ mk_diag_attr() {
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.termination_reason" string)" '"reason"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.name" string)" '"MyCrash"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.classname" string)" '"MyClass"'
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.stacktrace_json" string)" '"fake json stacktrace"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.app_launch.launch_duration" double)" 60
 }
 
