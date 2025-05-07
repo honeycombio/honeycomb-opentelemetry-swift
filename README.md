@@ -120,6 +120,8 @@ All spans will include the following attributes
 - `os.version`: Current iOS Version
 - `service.name`: The name of your application, as provided via `setServiceName()`, or inferred from your bundle if unset.
 - `service.version`: Optional. The version of your application, as provided via `setServiceVersion(), or inferred from your bundle if unset.
+- `telemetry.distro.version`: Version of the Honeycomb SDK being used.
+- `telemetry.distro.name`: "honeycomb-opentelemetry-swift"
 - `telemetry.sdk.language`: "swift"
 - `telemetry.sdk.name`: "opentelemetry"
 - `telemetry.sdk.version`: Version of the OpenTelemetry Swift SDK being used.
