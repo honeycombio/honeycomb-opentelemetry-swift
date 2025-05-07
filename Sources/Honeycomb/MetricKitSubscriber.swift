@@ -396,9 +396,16 @@
             ]
         }
         logForEach(payload.hangDiagnostics, "hang") {
-            [
-                "hang_duration": $0.hangDuration
-            ]
+            var attrs: [String: AttributeValueConvertable] = [:]
+            attrs["hang_duration"] = $0.hangDuration
+
+            let callStackTree = $0.callStackTree
+            attrs["exception.stacktrace_json"] = String(
+                decoding: callStackTree.jsonRepresentation(),
+                as: UTF8.self
+            )
+
+            return attrs
         }
         logForEach(payload.cpuExceptionDiagnostics, "cpu_exception") {
             [
@@ -420,6 +427,12 @@
             if let terminationReason = $0.terminationReason {
                 attrs["exception.termination_reason"] = terminationReason
             }
+            let callStackTree = $0.callStackTree
+            attrs["exception.stacktrace_json"] = String(
+                decoding: callStackTree.jsonRepresentation(),
+                as: UTF8.self
+            )
+
             if #available(iOS 17.0, *) {
                 if let exceptionReason = $0.exceptionReason {
                     attrs["exception.objc.type"] = exceptionReason.exceptionType
