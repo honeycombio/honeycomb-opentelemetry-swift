@@ -7,6 +7,7 @@ Honeycomb OpenTelemetry SDK Changelog
 ### New Features
 
 * `metrickit.diagnostic.crash` and `metrickit.diagnostic.hang` traces now include `stacktrace_json` attributes containing the raw (unsymbolicated) stacktrace supplied by the OS.
+* Include semantic convention attributes for distro name and version.
 
 ## 0.0.10
 
