@@ -1,5 +1,5 @@
-
 import Testing
+
 @testable import CocoaPodsTest
 
 struct CocoaPodsTestTests {

@@ -1,9 +1,11 @@
 
+swift_files := Package.swift Sources Tests Examples/SmokeTest Examples/CocoaPodsTest/CocoaPodsTest*
+
 lint:
-	swift format lint --strict --recursive .
+	swift format lint --strict --recursive $(swift_files)
 
 format:
-	swift format format --in-place --recursive .
+	swift format format --in-place --recursive $(swift_files)
 
 cocoapods-tests:
 	# pod lib lint honeycomb-opentelemetry-swift.podspec
