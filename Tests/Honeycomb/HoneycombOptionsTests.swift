@@ -35,6 +35,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -89,6 +91,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -138,6 +142,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -185,6 +191,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -253,6 +261,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -340,6 +350,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
 
@@ -536,6 +548,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.name": "unknown_service",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -555,6 +569,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -577,6 +593,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -603,6 +621,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "other.attr": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -629,6 +649,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -652,6 +674,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -676,6 +700,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "3",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -702,6 +728,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "2",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }
@@ -729,6 +757,8 @@ final class HoneycombOptionsTests: XCTestCase {
             "service.version": "1",
             "honeycomb.distro.version": honeycombLibraryVersion,
             "honeycomb.distro.runtime_version": runtimeVersion,
+            "telemetry.distro.version": honeycombLibraryVersion,
+            "telemetry.distro.name": "honeycomb-opentelemetry-swift",
         ]
         XCTAssertEqual(expectedResources, options.resourceAttributes)
     }

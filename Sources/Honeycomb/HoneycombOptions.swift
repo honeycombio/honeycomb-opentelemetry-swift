@@ -537,6 +537,16 @@ public struct HoneycombOptions {
                 runtimeVersion
             )
 
+            resourceAttributes.putIfAbsent(
+                "telemetry.distro.version",
+                honeycombLibraryVersion
+            )
+
+            resourceAttributes.putIfAbsent(
+                "telemetry.distro.name",
+                "honeycomb-opentelemetry-swift"
+            )
+
             let tracesEndpoint = getHoneycombEndpoint(
                 endpoint: self.tracesEndpoint,
                 fallback: apiEndpoint,

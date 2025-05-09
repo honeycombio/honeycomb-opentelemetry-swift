@@ -437,6 +437,9 @@ class FakeMetricPayload: MXMetricPayload {
 
 @available(iOS 14.0, *)
 class FakeCallStackTree: MXCallStackTree {
+    override func jsonRepresentation() -> Data {
+        return Data("fake json stacktrace".utf8)
+    }
 }
 
 @available(iOS 14.0, *)
