@@ -56,7 +56,7 @@ jobs:
           platform: "iOS"
           device: "iPhone 16"
       - checkout
-      - run: make cocoapods_tests
+      - run: make cocoapods-tests
 
   smoke_tests:
     macos:
