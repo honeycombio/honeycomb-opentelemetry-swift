@@ -8,6 +8,9 @@
       location = "group:Examples/SmokeTest/SmokeTest.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Examples/CocoaPodsTest/CocoaPodsTest.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:SmokeTest.xctestplan">
    </FileRef>
 </Workspace>

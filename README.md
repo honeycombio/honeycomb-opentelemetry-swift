@@ -27,7 +27,7 @@ If you're using `Package.swift` to manage dependencies...
 ```swift
     dependencies: [
         .package(url: "https://github.com/honeycombio/honeycomb-opentelemetry-swift.git",
-                 from: "0.0.7")
+                 from: "0.0.11")
     ],
 ```
 
@@ -37,6 +37,16 @@ If you're using `Package.swift` to manage dependencies...
     dependencies: [
         .product(name: "Honeycomb", package: "honeycomb-opentelemetry-swift"),
     ],
+```
+
+### CocoaPods
+
+If you're using [Cocoapods](https://cocoapods.org) to manage dependencies...
+
+1. Add the dependency.
+
+```
+pod 'honeycomb-opentelemetry-swift'
 ```
 
 ### Initializing the SDK

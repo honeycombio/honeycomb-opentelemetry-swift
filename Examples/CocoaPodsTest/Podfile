@@ -1,0 +1,33 @@
+
+target 'CocoaPodsTest' do
+  platform :ios, '13.0'
+
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for CocoaPodsTest
+  pod 'honeycomb-opentelemetry-swift', :path => '../../'
+
+  # This is temporary, for testing.
+  pod 'OpenTelemetry-Swift-Api', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-Sdk', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-Protocol-Exporter-Common', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-Protocol-Exporter-Http', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-SdkResourceExtension', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-StdoutExporter', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-DataCompression', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-BaggagePropagationProcessor', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-BaggagePropagationProcessor', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-Instrumentation-NetworkStatus', :path => '../../../opentelemetry-swift'
+  pod 'OpenTelemetry-Swift-PersistenceExporter', :path => '../../../opentelemetry-swift'
+
+  target 'CocoaPodsTestTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'CocoaPodsTestUITests' do
+    # Pods for testing
+  end
+
+end
