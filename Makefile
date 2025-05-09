@@ -5,6 +5,10 @@ lint:
 format:
 	swift format format --in-place --recursive .
 
+cocoapods-tests:
+	# pod lib lint honeycomb-opentelemetry-swift.podspec
+	cd Examples/CocoaPodsTest && sh ./run-cocoapods-test.sh
+
 #: cleans up smoke test output
 clean-smoke-tests:
 	rm -rf ./smoke-tests/collector/data.json
