@@ -306,9 +306,10 @@ public class Honeycomb {
 
         // TODO: Type and name seem wrong here. Which is right?
         var errorAttributes = [
-            "exception.type": type.attributeValue(),
-            "exception.message": message.attributeValue(),
-            "exception.stacktrace": exception.callStackSymbols.joined(separator: "\n")
+            SemanticAttributes.exceptionType.rawValue: type.attributeValue(),
+            SemanticAttributes.exceptionMessage.rawValue: message.attributeValue(),
+            SemanticAttributes.exceptionStacktrace.rawValue: exception.callStackSymbols
+                .joined(separator: "\n")
                 .attributeValue(),
         ]
         .merging(attributes, uniquingKeysWith: { (_, last) in last })
