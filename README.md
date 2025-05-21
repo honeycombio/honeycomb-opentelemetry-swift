@@ -391,7 +391,7 @@ Both helpers also accept 2 optional parameters: `prefix: String` and `reason: St
 
 ### Manual Error Logging
 
-Any Errors, NSErrors, or NSExceptions may be recorded as Log records using the `log` method. This can be used for logging 
+Any `Error`s, `NSError`s, or `NSException`s may be recorded as Log records using the `log` method. This can be used for logging 
 any caught exceptions in your own code that will not be logged by our crash instrumentation.
 
 Below is an example of logging an Error object using several custom attributes.
@@ -413,12 +413,29 @@ catch let error {
 ```
 
 | Argument        | Type                               | Is Required | Description                                                                                                          |
-|-----------------|------------------------------------|-------------|---------------------------------------------------------------------------------------------------------             |
+|-----------------|------------------------------------|-------------|----------------------------------------------------------------------------------------------------------------------|
 | error/exception | Error/NSError/NSException          | true        | The error or exception itself. Depending on the type of error, fields will be automatically added to the log record. |
 | attributes      | Dictionary<string, AttributeValue> | false       | Additional attributes you would like to log along with the default ones provided.                                    |
 | thread          | Thread                             | false       | Thread where the error occurred. Add this to include additional attributes related to the thread                     |
+| severity        | Severity                           | false       | The OpenTelemetry severity to attach to the log entry. Defaults to `.error` for manual errors.                       |
 | logger          | Logger                             | false       | Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`              |
 
+The following attributes are automatically attached to the log entry.
+
+#### Swift `Error`
+* `error.type` - The type name of the `Error` subclass.
+* `error.message` - The `localizedDescription` of the `Error`.
+
+#### `NSError`
+* `error.type` - The type name of the `NSError` subclass.
+* `error.message` - The `localizedDescription` of the `NSError`.
+* `nserror.code` - The `code` of the `NSError`.
+* `nserror.domain` - The `domain` of the `NSError`.
+
+#### `NSException`
+* `exception.type` - The `name` of the `NSException`.
+* `exception.message` - The `reason` of the `NSException`.
+* `exception.stacktrace` - The stack trace of the exception.
 
  ## Offline Caching
 

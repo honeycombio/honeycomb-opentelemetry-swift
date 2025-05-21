@@ -262,6 +262,7 @@ public class Honeycomb {
         error: NSError,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
+        severity: Severity = .error,
         logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
     ) {
         let timestamp = Date()
@@ -282,7 +283,7 @@ public class Honeycomb {
             errorAttributes["thread.name"] = name.attributeValue()
         }
 
-        logError(errorAttributes, .error, logger, timestamp)
+        logError(errorAttributes, severity, logger, timestamp)
     }
 
     /// Logs an `NSException`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
@@ -329,6 +330,7 @@ public class Honeycomb {
         error: Error,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
+        severity: Severity = .error,
         logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
     ) {
         let timestamp = Date()
@@ -345,7 +347,7 @@ public class Honeycomb {
             errorAttributes["thread.name"] = name.attributeValue()
         }
 
-        logError(errorAttributes, .error, logger, timestamp)
+        logError(errorAttributes, severity, logger, timestamp)
     }
 
     private static func logError(
