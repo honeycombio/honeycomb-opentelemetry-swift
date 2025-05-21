@@ -267,12 +267,14 @@ public class Honeycomb {
         let timestamp = Date()
         let type = String(describing: Mirror(reflecting: error).subjectType)
         let code = error.code
+        let domain = error.domain
         let message = error.localizedDescription
 
         var errorAttributes = [
-            "exception.type": type.attributeValue(),
-            "exception.message": message.attributeValue(),
-            "exception.code": code.attributeValue(),
+            "error.type": type.attributeValue(),
+            "error.message": message.attributeValue(),
+            "nserror.code": code.attributeValue(),
+            "nserror.domain": domain.attributeValue(),
         ]
         .merging(attributes, uniquingKeysWith: { (_, last) in last })
 
@@ -280,7 +282,7 @@ public class Honeycomb {
             errorAttributes["thread.name"] = name.attributeValue()
         }
 
-        logError(errorAttributes, logger, timestamp)
+        logError(errorAttributes, .error, logger, timestamp)
     }
 
     /// Logs an `NSException`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
@@ -288,21 +290,23 @@ public class Honeycomb {
     ///   - exception: The `NSException` itself
     ///   - attributes: Additional attributes you would like to log along with the default ones provided.
     ///   - thread: Thread where the exception occurred. Add this to include additional attributes related to the thread
+    ///   - severity: The severity of the exception. Typically .error or .fatal.
     ///   - logger: Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`
     public static func log(
         exception: NSException,
         attributes: [String: AttributeValue] = [:],
         thread: Thread?,
+        severity: Severity = .error,
         logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
     ) {
         let timestamp = Date()
-        let type = String(describing: Mirror(reflecting: exception).subjectType)
+        let type = exception.name.rawValue
         let message = exception.reason ?? exception.name.rawValue
 
+        // TODO: Type and name seem wrong here. Which is right?
         var errorAttributes = [
             "exception.type": type.attributeValue(),
             "exception.message": message.attributeValue(),
-            "exception.name": exception.name.rawValue.attributeValue(),
             "exception.stacktrace": exception.callStackSymbols.joined(separator: "\n")
                 .attributeValue(),
         ]
@@ -312,7 +316,7 @@ public class Honeycomb {
             errorAttributes["thread.name"] = name.attributeValue()
         }
 
-        logError(errorAttributes, logger, timestamp)
+        logError(errorAttributes, .fatal, logger, timestamp)
     }
 
     /// Logs an `Error`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
@@ -332,8 +336,8 @@ public class Honeycomb {
         let message = error.localizedDescription
 
         var errorAttributes = [
-            "exception.type": type.attributeValue(),
-            "exception.message": message.attributeValue(),
+            "error.type": type.attributeValue(),
+            "error.message": message.attributeValue(),
         ]
         .merging(attributes, uniquingKeysWith: { (_, last) in last })
 
@@ -341,11 +345,12 @@ public class Honeycomb {
             errorAttributes["thread.name"] = name.attributeValue()
         }
 
-        logError(errorAttributes, logger, timestamp)
+        logError(errorAttributes, .error, logger, timestamp)
     }
 
     private static func logError(
         _ attributes: [String: AttributeValue],
+        _ severity: Severity,
         _ logger: OpenTelemetryApi.Logger = getDefaultErrorLogger(),
         _ timestamp: Date = Date()
     ) {
@@ -357,7 +362,7 @@ public class Honeycomb {
         logger.logRecordBuilder()
             .setTimestamp(timestamp)
             .setAttributes(logAttrs)
-            .setSeverity(.fatal)
+            .setSeverity(severity)
             .emit()
     }
 

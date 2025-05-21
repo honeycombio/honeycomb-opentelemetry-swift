@@ -8,7 +8,7 @@ internal class HoneycombUncaughtExceptionHandler {
             NSGetUncaughtExceptionHandler()
 
         NSSetUncaughtExceptionHandler { exception in
-            Honeycomb.log(exception: exception, thread: Thread.current)
+            Honeycomb.log(exception: exception, thread: Thread.current, severity: .fatal)
 
             // App is about to close taking Otel with it, give it some time to finish
             Thread.sleep(forTimeInterval: 3.0)
