@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 0.0.12
+
 ### New Features
 
 * Add optional `severity` parameter to manual error-logging APIs.
