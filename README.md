@@ -437,8 +437,65 @@ The following attributes are automatically attached to the log entry.
 * `exception.message` - The `reason` of the `NSException`.
 * `exception.stacktrace` - The stack trace of the exception.
 
- ## Offline Caching
+## Adding a Custom Span Processor
+You can implement and register your own custom span processor with the Honeycomb SDK. This allows you to perform custom operations on spans before they are exported, such as adding application-specific attributes.
 
- Set the `offlineCachingEnabled` option to enable disk buffering for outgoing telemetry. This will cache your telemetry in the event of network failures and continue to retry exporting your telemetry for up to 18 hours. You will also see a minimum delay in exporting telemetry, of at least 5 seconds.
+```swift
+import Foundation
+import Honeycomb
+import OpenTelemetryApi
+import OpenTelemetrySdk
 
- This feature is currently in alpha and may be unstable. It is currently off by default.
+// Create a custom span processor
+internal struct AppVersionSpanProcessor: SpanProcessor {
+    public let isStartRequired = true
+    public let isEndRequired = true
+
+    // Add custom logic when a span starts
+    public func onStart(parentContext: SpanContext?, span: any ReadableSpan) {
+        // For example, add a custom attribute to every span:
+        span.setAttribute(key: "custom.attribute", value: "custom_value")
+    }
+
+    public func onEnd(span: any ReadableSpan) {}
+
+    public func shutdown(explicitTimeout: TimeInterval? = nil) {}
+
+    public func forceFlush(timeout: TimeInterval? = nil) {}
+}
+
+// Then when configuring the SDK, add your processor:
+let options = try HoneycombOptions.Builder()
+    .setAPIKey("YOUR-API-KEY")
+    .setServiceName("YOUR-SERVICE-NAME")
+    .setSpanProcessor(MyCustomSpanProcessor())
+    .build()
+try Honeycomb.configure(options: options)
+```
+
+To use multiple custom span processors, you can combine them using OpenTelemetry's `MultiSpanProcessor` helper:
+
+```swift
+import Foundation
+import Honeycomb
+import OpenTelemetryApi
+import OpenTelemetrySdk
+
+let combinedProcessor =  MultiSpanProcessor(spanProcessors: [
+    FirstSpanProcessor(),
+    SecondSpanProcessor(),
+])
+
+let options = try HoneycombOptions.Builder()
+    .setAPIKey("YOUR-API-KEY")
+    .setServiceName("YOUR-SERVICE-NAME")
+    .setSpanProcessor(combinedProcessor)
+    .build()
+try Honeycomb.configure(options: options)
+```
+
+## Offline Caching
+
+Set the `offlineCachingEnabled` option to enable disk buffering for outgoing telemetry. This will cache your telemetry in the event of network failures and continue to retry exporting your telemetry for up to 18 hours. You will also see a minimum delay in exporting telemetry, of at least 5 seconds.
+
+This feature is currently in alpha and may be unstable. It is currently off by default.
