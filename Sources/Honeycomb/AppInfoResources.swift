@@ -46,13 +46,25 @@ private func getBuildUUID() -> String? {
                 let bytes = rawPtr.bindMemory(to: UInt8.self)
 
                 // Format: 8-4-4-4-12
-                return String(format:
-                    "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-                    bytes[0], bytes[1], bytes[2], bytes[3],
-                    bytes[4], bytes[5],
-                    bytes[6], bytes[7],
-                    bytes[8], bytes[9],
-                    bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
+                return String(
+                    format:
+                        "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+                    bytes[0],
+                    bytes[1],
+                    bytes[2],
+                    bytes[3],
+                    bytes[4],
+                    bytes[5],
+                    bytes[6],
+                    bytes[7],
+                    bytes[8],
+                    bytes[9],
+                    bytes[10],
+                    bytes[11],
+                    bytes[12],
+                    bytes[13],
+                    bytes[14],
+                    bytes[15]
                 )
             }
 
