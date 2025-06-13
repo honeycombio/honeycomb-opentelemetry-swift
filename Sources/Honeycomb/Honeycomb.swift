@@ -69,6 +69,7 @@ public class Honeycomb {
 
         let resource = DefaultResources().get()
             .merging(other: Resource(attributes: createAttributeDict(options.resourceAttributes)))
+            .merging(other: Resource(attributes: createAttributeDict(getAppResources())))
 
         // Traces
 
