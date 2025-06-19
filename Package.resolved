@@ -1,13 +1,13 @@
 {
-  "originHash" : "a72dfb55821139a54e0f039200431108cdc5fe06d446cfaec8efe8810f40b5c3",
+  "originHash" : "e576df8efc6cc13272db60659554932b87feed5b39210597ea690580dd5543a1",
   "pins" : [
     {
       "identity" : "grpc-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/grpc/grpc-swift.git",
       "state" : {
-        "revision" : "8c5e99d0255c373e0330730d191a3423c57373fb",
-        "version" : "1.24.2"
+        "revision" : "a56a157218877ef3e9625f7e1f7b2cb7e46ead1b",
+        "version" : "1.26.1"
       }
     },
     {
@@ -15,17 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/open-telemetry/opentelemetry-swift.git",
       "state" : {
-        "revision" : "6a2c29d53ff0b543b551b2221538bd3d0206c6d6",
-        "version" : "1.15.0"
-      }
-    },
-    {
-      "identity" : "opentracing-objc",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/undefinedlabs/opentracing-objc",
-      "state" : {
-        "revision" : "18c1a35ca966236cee0c5a714a51a73ff33384c1",
-        "version" : "0.5.2"
+        "revision" : "b9b891abd313a538f8bbee7ac6bc96f647dd2379",
+        "version" : "1.16.1"
       }
     },
     {
@@ -33,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-atomics.git",
       "state" : {
-        "revision" : "cd142fd2f64be2100422d658e7411e39489da985",
-        "version" : "1.2.0"
+        "revision" : "b601256eab081c0f92f059e12818ac1d4f178ff7",
+        "version" : "1.3.0"
       }
     },
     {
@@ -60,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "9cb486020ebf03bfa5b5df985387a14a98744537",
-        "version" : "1.6.1"
+        "revision" : "3d8596ed08bd13520157f0355e35caed215ffbfa",
+        "version" : "1.6.3"
       }
     },
     {
@@ -69,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-metrics.git",
       "state" : {
-        "revision" : "e0165b53d49b413dd987526b641e05e246782685",
-        "version" : "2.5.0"
+        "revision" : "4c83e1cdf4ba538ef6e43a9bbd0bcc33a0ca46e3",
+        "version" : "2.7.0"
       }
     },
     {
@@ -78,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
-        "revision" : "4c4453b489cf76e6b3b0f300aba663eb78182fad",
-        "version" : "2.70.0"
+        "revision" : "34d486b01cd891297ac615e40d5999536a1e138d",
+        "version" : "2.83.0"
       }
     },
     {
@@ -96,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-http2.git",
       "state" : {
-        "revision" : "b5f7062b60e4add1e8c343ba4eb8da2e324b3a94",
-        "version" : "1.34.0"
+        "revision" : "4281466512f63d1bd530e33f4aa6993ee7864be0",
+        "version" : "1.36.0"
       }
     },
     {
@@ -114,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-transport-services.git",
       "state" : {
-        "revision" : "38ac8221dd20674682148d6451367f89c2652980",
-        "version" : "1.21.0"
+        "revision" : "cd1e89816d345d2523b11c55654570acd5cd4c56",
+        "version" : "1.24.0"
       }
     },
     {
@@ -123,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "d72aed98f8253ec1aa9ea1141e28150f408cf17f",
-        "version" : "1.29.0"
+        "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
+        "version" : "1.30.0"
       }
     },
     {
@@ -132,17 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system.git",
       "state" : {
-        "revision" : "d2ba781702a1d8285419c15ee62fd734a9437ff5",
-        "version" : "1.3.2"
-      }
-    },
-    {
-      "identity" : "thrift-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/undefinedlabs/Thrift-Swift",
-      "state" : {
-        "revision" : "18ff09e6b30e589ed38f90a1af23e193b8ecef8e",
-        "version" : "1.1.2"
+        "revision" : "61e4ca4b81b9e09e2ec863b00c340eb13497dac6",
+        "version" : "1.5.0"
       }
     }
   ],
