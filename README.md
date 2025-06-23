@@ -112,6 +112,11 @@ To manually send a span:
 ## Default Attributes
 All spans will include the following attributes
 
+- `app.bundle.version`: The version number of the app, as given by [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion)
+- `app.bundle.shortVersionString`: The short version string of the app, as given by [`CFBundleShortVersionVersion`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleshortversionstring)
+- `app.debug.buildUUID`: Debug UUID of app.
+- `app.debug.binaryName`: The name of the app binary with the UUID given in `app.debug.buildUUID`
+- `app.bundle.executable`: The name of the app executable, as given by [`CFBundleExecutable`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleexecutable) 
 - `honeycomb.distro.runtime_version`: Version of iOS on the device. See also `os.description`.
 - `honeycomb.distro.version`: Version of the Honeycomb SDK being used.
 - `os.description`: String containing iOS version, build ID, and SDK level.
