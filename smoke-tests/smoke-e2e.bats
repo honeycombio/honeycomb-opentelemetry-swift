@@ -37,6 +37,28 @@ teardown_file() {
   assert_equal "$(resource_attributes_received | jq 'select (.key == "os.description").value.stringValue' | uniq)" '"iOS Version 17.5 (Build 21F79)"'
   assert_equal "$(resource_attributes_received | jq 'select (.key == "os.name").value.stringValue' | uniq)" '"iOS"'
   assert_equal "$(resource_attributes_received | jq 'select (.key == "os.version").value.stringValue' | uniq)" '"17.5.0"'
+  
+  all_resource_attributes=$(resource_attributes_received | jq ".key"  | sort | uniq)
+  assert_equal "$all_resource_attributes" '"app.bundle.executable"
+"app.bundle.shortVersionString"
+"app.bundle.version"
+"app.debug.binaryName"
+"app.debug.buildUUID"
+"device.id"
+"device.model.identifier"
+"honeycomb.distro.runtime_version"
+"honeycomb.distro.version"
+"os.description"
+"os.name"
+"os.type"
+"os.version"
+"service.name"
+"service.version"
+"telemetry.distro.name"
+"telemetry.distro.version"
+"telemetry.sdk.language"
+"telemetry.sdk.name"
+"telemetry.sdk.version"'
 }
 
 @test "Spans have network attributes" {
