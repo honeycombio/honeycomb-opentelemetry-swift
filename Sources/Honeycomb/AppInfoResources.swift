@@ -3,21 +3,27 @@ import MachO
 import OpenTelemetryApi
 import OpenTelemetrySdk
 
+// none of these are in the semconv yet so we can call them whatever we like
+let APP_BUNDLE_VERSION = "app.bundle.version"
+let APP_BUNDLE_SHORT_VERSION_STRING = "app.bundle.shortVersionString"
+let APP_DEBUG_BUILD_UUID = "app.debug.buildUUID"
+let APP_DEBUG_BINARY_NAME = "app.debug.binaryName"
+let APP_BUNDLE_EXECUTABLE = "app.bundle.executable"
+
 public func getAppResources() -> [String: String] {
-    print(Bundle.main.infoDictionary)
     var result: [String: String] = [:]
     if let version = getVersion() {
-        result["app.bundle.version"] = version
+        result[APP_BUNDLE_VERSION] = version
     }
     if let shortVersionString = getShortVersionString() {
-        result["app.bundle.shortVersionString"] = shortVersionString
+        result[APP_BUNDLE_SHORT_VERSION_STRING] = shortVersionString
     }
     if let buildUUID = getBuildUUID() {
-        result["app.debug.buildUUID"] = buildUUID
-        result["app.debug.binaryName"] = getBinaryName()
+        result[APP_DEBUG_BUILD_UUID] = buildUUID
+        result[APP_DEBUG_BINARY_NAME] = getBinaryName()
     }
     if let executable = getExecutable() {
-        result["app.bundle.executable"] = executable
+        result[APP_BUNDLE_EXECUTABLE] = executable
     }
     return result
 }
