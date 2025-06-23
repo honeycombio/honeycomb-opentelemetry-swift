@@ -4,26 +4,26 @@ import OpenTelemetryApi
 import OpenTelemetrySdk
 
 // none of these are in the semconv yet so we can call them whatever we like
-let APP_BUNDLE_VERSION = "app.bundle.version"
-let APP_BUNDLE_SHORT_VERSION_STRING = "app.bundle.shortVersionString"
-let APP_DEBUG_BUILD_UUID = "app.debug.buildUUID"
-let APP_DEBUG_BINARY_NAME = "app.debug.binaryName"
-let APP_BUNDLE_EXECUTABLE = "app.bundle.executable"
+let appBundleVersion = "app.bundle.version"
+let appBundleShortVersionString = "app.bundle.shortVersionString"
+let appDebugBuildUUID = "app.debug.buildUUID"
+let appDebugBinaryName = "app.debug.binaryName"
+let appBundleExecutable = "app.bundle.executable"
 
 public func getAppResources() -> [String: String] {
     var result: [String: String] = [:]
     if let version = getVersion() {
-        result[APP_BUNDLE_VERSION] = version
+        result[appBundleVersion] = version
     }
     if let shortVersionString = getShortVersionString() {
-        result[APP_BUNDLE_SHORT_VERSION_STRING] = shortVersionString
+        result[appBundleShortVersionString] = shortVersionString
     }
     if let buildUUID = getBuildUUID() {
-        result[APP_DEBUG_BUILD_UUID] = buildUUID
-        result[APP_DEBUG_BINARY_NAME] = getBinaryName()
+        result[appDebugBuildUUID] = buildUUID
+        result[appDebugBinaryName] = getBinaryName()
     }
     if let executable = getExecutable() {
-        result[APP_BUNDLE_EXECUTABLE] = executable
+        result[appBundleExecutable] = executable
     }
     return result
 }
