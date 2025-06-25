@@ -6,7 +6,7 @@ import OpenTelemetrySdk
 // none of these are in the semconv yet so we can call them whatever we like
 let appBundleVersion = "app.bundle.version"
 let appBundleShortVersionString = "app.bundle.shortVersionString"
-let appDebugBuildUUID = "app.debug.buildUUID"
+let appDebugBuildUUID = "app.debug.build_uuid"
 let appDebugBinaryName = "app.debug.binaryName"
 let appBundleExecutable = "app.bundle.executable"
 

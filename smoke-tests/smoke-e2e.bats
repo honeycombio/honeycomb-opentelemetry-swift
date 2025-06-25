@@ -53,7 +53,7 @@ teardown_file() {
 "app.bundle.shortVersionString"
 "app.bundle.version"
 "app.debug.binaryName"
-"app.debug.buildUUID"
+"app.debug.build_uuid"
 "device.id"
 "device.model.identifier"
 "honeycomb.distro.runtime_version"
