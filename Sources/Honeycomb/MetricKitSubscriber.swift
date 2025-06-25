@@ -419,11 +419,11 @@
                 attrs["exception.code"] = exceptionCode.intValue
             }
             if let exceptionType = $0.exceptionType {
-                attrs["exception.mach_exception_type"] = exceptionType.intValue
-                attrs["exception.mach_exception_name"] =
+                attrs["exception.mach_exception.type"] = exceptionType.intValue
+                attrs["exception.mach_exception.name"] =
                     exceptionNameMap[exceptionType.int32Value]
                     ?? "Unknown exception type: \(String(describing: exceptionType))"
-                attrs["exception.mach_exception_description"] =
+                attrs["exception.mach_exception.description"] =
                     exceptionDescriptionMap[exceptionType.int32Value]
                     ?? "Unknown exception type: \(String(describing: exceptionType))"
             }
