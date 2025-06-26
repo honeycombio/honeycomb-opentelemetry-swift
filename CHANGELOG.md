@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+### New Features
+
+* Include human-readable exception info in MetricKit crash logs.
+
 ## 0.0.13
 
 ### New Features
