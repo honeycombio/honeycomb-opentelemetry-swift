@@ -11,6 +11,7 @@ import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
+import URLSessionInstrumentation
 
 #if canImport(MetricKit)
     import MetricKit
@@ -218,7 +219,7 @@ public class Honeycomb {
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
         if options.urlSessionInstrumentationEnabled {
-            installNetworkInstrumentation(options: options)
+            URLSessionInstrumentation(configuration: URLSessionInstrumentationConfiguration())
         }
         #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
