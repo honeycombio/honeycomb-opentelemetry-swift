@@ -429,7 +429,7 @@
             }
             if let signal = $0.signal {
                 attrs["exception.signal"] = signal.intValue
-                attrs["excpetion.signal.name"] =
+                attrs["exception.signal.name"] =
                     signalNameMap[signal.int32Value]
                     ?? "Unknown signal: \(String(describing: signal))"
                 attrs["exception.signal.description"] =
