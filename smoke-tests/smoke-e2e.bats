@@ -190,9 +190,13 @@ mk_diag_attr() {
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.disk_write_exception.total_writes_caused" double)" 55000000  # 55 MB
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.hang.hang_duration" double)" 56
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.hang.exception.stacktrace_json" string)" '"fake json stacktrace"'
-  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_execution_type" int)" '"57"'
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_exception.type" int)" '"57"'
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_exception.name" int)" '"Unknown exception type: 57"'
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_exception.description" int)" '"Unknown exception type: 57"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.code" int)" '"58"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.signal" int)" '"59"'
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.signal.name" int)" '"Unknown signal: 59"'
+  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.signal.description" int)" '"Unknown signal: 59"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.message" string)" '"message: 1 2"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.type" string)" '"ExceptionType"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.termination_reason" string)" '"reason"'
