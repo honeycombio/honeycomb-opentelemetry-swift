@@ -87,6 +87,8 @@ jobs:
       - run:
           name: Run Smoke Tests
           command: make smoke-bats
+      - store_artifacts:
+          path: smoke-tests/collector/data.json
 workflows:
   nightly:
     triggers:
