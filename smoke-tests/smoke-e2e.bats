@@ -241,10 +241,10 @@ mk_diag_attr() {
 }
 
 @test "URLSession attributes are correct" {
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET http.response.status_code int | uniq -c)
+  result=$(attribute_for_span_key "NSURLSession" GET http.status_code int | uniq -c)
   assert_equal "$result" '  30 "200"'
 
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET server.address string | uniq -c)
+  result=$(attribute_for_span_key "NSURLSession" GET net.peer.name string | uniq -c)
   assert_equal "$result" '  30 "localhost"'
 }
 
