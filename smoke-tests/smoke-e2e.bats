@@ -207,7 +207,7 @@ mk_diag_attr() {
 }
 
 @test "URLSession all requests are present" {
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET request-id string | sort)
+  result=$(attribute_for_span_key "NSURLSession" "HTTP GET" request-id string | sort)
   assert_equal "$result" '"data-async-obj"
 "data-async-obj-session"
 "data-async-url"
