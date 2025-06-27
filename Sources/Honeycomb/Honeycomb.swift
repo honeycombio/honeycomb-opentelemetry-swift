@@ -219,7 +219,9 @@ public class Honeycomb {
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
         if options.urlSessionInstrumentationEnabled {
-            URLSessionInstrumentation(configuration: URLSessionInstrumentationConfiguration())
+            var config = URLSessionInstrumentationConfiguration(shouldInstrument: self.isNotOTLPRequest)
+            
+            let sessionInstrumentation = URLSessionInstrumentation(configuration: config)
         }
         #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
@@ -240,6 +242,18 @@ public class Honeycomb {
                 }
             }
         #endif
+    }
+    
+    private static func isNotOTLPRequest(_ request: URLRequest) -> Bool {
+        // Just check for the OTLP version header that's always set.
+        if let headers = request.allHTTPHeaderFields {
+            for (key, _) in headers {
+                if key == "x-otlp-version" {
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     public static func currentSession() -> HoneycombSession? {
