@@ -207,7 +207,7 @@ mk_diag_attr() {
 }
 
 @test "URLSession all requests are present" {
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET request-id string | sort)
+  result=$(attribute_for_span_key "NSURLSession" "HTTP GET" request-id string | sort)
   assert_equal "$result" '"data-async-obj"
 "data-async-obj-session"
 "data-async-url"
@@ -241,10 +241,10 @@ mk_diag_attr() {
 }
 
 @test "URLSession attributes are correct" {
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET http.response.status_code int | uniq -c)
+  result=$(attribute_for_span_key "NSURLSession" "HTTP GET" http.status_code int | uniq -c)
   assert_equal "$result" '  30 "200"'
 
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET server.address string | uniq -c)
+  result=$(attribute_for_span_key "NSURLSession" "HTTP GET" net.peer.name string | uniq -c)
   assert_equal "$result" '  30 "localhost"'
 }
 

@@ -1,5 +1,5 @@
 {
-  "originHash" : "e576df8efc6cc13272db60659554932b87feed5b39210597ea690580dd5543a1",
+  "originHash" : "e4ae5d74c9827681af45eb6705863a5ee4a8d4d4c82c4f40141ff84d96cb1468",
   "pins" : [
     {
       "identity" : "grpc-swift",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "b9b891abd313a538f8bbee7ac6bc96f647dd2379",
         "version" : "1.16.1"
+      }
+    },
+    {
+      "identity" : "opentracing-objc",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/undefinedlabs/opentracing-objc",
+      "state" : {
+        "revision" : "18c1a35ca966236cee0c5a714a51a73ff33384c1",
+        "version" : "0.5.2"
       }
     },
     {
@@ -125,6 +134,15 @@
       "state" : {
         "revision" : "61e4ca4b81b9e09e2ec863b00c340eb13497dac6",
         "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "thrift-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/undefinedlabs/Thrift-Swift",
+      "state" : {
+        "revision" : "18ff09e6b30e589ed38f90a1af23e193b8ecef8e",
+        "version" : "1.1.2"
       }
     }
   ],
