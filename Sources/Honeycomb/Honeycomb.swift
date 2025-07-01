@@ -223,7 +223,8 @@ public class Honeycomb {
                 shouldInstrument: self.isNotOTLPRequest
             )
 
-            let sessionInstrumentation = URLSessionInstrumentation(configuration: config)
+            // Store the instrumentation instance to keep it alive
+            _ = URLSessionInstrumentation(configuration: config)
         }
         #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
