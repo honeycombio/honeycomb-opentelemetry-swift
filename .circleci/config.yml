@@ -25,7 +25,7 @@ jobs:
         type: string
     macos:
       xcode: 15.4.0
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
     steps:
       - checkout
       - run: xcodebuild -version
@@ -34,7 +34,7 @@ jobs:
   tests:
     macos:
       xcode: 15.4.0
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
 
     steps:
       - macos/preboot-simulator:
@@ -74,7 +74,7 @@ jobs:
   smoke_tests:
     macos:
       xcode: 15.4.0
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
 
     steps:
       - attach_workspace:
