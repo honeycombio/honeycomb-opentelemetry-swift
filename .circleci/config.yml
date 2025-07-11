@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - macos/preboot-simulator:
-          version: "18.2"
+          version: "18.5"
           platform: "iOS"
           device: "iPhone 16"
       - checkout
