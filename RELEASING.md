@@ -1,6 +1,7 @@
 # Releasing
 
 - Update `honeycombLibraryVersion` in `Sources/Honeycomb/HoneycombVersion.swift`.
+- Update `README.md` and `honeycomb-opentelemetry-swift.podspec` with the new version.
 - Update `CHANGELOG.md` with the changes since the last release.
 - Commit changes, push, and open a release preparation pull request for review.
 - Once the pull request is merged, fetch the updated `main` branch.
