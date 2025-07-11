@@ -6,6 +6,16 @@ Honeycomb OpenTelemetry SDK Changelog
 
 * Add Cocoapods support.
 
+## 0.0.12
+
+### New Features
+
+* Add optional `severity` parameter to manual error-logging APIs.
+
+### Fixes
+
+* Change logging of `NSError` and Swift `Error` to match semantic conventions for _errors_, not _exceptions_.
+
 ## 0.0.11
 
 ### New Features

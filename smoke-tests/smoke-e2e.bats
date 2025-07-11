@@ -427,31 +427,40 @@ mk_diag_attr() {
 }
 
 @test "NSException attributes are correct" {
-    stacktrace=$(attribute_for_exception_log_of_type "NSException" "exception.stacktrace" string)
-    type=$(attribute_for_exception_log_of_type "NSException" "exception.type" string)
-    message=$(attribute_for_exception_log_of_type "NSException" "exception.message" string)
-    name=$(attribute_for_exception_log_of_type "NSException" "exception.name" string)
+    stacktrace=$(attribute_for_exception_log_of_type "TestException" "exception.stacktrace" string)
+    type=$(attribute_for_exception_log_of_type "TestException" "exception.type" string)
+    message=$(attribute_for_exception_log_of_type "TestException" "exception.message" string)
+    severity=$(logs_from_scope_named "io.honeycomb.error" \
+        | jq "select(.attributes[].value.stringValue == \"TestException\") | .severityText")
 
     assert_not_empty "$stacktrace"
-    assert_equal "$type" '"NSException"'
     assert_equal "$message" '"Exception Handling reason"'
-    assert_equal "$name" '"TestException"'
+    assert_equal "$type" '"TestException"'
+    assert_equal "$severity" '"FATAL"'
 }
 
 @test "NSError attributes are correct" {
-    code=$(attribute_for_exception_log_of_type "NSError" "exception.code" int)
-    type=$(attribute_for_exception_log_of_type "NSError" "exception.type" string)
-    message=$(attribute_for_exception_log_of_type "NSError" "exception.message" string)
+    code=$(attribute_for_exception_log_of_type "NSError" "nserror.code" int)
+    domain=$(attribute_for_exception_log_of_type "NSError" "nserror.domain" string)
+    type=$(attribute_for_exception_log_of_type "NSError" "error.type" string)
+    message=$(attribute_for_exception_log_of_type "NSError" "error.message" string)
+    severity=$(logs_from_scope_named "io.honeycomb.error" \
+        | jq "select(.attributes[].value.stringValue == \"NSError\") | .severityText")
 
     assert_equal "$code" '"-1"'
+    assert_equal "$domain" '"Test Error"'
     assert_equal "$type" '"NSError"'
     assert_equal "$message" "\"The operation couldn’t be completed. (Test Error error -1.)\""
+    assert_equal "$severity" '"ERROR"'
 }
 
 @test "Swift Error attributes are correct" {
-    type=$(attribute_for_exception_log_of_type "TestError" "exception.type" string)
-    message=$(attribute_for_exception_log_of_type "TestError" "exception.message" string)
+    type=$(attribute_for_exception_log_of_type "TestError" "error.type" string)
+    message=$(attribute_for_exception_log_of_type "TestError" "error.message" string)
+    severity=$(logs_from_scope_named "io.honeycomb.error" \
+        | jq "select(.attributes[].value.stringValue == \"TestError\") | .severityText")
 
     assert_equal "$type" '"TestError"'
     assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestError error 0.)\""
+    assert_equal "$severity" '"ERROR"'
 }
