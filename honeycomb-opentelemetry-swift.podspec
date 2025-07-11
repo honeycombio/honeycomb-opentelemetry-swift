@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target = "6.0"
 
   s.source_files = 'Sources/Honeycomb/**/*.swift'
-  
+
   s.dependency 'OpenTelemetry-Swift-Api', '~> 1.17.1'
   s.dependency 'OpenTelemetry-Swift-Sdk', '~> 1.17.1'
   s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Common', '~> 1.17.1'
@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.dependency 'OpenTelemetry-Swift-BaggagePropagationProcessor', '~> 1.17.1'
   s.dependency 'OpenTelemetry-Swift-Instrumentation-NetworkStatus', '~> 1.17.1'
   s.dependency 'OpenTelemetry-Swift-PersistenceExporter', '~> 1.17.1'
-  
+
   s.pod_target_xcconfig = {
     "OTHER_SWIFT_FLAGS" => "-module-name Honeycomb -package-name honeycomb_opentelemetry_swift"
   }
