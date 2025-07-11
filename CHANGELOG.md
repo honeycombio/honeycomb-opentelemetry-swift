@@ -6,6 +6,22 @@ Honeycomb OpenTelemetry SDK Changelog
 
 * Add Cocoapods support.
 
+### 0.0.14
+
+### New Features
+
+* Include human-readable exception info in MetricKit crash logs.
+
+### Fixes
+
+* fix: update `app.debug.buildUUID` attribute to `app.debug.build_uuid`
+
+## 0.0.13
+
+### New Features
+
+* Add new resource attributes with build and version information.
+
 ## 0.0.12
 
 ### New Features

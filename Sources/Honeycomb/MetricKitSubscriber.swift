@@ -419,10 +419,22 @@
                 attrs["exception.code"] = exceptionCode.intValue
             }
             if let exceptionType = $0.exceptionType {
-                attrs["exception.mach_execution_type"] = exceptionType.intValue
+                attrs["exception.mach_exception.type"] = exceptionType.intValue
+                attrs["exception.mach_exception.name"] =
+                    exceptionNameMap[exceptionType.int32Value]
+                    ?? "Unknown exception type: \(String(describing: exceptionType))"
+                attrs["exception.mach_exception.description"] =
+                    exceptionDescriptionMap[exceptionType.int32Value]
+                    ?? "Unknown exception type: \(String(describing: exceptionType))"
             }
             if let signal = $0.signal {
                 attrs["exception.signal"] = signal.intValue
+                attrs["exception.signal.name"] =
+                    signalNameMap[signal.int32Value]
+                    ?? "Unknown signal: \(String(describing: signal))"
+                attrs["exception.signal.description"] =
+                    signalDescriptionMap[signal.int32Value]
+                    ?? "Unknown signal: \(String(describing: signal))"
             }
             if let terminationReason = $0.terminationReason {
                 attrs["exception.termination_reason"] = terminationReason
@@ -444,4 +456,105 @@
             return attrs
         }
     }
+
+    // names/descriptions taken from exception_types.h
+    let exceptionNameMap: [Int32: String] = [
+        EXC_BAD_ACCESS: "EXC_BAD_ACCESS",
+        EXC_BAD_INSTRUCTION: "EXC_BAD_INSTRUCTION",
+        EXC_ARITHMETIC: "EXC_ARITHMETIC",
+        EXC_EMULATION: "EXC_EMULATION",
+        EXC_SOFTWARE: "EXC_SOFTWARE",
+        EXC_BREAKPOINT: "EXC_BREAKPOINT",
+        EXC_SYSCALL: "EXC_SYSCALL",
+        EXC_MACH_SYSCALL: "EXC_MACH_SYSCALL",
+        EXC_RPC_ALERT: "EXC_RPC_ALERT",
+        EXC_CRASH: "EXC_CRASH",
+        EXC_RESOURCE: "EXC_RESOURCE",
+        EXC_GUARD: "EXC_GUARD",
+        EXC_CORPSE_NOTIFY: "EXC_CORPSE_NOTIFY",
+    ]
+    let exceptionDescriptionMap: [Int32: String] = [
+        EXC_BAD_ACCESS: "Could not access memory",
+        EXC_BAD_INSTRUCTION: "Instruction failed",
+        EXC_ARITHMETIC: "Arithmetic exception",
+        EXC_EMULATION: "Emulation instruction",
+        EXC_SOFTWARE: "Software generated exception",
+        EXC_BREAKPOINT: "Trace, breakpoint, etc.",
+        EXC_SYSCALL: "System calls.",
+        EXC_MACH_SYSCALL: "Mach system calls.",
+        EXC_RPC_ALERT: "RPC alert",
+        EXC_CRASH: "Abnormal process exit",
+        EXC_RESOURCE: "Hit resource consumption limit",
+        EXC_GUARD: "Violated guarded resource protections",
+        EXC_CORPSE_NOTIFY: "Abnormal process exited to corpse state",
+    ]
+
+    // names/descriptions taken from signal.h
+    let signalNameMap: [Int32: String] = [
+        SIGHUP: "SIGHUP",
+        SIGINT: "SIGINT",
+        SIGQUIT: "SIGQUIT",
+        SIGILL: "SIGILL",
+        SIGTRAP: "SIGTRAP",
+        SIGABRT: "SIGABRT",
+        SIGEMT: "SIGEMT",
+        SIGFPE: "SIGFPE",
+        SIGKILL: "SIGKILL",
+        SIGBUS: "SIGBUS",
+        SIGSEGV: "SIGSEGV",
+        SIGSYS: "SIGSYS",
+        SIGPIPE: "SIGPIPE",
+        SIGALRM: "SIGALRM",
+        SIGTERM: "SIGTERM",
+        SIGURG: "SIGURG",
+        SIGSTOP: "SIGSTOP",
+        SIGTSTP: "SIGTSTP",
+        SIGCONT: "SIGCONT",
+        SIGCHLD: "SIGCHLD",
+        SIGTTIN: "SIGTTIN",
+        SIGTTOU: "SIGTTOU",
+        SIGIO: "SIGIO",
+        SIGXCPU: "SIGXCPU",
+        SIGXFSZ: "SIGXFSZ",
+        SIGVTALRM: "SIGVTALRM",
+        SIGPROF: "SIGPROF",
+        SIGWINCH: "SIGWINCH",
+        SIGINFO: "SIGINFO",
+        SIGUSR1: "SIGUSR1",
+        SIGUSR2: "SIGUSR2",
+    ]
+
+    let signalDescriptionMap: [Int32: String] = [
+        SIGHUP: "hangup",
+        SIGINT: "interrupt",
+        SIGQUIT: "quit",
+        SIGILL: "illegal instruction (not reset when caught)",
+        SIGTRAP: "trace trap (not reset when caught)",
+        SIGABRT: "abort()",
+        SIGEMT: "EMT instruction",
+        SIGFPE: "floating point exception",
+        SIGKILL: "kill (cannot be caught or ignored)",
+        SIGBUS: "bus error",
+        SIGSEGV: "segmentation violation",
+        SIGSYS: "bad argument to system call",
+        SIGPIPE: "write on a pipe with no one to read it",
+        SIGALRM: "alarm clock",
+        SIGTERM: "software termination signal from kill",
+        SIGURG: "urgent condition on IO channel",
+        SIGSTOP: "sendable stop signal not from tty",
+        SIGTSTP: "stop signal from tty",
+        SIGCONT: "continue a stopped process",
+        SIGCHLD: "to parent on child stop or exit",
+        SIGTTIN: "to readers pgrp upon background tty read",
+        SIGTTOU: "like TTIN for output if (tp->t_local&LTOSTOP)",
+        SIGIO: "input/output possible signal",
+        SIGXCPU: "exceeded CPU time limit",
+        SIGXFSZ: "exceeded file size limit",
+        SIGVTALRM: "virtual time alarm",
+        SIGPROF: "profiling time alarm",
+        SIGWINCH: "window size changes",
+        SIGINFO: "information request",
+        SIGUSR1: "user defined signal 1",
+        SIGUSR2: "user defined signal 2",
+    ]
 #endif
