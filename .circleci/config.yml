@@ -137,7 +137,8 @@ workflows:
                 - generic/platform=watchOS
       - tests
       - smoke_tests
-      - cocoapods_tests
+      - cocoapods_lint
+      - cocoapods_test
 
   build:
     jobs:
@@ -156,5 +157,7 @@ workflows:
           <<: *filters_always
       - smoke_tests:
           <<: *filters_always
-      - cocoapods_tests:
+      - cocoapods_lint:
+          <<: *filters_always
+      - cocoapods_test:
           <<: *filters_always
