@@ -25,16 +25,16 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Sources/Honeycomb/**/*.swift'
   
-  s.dependency 'OpenTelemetry-Swift-Api', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-Sdk', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Common', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Http', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-SdkResourceExtension', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-StdoutExporter', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-DataCompression', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-BaggagePropagationProcessor', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-Instrumentation-NetworkStatus', '~> 1.15.0'
-  s.dependency 'OpenTelemetry-Swift-PersistenceExporter', '~> 1.15.0'
+  s.dependency 'OpenTelemetry-Swift-Api', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-Sdk', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Common', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Http', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-SdkResourceExtension', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-StdoutExporter', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-DataCompression', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-BaggagePropagationProcessor', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-Instrumentation-NetworkStatus', '~> 1.17.1'
+  s.dependency 'OpenTelemetry-Swift-PersistenceExporter', '~> 1.17.1'
   
   s.pod_target_xcconfig = {
     "OTHER_SWIFT_FLAGS" => "-module-name Honeycomb -package-name honeycomb_opentelemetry_swift"
