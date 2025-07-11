@@ -47,7 +47,7 @@ jobs:
 
   cocoapods_tests:
     macos:
-      xcode: 16.2.0
+      xcode: 16.4.0
     resource_class: macos.m1.medium.gen1
 
     steps:
