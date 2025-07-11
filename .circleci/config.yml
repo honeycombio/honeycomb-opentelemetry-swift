@@ -45,7 +45,7 @@ jobs:
       - run: xcodebuild -version
       - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
 
-  cocoapods_tests:
+  cocoapods_lint:
     macos:
       xcode: 16.4.0
     resource_class: m4pro.medium
@@ -56,7 +56,20 @@ jobs:
           platform: "iOS"
           device: "iPhone 16"
       - checkout
-      - run: make cocoapods-tests
+      - run: make cocoapods-lint
+
+  cocoapods_test:
+    macos:
+      xcode: 16.4.0
+    resource_class: m4pro.medium
+
+    steps:
+      - macos/preboot-simulator:
+          version: "18.5"
+          platform: "iOS"
+          device: "iPhone 16"
+      - checkout
+      - run: make cocoapods-test
 
   smoke_tests:
     macos:

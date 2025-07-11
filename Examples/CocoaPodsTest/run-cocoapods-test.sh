@@ -11,5 +11,3 @@ DESTINATION="OS=18.5,name=iPhone 16"
 echo "DESTINATION: $DESTINATION"
 
 xcodebuild test -workspace CocoaPodsTest.xcworkspace -scheme CocoaPodsTest -sdk "$SDK" -destination "$DESTINATION" -verbose
-
-pod lib lint --allow-warnings ../../honeycomb-opentelemetry-swift.podspec
