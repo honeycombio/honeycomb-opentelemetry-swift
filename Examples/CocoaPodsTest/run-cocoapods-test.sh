@@ -1,6 +1,5 @@
 set -e
 
-pod lib lint --allow-warnings ../../honeycomb-opentelemetry-swift.podspec
 pod install --repo-update
 
 xcodebuild -showsdks | grep iphonesimulator
@@ -13,3 +12,4 @@ echo "DESTINATION: $DESTINATION"
 
 xcodebuild test -workspace CocoaPodsTest.xcworkspace -scheme CocoaPodsTest -sdk "$SDK" -destination "$DESTINATION" -verbose
 
+pod lib lint --allow-warnings ../../honeycomb-opentelemetry-swift.podspec
