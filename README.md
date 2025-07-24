@@ -7,6 +7,19 @@ Honeycomb wrapper for [OpenTelemetry](https://opentelemetry.io) on iOS and macOS
 
 **STATUS: this library is in BETA.** Data shapes are stable and safe for production. We are actively seeking feedback to ensure usability.
 
+Honeycomb APIs and data shapes are stable and safe for production.
+However, we do depend on a seperate library, `opentelemetry-swift` that
+is subject to change in major version updates. 
+
+These are the current versions of libraries we have tested for compatibility:
+
+  | Dependency                                             | Version        |
+  |--------------------------------------------------------|----------------|
+  | `opentelemetry-swift`                                  | `1.15.0`.      |
+
+For a complete list of tested dependencies and versions, see
+[Package.swift](Package.swift)
+
 ## Getting started
 
 ### Xcode
@@ -45,7 +58,7 @@ If you're using [Cocoapods](https://cocoapods.org) to manage dependencies...
 
 1. Add the dependency.
 
-```
+```ruby
 pod 'honeycomb-opentelemetry-swift'
 ```
 
@@ -119,8 +132,8 @@ To manually send a span:
 | `unhandledExceptionInstrumentationEnabled` | Bool     | No        | Whether to enable unhandle exception instrumentation. (default: true)                                                                                      |
 | `offlineCachingEnabled` | Bool | No | Whether to enable offline caching for telemetry (default: false). Warning: this feature is still in alpha and may be unstable. For more details, see [Offline Caching](#offline-caching) |
 
-## Default Attributes
-All spans will include the following attributes
+## Standard Attributes
+All telemetry will include the following attributes
 
 - `app.bundle.version`: The version number of the app, as given by [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion)
 - `app.bundle.shortVersionString`: The short version string of the app, as given by [`CFBundleShortVersionVersion`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleshortversionstring)
