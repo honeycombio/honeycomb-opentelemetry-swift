@@ -148,7 +148,6 @@ workflows:
               otel_version:
                 - 1.15.0
                 - 1.16.1
-                - 2.0.0
       - cocoapods_lint
       - cocoapods_test
 
@@ -174,7 +173,6 @@ workflows:
               otel_version:
                 - 1.15.0
                 - 1.16.1
-                - 2.0.0
       - cocoapods_lint:
           <<: *filters_always
       - cocoapods_test:
