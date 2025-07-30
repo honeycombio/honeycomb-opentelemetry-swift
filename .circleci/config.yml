@@ -72,6 +72,9 @@ jobs:
       - run: make cocoapods-test
 
   smoke_tests:
+    parameters:
+      otel_version:
+        type: string
     macos:
       xcode: 15.4.0
     resource_class: m4pro.medium
@@ -108,6 +111,9 @@ jobs:
           command: npm install && npm start
           background: true
       - run:
+          name: Set opentelemetry-swift version
+          command: ./set-otel-version.sh << parameters.otel_version >>
+      - run:
           name: Run iOS App
           command: make ios-tests
       - run:
@@ -136,7 +142,13 @@ workflows:
                 - generic/platform=tvOS
                 - generic/platform=watchOS
       - tests
-      - smoke_tests
+      - smoke_tests:
+          matrix:
+            parameters:
+              otel_version:
+                - 1.15.0
+                - 1.16.1
+                - 2.0.0
       - cocoapods_lint
       - cocoapods_test
 
@@ -157,6 +169,12 @@ workflows:
           <<: *filters_always
       - smoke_tests:
           <<: *filters_always
+          matrix:
+            parameters:
+              otel_version:
+                - 1.15.0
+                - 1.16.1
+                - 2.0.0
       - cocoapods_lint:
           <<: *filters_always
       - cocoapods_test:
