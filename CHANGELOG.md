@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* Make `HoneycombOptions` Builder class ObjectiveC friendly
+
 ### New Features
 
 * Add Cocoapods support.
