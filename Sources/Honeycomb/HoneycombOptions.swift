@@ -216,7 +216,7 @@ public struct HoneycombOptions {
 
     let offlineCachingEnabled: Bool
 
-    public class Builder {
+    @objc public class Builder : NSObject {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
         private var metricsApiKey: String? = nil
@@ -265,7 +265,7 @@ public struct HoneycombOptions {
         private var offlineCachingEnabled: Bool = false
 
         /// Creates a builder with default options.
-        public init() {}
+        override public init() {}
 
         internal convenience init(source: HoneycombOptionsSource) throws {
             self.init()
@@ -321,77 +321,77 @@ public struct HoneycombOptions {
                 try source.getBool(offlineCachingEnabledKey) ?? offlineCachingEnabled
         }
 
-        public func setAPIKey(_ apiKey: String) -> Builder {
+        @objc public func setAPIKey(_ apiKey: String) -> Builder {
             self.apiKey = apiKey
             return self
         }
 
-        public func setTracesAPIKey(_ apiKey: String) -> Builder {
+        @objc public func setTracesAPIKey(_ apiKey: String) -> Builder {
             tracesApiKey = apiKey
             return self
         }
 
-        public func setMetricsAPIKey(_ apiKey: String) -> Builder {
+        @objc public func setMetricsAPIKey(_ apiKey: String) -> Builder {
             metricsApiKey = apiKey
             return self
         }
 
-        public func setLogsAPIKey(_ apiKey: String) -> Builder {
+        @objc public func setLogsAPIKey(_ apiKey: String) -> Builder {
             logsApiKey = apiKey
             return self
         }
 
-        public func setDataset(_ dataset: String) -> Builder {
+        @objc public func setDataset(_ dataset: String) -> Builder {
             self.dataset = dataset
             return self
         }
 
-        public func setMetricsDataset(_ dataset: String) -> Builder {
+        @objc public func setMetricsDataset(_ dataset: String) -> Builder {
             metricsDataset = dataset
             return self
         }
 
-        public func setAPIEndpoint(_ endpoint: String) -> Builder {
+        @objc public func setAPIEndpoint(_ endpoint: String) -> Builder {
             apiEndpoint = endpoint
             return self
         }
 
-        public func setTracesAPIEndpoint(_ endpoint: String) -> Builder {
+        @objc public func setTracesAPIEndpoint(_ endpoint: String) -> Builder {
             tracesEndpoint = endpoint
             return self
         }
 
-        public func setMetricsAPIEndpoint(_ endpoint: String) -> Builder {
+        @objc public func setMetricsAPIEndpoint(_ endpoint: String) -> Builder {
             metricsEndpoint = endpoint
             return self
         }
 
-        public func setLogsAPIEndpoint(_ endpoint: String) -> Builder {
+        @objc public func setLogsAPIEndpoint(_ endpoint: String) -> Builder {
             logsEndpoint = endpoint
             return self
         }
 
-        public func setSampleRate(_ sampleRate: Int) -> Builder {
+        @objc public func setSampleRate(_ sampleRate: Int) -> Builder {
             self.sampleRate = sampleRate
             return self
         }
 
-        public func setDebug(_ debug: Bool) -> Builder {
+        @objc public func setDebug(_ debug: Bool) -> Builder {
             self.debug = debug
             return self
         }
 
-        public func setServiceName(_ serviceName: String) -> Builder {
+        @objc public func setServiceName(_ serviceName: String) -> Builder {
             self.serviceName = serviceName
             return self
         }
 
-        public func setServiceVersion(_ serviceVersion: String) -> Builder {
+        @objc public func setServiceVersion(_ serviceVersion: String) -> Builder {
             self.serviceVersion = serviceVersion
             return self
         }
 
-        public func setResourceAttributes(_ resources: [String: String]) -> Builder {
+        @objc public func setResourceAttributes(_ resources: [String: String]) -> Builder {
             for (key, value) in resources {
                 resourceAttributes[key] = value
             }
@@ -406,42 +406,42 @@ public struct HoneycombOptions {
             return self
         }
 
-        public func setHeaders(_ headers: [String: String]) -> Builder {
+        @objc public func setHeaders(_ headers: [String: String]) -> Builder {
             self.headers = headers
             return self
         }
 
-        public func setTracesHeaders(_ headers: [String: String]) -> Builder {
+        @objc public func setTracesHeaders(_ headers: [String: String]) -> Builder {
             tracesHeaders = headers
             return self
         }
 
-        public func setMetricsHeaders(_ headers: [String: String]) -> Builder {
+        @objc public func setMetricsHeaders(_ headers: [String: String]) -> Builder {
             metricsHeaders = headers
             return self
         }
 
-        public func setLogsHeaders(_ headers: [String: String]) -> Builder {
+        @objc public func setLogsHeaders(_ headers: [String: String]) -> Builder {
             logsHeaders = headers
             return self
         }
 
-        public func setTimeout(_ timeout: TimeInterval) -> Builder {
+        @objc public func setTimeout(_ timeout: TimeInterval) -> Builder {
             self.timeout = timeout
             return self
         }
 
-        public func setTracesTimeout(_ timeout: TimeInterval) -> Builder {
+        @objc public func setTracesTimeout(_ timeout: TimeInterval) -> Builder {
             tracesTimeout = timeout
             return self
         }
 
-        public func setMetricsTimeout(_ timeout: TimeInterval) -> Builder {
+        @objc public func setMetricsTimeout(_ timeout: TimeInterval) -> Builder {
             metricsTimeout = timeout
             return self
         }
 
-        public func setLogsTimeout(_ timeout: TimeInterval) -> Builder {
+        @objc public func setLogsTimeout(_ timeout: TimeInterval) -> Builder {
             logsTimeout = timeout
             return self
         }
@@ -471,33 +471,33 @@ public struct HoneycombOptions {
             return self
         }
 
-        public func setSessionTimeout(_ timeout: TimeInterval) -> Builder {
+        @objc public func setSessionTimeout(_ timeout: TimeInterval) -> Builder {
             sessionTimeout = timeout
             return self
         }
 
-        public func setMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        @objc public func setMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
             metricKitInstrumentationEnabled = enabled
             return self
         }
-        public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        @objc public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             urlSessionInstrumentationEnabled = enabled
             return self
         }
-        public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        @objc public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
             uiKitInstrumentationEnabled = enabled
             return self
         }
-        public func setTouchInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        @objc public func setTouchInstrumentationEnabled(_ enabled: Bool) -> Builder {
             touchInstrumentationEnabled = enabled
             return self
         }
-        public func setUnhandledExceptionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        @objc public func setUnhandledExceptionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             unhandledExceptionInstrumentationEnabled = enabled
             return self
         }
 
-        public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
+        @objc public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
             offlineCachingEnabled = enabled
             return self
         }
