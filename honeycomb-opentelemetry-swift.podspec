@@ -7,7 +7,7 @@
 Pod::Spec.new do |s|
   s.name             = 'honeycomb-opentelemetry-swift'
   s.module_name      = 'Honeycomb'
-  s.version          = '0.0.14'
+  s.version          = '0.0.15'
   s.summary          = 'Honeycomb wrapper for [OpenTelemetry](https://opentelemetry.io) on iOS and macOS.'
 
   s.homepage         = 'https://github.com/honeycombio/honeycomb-opentelemetry-swift'
