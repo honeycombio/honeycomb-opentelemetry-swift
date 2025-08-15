@@ -216,7 +216,7 @@ public struct HoneycombOptions {
 
     let offlineCachingEnabled: Bool
 
-    @objc public class Builder: NSObject {
+    @objc open class Builder: NSObject {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
         private var metricsApiKey: String? = nil
