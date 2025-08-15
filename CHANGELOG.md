@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## v 0.0.16
+
 * fix: builder class is not extendable outside of package 
 
 ## v 0.0.15
