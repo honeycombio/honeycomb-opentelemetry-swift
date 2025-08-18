@@ -215,8 +215,7 @@ public struct HoneycombOptions {
     let unhandledExceptionInstrumentationEnabled: Bool
 
     let offlineCachingEnabled: Bool
-
-    @objc open class Builder: NSObject {
+    @objc(HNYOptions) open class Builder: NSObject {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
         private var metricsApiKey: String? = nil
