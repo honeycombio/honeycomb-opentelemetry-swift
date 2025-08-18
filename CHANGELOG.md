@@ -2,7 +2,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
-* fix: add objectiveC alias for type
+* fix: add Objective-C alias for type
 
 ## v 0.0.16
 
