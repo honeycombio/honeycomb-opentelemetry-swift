@@ -176,13 +176,13 @@ internal class HoneycombNavigationProcessor {
     }
 }
 
-extension View {
+extension SwiftUI.View {
     @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
     public func instrumentNavigation(
         prefix: String? = nil,
         path: NavigationPath,
         reason: String? = nil
-    ) -> some View {
+    ) -> some SwiftUI.View {
         HoneycombNavigationProcessor.shared.reportNavigation(
             prefix: prefix,
             path: path,
@@ -196,7 +196,7 @@ extension View {
         prefix: String? = nil,
         path: [Encodable],
         reason: String? = nil
-    ) -> some View {
+    ) -> some SwiftUI.View {
         HoneycombNavigationProcessor.shared.reportNavigation(
             prefix: prefix,
             path: path,

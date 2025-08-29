@@ -16,6 +16,9 @@ These are the current versions of libraries we have tested for compatibility:
   | Dependency                                             | Version        |
   |--------------------------------------------------------|----------------|
   | `opentelemetry-swift`                                  | `1.15.0`.      |
+  | `opentelemetry-swift`                                  | `1.16.1`.      |
+  | `opentelemetry-swift`                                  | `1.17.1`.      |
+  | `opentelemetry-swift`                                  | `2.0.2`.       |
 
 For a complete list of tested dependencies and versions, see
 [Package.swift](Package.swift)

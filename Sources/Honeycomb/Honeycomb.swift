@@ -188,10 +188,10 @@ public class Honeycomb {
             metricExporter = createPersistenceMetricExporter(metricExporter)
         }
 
-        let meterProvider = MeterProviderBuilder()
-            .with(processor: MetricProcessorSdk())
-            .with(exporter: metricExporter)
-            .with(resource: Resource())
+        let metricReader = StablePeriodicMetricReaderBuilder(exporter: metricExporter).build()
+        let meterProvider = MeterProviderSdk.builder()
+            .registerMetricReader(reader: metricReader)
+            .setResource(resource: resource)
             .build()
 
         // Logs

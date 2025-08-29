@@ -2,14 +2,14 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct UIKitView: View {
-    var body: some View {
+struct UIKitView: SwiftUI.View {
+    var body: some SwiftUI.View {
         StoryboardViewControllerRepresentation()
     }
 }
 
 struct UIKView_preview: PreviewProvider {
-    static var previews: some View {
+    static var previews: some SwiftUI.View {
         UIKitView()
     }
 }
