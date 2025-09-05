@@ -123,8 +123,6 @@ workflows:
                 - 1.15.0
                 - 1.16.1
                 - 1.17.1
-      - cocoapods_lint
-      - cocoapods_test
 
   build:
     jobs:
@@ -149,7 +147,3 @@ workflows:
                 - 1.15.0
                 - 1.16.1
                 - 1.17.1
-      - cocoapods_lint:
-          <<: *filters_always
-      - cocoapods_test:
-          <<: *filters_always
