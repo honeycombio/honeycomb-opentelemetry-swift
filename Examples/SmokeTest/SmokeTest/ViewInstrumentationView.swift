@@ -4,10 +4,10 @@ import OpenTelemetryApi
 import SwiftUI
 import UIKit
 
-private struct NestedExpensiveView: View {
+private struct NestedExpensiveView: SwiftUI.View {
     let delay: Double
 
-    var body: some View {
+    var body: some SwiftUI.View {
         HStack {
             HoneycombInstrumentedView(name: "nested expensive text") {
                 Text(String(timeConsumingCalculation(delay)))
@@ -20,12 +20,12 @@ private struct NestedExpensiveView: View {
 // the main ExpensiveView
 // once the user stops editing the slider, we propagate it back
 // up to ExpensiveView and then that will re-render
-struct DelayedSlider: View {
+struct DelayedSlider: SwiftUI.View {
     @State private var sliderDelay = 2.0
     @State private var isEditing = false
     var delay: Binding<Double>
 
-    var body: some View {
+    var body: some SwiftUI.View {
         Slider(
             value: $sliderDelay,
             in: 0...4,
@@ -45,10 +45,10 @@ struct DelayedSlider: View {
     }
 }
 
-private struct ExpensiveView: View {
+private struct ExpensiveView: SwiftUI.View {
     @State private var delay = 2.0
 
-    var body: some View {
+    var body: some SwiftUI.View {
         HoneycombInstrumentedView(name: "main view") {
             VStack {
                 Spacer()
@@ -81,10 +81,10 @@ private struct ExpensiveView: View {
     }
 }
 
-struct ViewInstrumentationView: View {
+struct ViewInstrumentationView: SwiftUI.View {
     @State private var isEnabled = false
 
-    var body: some View {
+    var body: some SwiftUI.View {
         VStack {
             Toggle(isOn: $isEnabled) { Text("enable slow render") }
             Spacer()

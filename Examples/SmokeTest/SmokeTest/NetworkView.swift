@@ -234,13 +234,13 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
     }
 }
 
-struct NetworkView: View {
+struct NetworkView: SwiftUI.View {
     @StateObject private var request = NetworkRequestSpec()
     @State private var responseSummary = ""
     @State private var taskDelegateCalled = false
     @State private var sessionDelegateCalled = false
 
-    var body: some View {
+    var body: some SwiftUI.View {
         VStack(
             alignment: .center,
             spacing: 20.0

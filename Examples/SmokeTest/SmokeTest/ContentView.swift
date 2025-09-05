@@ -69,7 +69,7 @@ private func crashTheApp() {
     CatchNSException.crashTheApp()
 }
 
-struct ContentView: View {
+struct ContentView: SwiftUI.View {
     @State private var sessionId: String = "🐝💭"
     @State private var sessionStartTime: String = "🐝🕰️"
     @State private var timer: Timer?
@@ -79,7 +79,7 @@ struct ContentView: View {
         sessionStartTime = session.startTimestamp.ISO8601Format().description
     }
 
-    var body: some View {
+    var body: some SwiftUI.View {
         TabView {
             VStack(
                 alignment: .center,

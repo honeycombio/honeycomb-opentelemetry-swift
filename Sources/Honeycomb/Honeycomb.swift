@@ -171,7 +171,10 @@ public class Honeycomb {
                     )
                     .connect(host: host, port: port)
 
-                metricExporter = OtlpMetricExporter(channel: channel, config: otlpMetricsConfig)
+                metricExporter = OtlpMetricExporter(
+                    channel: channel,
+                    config: otlpMetricsConfig
+                )
             #else
                 throw HoneycombOptionsError.unsupportedProtocol("gRPC")
             #endif
@@ -188,10 +191,10 @@ public class Honeycomb {
             metricExporter = createPersistenceMetricExporter(metricExporter)
         }
 
-        let meterProvider = MeterProviderBuilder()
-            .with(processor: MetricProcessorSdk())
-            .with(exporter: metricExporter)
-            .with(resource: Resource())
+        let metricReader = PeriodicMetricReaderBuilder(exporter: metricExporter).build()
+        let meterProvider = MeterProviderSdk.builder()
+            .registerMetricReader(reader: metricReader)
+            .setResource(resource: resource)
             .build()
 
         // Logs

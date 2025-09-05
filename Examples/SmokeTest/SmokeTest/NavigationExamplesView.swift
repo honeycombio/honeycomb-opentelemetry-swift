@@ -45,26 +45,26 @@ func tree(from id: Tree.ID?) -> Tree? {
 }
 
 // MARK: views
-struct ParkDetails: View {
+struct ParkDetails: SwiftUI.View {
     let park: Park
-    var body: some View {
+    var body: some SwiftUI.View {
         Text("details for \(park.name)")
     }
 }
 
-struct TreeDetails: View {
+struct TreeDetails: SwiftUI.View {
     let park: Park
     let tree: Tree
-    var body: some View {
+    var body: some SwiftUI.View {
         Text("\(park) has many \(tree)")
     }
 }
 
-struct NavigationStackExample: View {
+struct NavigationStackExample: SwiftUI.View {
     @State private var presentedParks = NavigationPath()
     @State private var usePrefix = false
 
-    var body: some View {
+    var body: some SwiftUI.View {
         Toggle("Include path prefix", isOn: $usePrefix)
         NavigationStack(path: $presentedParks) {
             List(parks) { park in
@@ -83,11 +83,11 @@ struct NavigationStackExample: View {
 }
 
 let navigationSplitExampleRoot = "Split View Parks Root"
-struct NavigationSplitExample: View {
+struct NavigationSplitExample: SwiftUI.View {
     @State private var selectedPark: Park.ID? = nil
     @State private var selectedTree: Park.ID? = nil
 
-    var body: some View {
+    var body: some SwiftUI.View {
         NavigationSplitView {
             List(parks, selection: $selectedPark) { park in
                 Text(park.name)
@@ -122,10 +122,10 @@ struct NavigationSplitExample: View {
     }
 }
 
-struct NavigationExamplesView: View {
+struct NavigationExamplesView: SwiftUI.View {
     @State private var useSplit = false
 
-    var body: some View {
+    var body: some SwiftUI.View {
         VStack {
             Toggle("Use Split View", isOn: $useSplit)
             if useSplit {
