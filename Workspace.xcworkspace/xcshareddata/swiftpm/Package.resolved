@@ -1,6 +1,15 @@
 {
-  "originHash" : "97e9300574f6e5b4d44295e67a58c9a132b32ca4d37685699b88da89b1359e26",
+  "originHash" : "8bf0b58cdca5a499330b34a827aba40cb4658fbcaac94b40fa8c8dd2208dab6c",
   "pins" : [
+    {
+      "identity" : "datacompression",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mw99/DataCompression",
+      "state" : {
+        "revision" : "16f858982a077451ce3bdbd9144d3073ec85b6e4",
+        "version" : "3.9.0"
+      }
+    },
     {
       "identity" : "grpc-swift",
       "kind" : "remoteSourceControl",
@@ -15,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/open-telemetry/opentelemetry-swift.git",
       "state" : {
-        "revision" : "ef63c346d05f4fa7c9ca883f92631fd139eb2cfe",
-        "version" : "1.17.1"
+        "revision" : "6cd16704ef24a8a41e301be939ab2af526963a75",
+        "version" : "2.0.2"
       }
     },
     {
