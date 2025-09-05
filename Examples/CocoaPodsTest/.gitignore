@@ -1,6 +1,0 @@
-# Normally, these files should not be ignored in a CocoaPods project.
-# However, the purpose of this project is to test the Cocoapods spec,
-# so we don't want anything to be cached.
-CocoaPodsTest.xcworkspace
-Pods
-Podfile.lock

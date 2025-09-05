@@ -45,32 +45,6 @@ jobs:
       - run: xcodebuild -version
       - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
 
-  cocoapods_lint:
-    macos:
-      xcode: 16.4.0
-    resource_class: m4pro.medium
-
-    steps:
-      - macos/preboot-simulator:
-          version: "18.5"
-          platform: "iOS"
-          device: "iPhone 16"
-      - checkout
-      - run: make cocoapods-lint
-
-  cocoapods_test:
-    macos:
-      xcode: 16.4.0
-    resource_class: m4pro.medium
-
-    steps:
-      - macos/preboot-simulator:
-          version: "18.5"
-          platform: "iOS"
-          device: "iPhone 16"
-      - checkout
-      - run: make cocoapods-test
-
   smoke_tests:
     parameters:
       otel_version:
@@ -149,8 +123,6 @@ workflows:
                 - 1.15.0
                 - 1.16.1
                 - 1.17.1
-      - cocoapods_lint
-      - cocoapods_test
 
   build:
     jobs:
@@ -175,7 +147,3 @@ workflows:
                 - 1.15.0
                 - 1.16.1
                 - 1.17.1
-      - cocoapods_lint:
-          <<: *filters_always
-      - cocoapods_test:
-          <<: *filters_always

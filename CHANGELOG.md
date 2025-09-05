@@ -2,17 +2,18 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
-* fix: add Objective-C alias for type
+* maint: Remove Cocoapods support.
+* fix: Add Objective-C alias for type.
 
 ## v 0.0.16
 
-* fix: builder class is not extendable outside of package 
+* fix: Builder class is not extendable outside of package.
 
 ## v 0.0.15
 
 ### New Features
 
-* Make `HoneycombOptions` Builder class ObjectiveC friendly
+* Make `HoneycombOptions` Builder class Objective-C friendly.
 * Add Cocoapods support.
 
 ### 0.0.14
