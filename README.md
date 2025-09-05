@@ -52,16 +52,6 @@ If you're using `Package.swift` to manage dependencies...
     ],
 ```
 
-### CocoaPods
-
-If you're using [Cocoapods](https://cocoapods.org) to manage dependencies...
-
-1. Add the dependency.
-
-```ruby
-pod 'honeycomb-opentelemetry-swift'
-```
-
 ### Initializing the SDK
 
 To configure the SDK in your `App` class:
