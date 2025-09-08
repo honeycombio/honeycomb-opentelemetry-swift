@@ -5,6 +5,7 @@ Honeycomb OpenTelemetry SDK Changelog
 ## 2.0.0
 
 * maint: Update to OpenTelemetry 2.x.
+* maint: Remove Cocoapods support.
 * fix: Add Objective-C alias for type.
 
 ## 0.0.16
