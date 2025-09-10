@@ -841,9 +841,9 @@ final class HoneycombOptionsTests: XCTestCase {
         let customAttributes = [
             "environment": "test",
             "custom.attr2": "custom-value2",
-            "custom.attr": "custom-value"
+            "custom.attr": "custom-value",
         ]
-        
+
         let options = try HoneycombOptions.Builder()
             .setAPIKey("test-key")
             .setServiceName("test-service")
@@ -855,11 +855,14 @@ final class HoneycombOptionsTests: XCTestCase {
         // Resource is always available (non-null)
         let resource = Honeycomb.resource
         let attributes = resource.attributes
-        
+
         // Test standard attributes
         XCTAssertEqual(attributes["service.name"]?.description, "test-service")
-        XCTAssertEqual(attributes["telemetry.distro.name"]?.description, "honeycomb-opentelemetry-swift")
-        
+        XCTAssertEqual(
+            attributes["telemetry.distro.name"]?.description,
+            "honeycomb-opentelemetry-swift"
+        )
+
         // Test custom attributes
         XCTAssertEqual(attributes["environment"]?.description, "test")
         XCTAssertEqual(attributes["custom.attr2"]?.description, "custom-value2")
