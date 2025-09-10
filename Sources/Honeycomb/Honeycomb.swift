@@ -37,8 +37,6 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 
 public class Honeycomb {
     static private var sessionManager: HoneycombSessionManager? = nil
-    static private var _resource: Resource = DefaultResources().get()
-
     /// The OpenTelemetry Resource containing service information, custom attributes, and telemetry metadata.
     ///
     /// This property initially returns the default OpenTelemetry resource with system information.
@@ -50,9 +48,7 @@ public class Honeycomb {
     /// let resource = Honeycomb.resource
     /// print("Service name: \(resource.attributes["service.name"]?.description ?? "unknown")")
     /// ```
-    public static var resource: Resource {
-        return _resource
-    }
+    public private(set) static var resource: Resource = DefaultResources().get()
 
     #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
         static private let metricKitSubscriber = MetricKitSubscriber()
@@ -86,7 +82,7 @@ public class Honeycomb {
             headers: createKeyValueList(options.logsHeaders)
         )
 
-        _resource = DefaultResources().get()
+        resource = DefaultResources().get()
             .merging(other: Resource(attributes: createAttributeDict(options.resourceAttributes)))
             .merging(other: Resource(attributes: createAttributeDict(getAppResources())))
 
@@ -168,7 +164,7 @@ public class Honeycomb {
 
         let tracerProvider =
             tracerProviderBuilder
-            .with(resource: _resource)
+            .with(resource: resource)
             .with(sampler: HoneycombDeterministicSampler(sampleRate: options.sampleRate))
             .build()
 
@@ -210,7 +206,7 @@ public class Honeycomb {
         let metricReader = PeriodicMetricReaderBuilder(exporter: metricExporter).build()
         let meterProvider = MeterProviderSdk.builder()
             .registerMetricReader(reader: metricReader)
-            .setResource(resource: _resource)
+            .setResource(resource: resource)
             .build()
 
         // Logs
@@ -242,7 +238,7 @@ public class Honeycomb {
 
         let loggerProvider = LoggerProviderBuilder()
             .with(processors: [logProcessor])
-            .with(resource: _resource)
+            .with(resource: resource)
             .build()
 
         // Register everything at once, so that we don't leave OTel partially initialized.
