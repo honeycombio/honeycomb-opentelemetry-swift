@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.1.0
+
 * feat: expose OpenTelemetry Resource as public property
 
 ## 2.0.0
