@@ -1,15 +1,6 @@
 {
-  "originHash" : "8bf0b58cdca5a499330b34a827aba40cb4658fbcaac94b40fa8c8dd2208dab6c",
+  "originHash" : "b65e2a5736041bad324c421d028cef43b92e3a01953132fe97fb0838e5af1dad",
   "pins" : [
-    {
-      "identity" : "datacompression",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mw99/DataCompression",
-      "state" : {
-        "revision" : "16f858982a077451ce3bdbd9144d3073ec85b6e4",
-        "version" : "3.9.0"
-      }
-    },
     {
       "identity" : "grpc-swift",
       "kind" : "remoteSourceControl",
@@ -24,8 +15,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/open-telemetry/opentelemetry-swift.git",
       "state" : {
-        "revision" : "6cd16704ef24a8a41e301be939ab2af526963a75",
-        "version" : "2.0.2"
+        "revision" : "7a68865d9cc571cbe62c4d4902ccc0d902881eab",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "opentelemetry-swift-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/open-telemetry/opentelemetry-swift-core.git",
+      "state" : {
+        "revision" : "6aebc7734e154cd221ea9fb76bd4f611262be962",
+        "version" : "2.1.1"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
-        "revision" : "34d486b01cd891297ac615e40d5999536a1e138d",
-        "version" : "2.83.0"
+        "revision" : "1c30f0f2053b654e3d1302492124aa6d242cdba7",
+        "version" : "2.86.0"
       }
     },
     {

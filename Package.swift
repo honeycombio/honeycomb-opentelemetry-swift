@@ -16,7 +16,8 @@ let package = Package(
         .library(name: "Honeycomb", type: .static, targets: ["Honeycomb"])
     ],
     dependencies: [
-        .package(url: "https://github.com/open-telemetry/opentelemetry-swift.git", from: "2.0.2")
+        .package(url: "https://github.com/open-telemetry/opentelemetry-swift-core.git", from: "2.1.1"),
+        .package(url: "https://github.com/open-telemetry/opentelemetry-swift.git", from: "2.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -25,12 +26,12 @@ let package = Package(
             name: "Honeycomb",
             dependencies: [
                 .product(name: "BaggagePropagationProcessor", package: "opentelemetry-swift"),
-                .product(name: "OpenTelemetryApi", package: "opentelemetry-swift"),
-                .product(name: "OpenTelemetrySdk", package: "opentelemetry-swift"),
+                .product(name: "OpenTelemetryApi", package: "opentelemetry-swift-core"),
+                .product(name: "OpenTelemetrySdk", package: "opentelemetry-swift-core"),
                 .product(name: "OpenTelemetryProtocolExporter", package: "opentelemetry-swift"),
                 .product(name: "OpenTelemetryProtocolExporterHTTP", package: "opentelemetry-swift"),
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
-                .product(name: "StdoutExporter", package: "opentelemetry-swift"),
+                .product(name: "StdoutExporter", package: "opentelemetry-swift-core"),
             ]
         ),
         .testTarget(
