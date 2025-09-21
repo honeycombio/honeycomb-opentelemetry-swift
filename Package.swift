@@ -16,8 +16,8 @@ let package = Package(
         .library(name: "Honeycomb", type: .static, targets: ["Honeycomb"])
     ],
     dependencies: [
-        .package(url: "https://github.com/open-telemetry/opentelemetry-swift-core.git", from: "2.1.1"),
-        .package(url: "https://github.com/open-telemetry/opentelemetry-swift.git", from: "2.1.0")
+        .package(url: "https://github.com/open-telemetry/opentelemetry-swift-core.git", exact: "2.1.1"),
+        .package(url: "https://github.com/open-telemetry/opentelemetry-swift.git", exact: "2.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
