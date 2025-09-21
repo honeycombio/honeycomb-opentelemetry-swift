@@ -9,13 +9,14 @@ Honeycomb wrapper for [OpenTelemetry](https://opentelemetry.io) on iOS and macOS
 
 Honeycomb APIs and data shapes are stable and safe for production.
 However, we do depend on a seperate library, `opentelemetry-swift` that
-is subject to change in major version updates. 
+is subject to change in major version updates.
 
 These are the current versions of libraries we have tested for compatibility:
 
   | Dependency                                             | Version        |
   |--------------------------------------------------------|----------------|
-  | `opentelemetry-swift`                                  | `2.0.2`.       |
+  | `opentelemetry-swift-core`                             | `2.1.1`.       |
+  | `opentelemetry-swift`                                  | `2.1.0`.       |
 
 For a complete list of tested dependencies and versions, see
 [Package.swift](Package.swift)
@@ -160,7 +161,7 @@ All telemetry will include the following attributes
 - `app.bundle.shortVersionString`: The short version string of the app, as given by [`CFBundleShortVersionVersion`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleshortversionstring)
 - `app.debug.build_uuid`: Debug UUID of app.
 - `app.debug.binaryName`: The name of the app binary with the UUID given in `app.debug.build_uuid`
-- `app.bundle.executable`: The name of the app executable, as given by [`CFBundleExecutable`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleexecutable) 
+- `app.bundle.executable`: The name of the app executable, as given by [`CFBundleExecutable`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleexecutable)
 - `honeycomb.distro.runtime_version`: Version of iOS on the device. See also `os.description`.
 - `honeycomb.distro.version`: Version of the Honeycomb SDK being used.
 - `os.description`: String containing iOS version, build ID, and SDK level.
@@ -211,8 +212,8 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
     - Storybook Identifier - unique id identifying the view controller within its Storybook.
     - `view.class` - as defined above
 - `screen.path` - the full path leading to the current view, consisting of the current view's `screen.name` as well as any parent views.
-    
-`viewDidAppear` events will also track `screen.name` as the "current screen" (as with the manual instrumentation described below), and will include that value as `screen.name` on other, non-navigation spans emitted. 
+
+`viewDidAppear` events will also track `screen.name` as the "current screen" (as with the manual instrumentation described below), and will include that value as `screen.name` on other, non-navigation spans emitted.
 
 #### Interaction
 
@@ -231,7 +232,7 @@ These events may have the following attributes. In the case of name attributes, 
 
 #### Session
 
-The default session manager will create a new session on startup and will expire the session after a timeout. 
+The default session manager will create a new session on startup and will expire the session after a timeout.
 You can call `HoneycombOptions.setSessionTimeout` to set the timeout duration.
 
 Spans will have the following attributes:
@@ -239,17 +240,17 @@ Spans will have the following attributes:
 
 To get the current session ID, call `Honeycomb.currentSession().id`.
 
-You can subscribe to `.sessionStarted` and `sessionEnded` with `NotificationCenter` to be notified of session start and end events. 
+You can subscribe to `.sessionStarted` and `sessionEnded` with `NotificationCenter` to be notified of session start and end events.
 For `.sessionStarted`:
 * `userInfo["session"]` contains the session just created
-* `userInfo["previousSession"]` contains the previous session or `nil` if there is no previous session. 
+* `userInfo["previousSession"]` contains the previous session or `nil` if there is no previous session.
 For `.sessionEnded`:
 * `userInfo["previousSession"]` contains the session just ended.
 
 #### Network
-Network events on `URLSession` will automatically be instrumented. 
+Network events on `URLSession` will automatically be instrumented.
 
-##### Trace Propagation 
+##### Trace Propagation
 If you are connecting your app to a backend service that you wish to view as a unified trace with your app, you
 will need to manually add headers to all your outgoing requests. You must also create a span and set it as the active
 span. The span's context will be used to generate the headers needed for trace propagation.
@@ -281,7 +282,7 @@ func makeBackendRequest(data: Data) async throws {
         instrumentationVersion: getCurrentAppVersion()
     )
     .spanBuilder(spanName: "backendRequest")
-    // The span must be made the active span or else the network autoinstrumentation 
+    // The span must be made the active span or else the network autoinstrumentation
     // will not be attached to the trace.
     .setActive(true)
     .startSpan()
@@ -335,7 +336,7 @@ Specifically, it will emit 2 kinds of span for each view that is wrapped:
 - `view.totalDuration` (double): amount of time from when `HoneycombInstrumentedView.body()` is called to when the contents appear on screen
 
 `View Body` spans encompass just the `body()` call of `HoneycombInstrumentedView, and include the following attributes:
-- `view.name` (string): the name passed to `HoneycombInstrumentedView` 
+- `view.name` (string): the name passed to `HoneycombInstrumentedView`
 
 ### SwiftUI Navigation Instrumentation
 iOS 16 introduced two [new Navigation types](https://developer.apple.com/documentation/swiftui/migrating-to-new-navigation-types) that replace the now-deprecated [NavigationView](https://developer.apple.com/documentation/swiftui/navigationview).
@@ -361,17 +362,17 @@ struct SampleNavigationView: View {
         .instrumentNavigation(path: presentedParks) // convenience View Modifier
     }
 }
-```  
+```
 
 Whenever the `path` variable changes, this View Modifier will emit a span with the name `NavigationTo`. This span will contain the following attributes:
 
 - `screen.name` (string): the full navigation path when the span is emitted. If the path passed to the view modifier is not `Encodable` (ie. if you're using a `NavigationPath` and have stored a value that does not conform to the `Codable` protocol), then this attribute will have the value `<unencodable path>`.
-- `navigation.trigger`: Normally `navigation`. May also be `appDidBecomeActive` if the app moves into the foreground and still has navigation context. 
+- `navigation.trigger`: Normally `navigation`. May also be `appDidBecomeActive` if the app moves into the foreground and still has navigation context.
 
 If coming from another screen, we will also emit a `NavigationFrom` span with the following attributes:
 - `screen.name` (string): the name of the previous screen.
 - `screen.active.time` (double): time in seconds spent on that previous screen.
-- `navigation.trigger`: Normally `navigation`. May also be `appWillResignActive`, `appDidEnterBackground`, or `appWillTerminate` if the navigation is due to the app closing. 
+- `navigation.trigger`: Normally `navigation`. May also be `appWillResignActive`, `appDidEnterBackground`, or `appWillTerminate` if the navigation is due to the app closing.
 
 Note that navigation spans due to application lifecycle changes are only available on platforms with UIKit.
 
@@ -430,17 +431,17 @@ struct ContentView: View {
         }
     }
 }
-``` 
+```
 
 In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `screen.name: "View A"`.
 
 Both helpers also accept 2 optional parameters: `prefix: String` and `reason: String`:
 - If the `prefix` parameter is provided, it will be prepended to the supplied path. This is useful to disambiguate between two different NavigationStacks within the same application.
-- If the `reason` parameter is provided, it will be included as `navigation.trigger` on the `NavigateTo` and `NavigateFrom` spans. See included attributes above for more details on this attribute. 
+- If the `reason` parameter is provided, it will be included as `navigation.trigger` on the `NavigateTo` and `NavigateFrom` spans. See included attributes above for more details on this attribute.
 
 ### Manual Error Logging
 
-Any `Error`s, `NSError`s, or `NSException`s may be recorded as Log records using the `log` method. This can be used for logging 
+Any `Error`s, `NSError`s, or `NSException`s may be recorded as Log records using the `log` method. This can be used for logging
 any caught exceptions in your own code that will not be logged by our crash instrumentation.
 
 Below is an example of logging an Error object using several custom attributes.
