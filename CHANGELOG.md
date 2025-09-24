@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.1.1
+
+* fix: update to use otel-swift-core 2.1.1 and otel-swift 2.1.0
+
 ## 2.1.0
 
 * feat: expose OpenTelemetry Resource as public property
