@@ -72,6 +72,8 @@ jobs:
         run: |
           which bats
           bats --version
+      - name: Debug
+        run: xcrun simctl list --json devices available
       - name: Create iOS simulator
         run: xcrun simctl create test-iphone com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-5
       - name: Boot iOS simulator
