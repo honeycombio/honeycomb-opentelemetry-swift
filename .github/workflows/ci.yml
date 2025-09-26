@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  lint:
+    runs-on: namespace-profile-otel-macos-6x14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_16.1.app/Contents/Developer
+      - name: Run lint
+        run: make lint
+
+  build:
+    runs-on: namespace-profile-otel-macos-6x14
+    strategy:
+      matrix:
+        destination:
+          - generic/platform=macOS
+          - generic/platform=iOS
+          - generic/platform=tvOS
+          - generic/platform=watchOS
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: Build
+        run: xcodebuild -scheme honeycomb-opentelemetry-swift -destination '${{ matrix.destination }}'
+
+  tests:
+    runs-on: namespace-profile-otel-macos-6x14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: List available simulators
+        run: xcrun simctl list devices available
+      - name: Create iOS simulator
+        run: xcrun simctl create test-iphone com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-5
+      - name: Boot iOS simulator
+        run: xcrun simctl boot test-iphone
+      - name: Run tests
+        run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
+
+  smoke_tests:
+    runs-on: namespace-profile-otel-macos-6x14
+    strategy:
+      matrix:
+        otel_version: ["2.0.2"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+      - name: Install Bats
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+      - name: Check Bats installation
+        run: |
+          which bats
+          bats --version
+      - name: Create iOS simulator
+        run: xcrun simctl create test-iphone com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-5
+      - name: Boot iOS simulator
+        run: xcrun simctl boot test-iphone
+      - name: Install OTel Collector
+        env:
+          COLLECTOR_VERSION: "0.111.0"
+        run: |
+          curl --proto '=https' --tlsv1.2 -fOL https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${COLLECTOR_VERSION}/otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
+          tar -xvf otelcol_${COLLECTOR_VERSION}_darwin_arm64.tar.gz
+      - name: Start OTel Collector
+        run: |
+          touch ./smoke-tests/collector/data.json
+          ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml --set="exporters::file::path=./smoke-tests/collector/data.json" &
+          echo $! > collector.pid
+      - name: Start Mock Server
+        working-directory: smoke-tests/mock-server
+        run: |
+          npm install
+          npm start &
+          echo $! > ../../mockserver.pid
+      - name: Set opentelemetry-swift version
+        run: ./set-otel-version.sh ${{ matrix.otel_version }}
+      - name: Wait for services to start
+        run: sleep 10
+      - name: Run iOS App
+        run: make ios-tests
+      - name: Run Smoke Tests
+        run: make smoke-bats
+      - name: Stop background processes
+        if: always()
+        run: |
+          if [ -f collector.pid ]; then
+            kill $(cat collector.pid) || true
+          fi
+          if [ -f mockserver.pid ]; then
+            kill $(cat mockserver.pid) || true
+          fi
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-data-${{ matrix.otel_version }}
+          path: smoke-tests/collector/data.json
