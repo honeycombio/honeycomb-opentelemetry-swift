@@ -31,7 +31,7 @@ private func flush() {
     // garbage-collected and the http request will never be sent. Until that behavior is
     // fixed, it's necessary to sleep here, to allow the outstanding HTTP requests to be
     // processed.
-    Thread.sleep(forTimeInterval: 3.0)
+    // Thread.sleep(forTimeInterval: 3.0)
 }
 
 private func sendFakeNSError() {
