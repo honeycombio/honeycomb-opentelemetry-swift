@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.1.2
+
 * fix: add session ID to log records
 
 ## 2.1.1
