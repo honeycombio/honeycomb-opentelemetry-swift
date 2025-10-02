@@ -1,7 +1,7 @@
 import Foundation
 import OpenTelemetryApi
 
-private let sessionIdKey: String = SemanticConventions.Session.id.rawValue
+private let sessionIdKey: String = SemanticConventions.Session.id
 private let sessionStartTimeKey: String = "session.startTime"
 
 // A set of utility functions for reading and saving a Session object to persistent storage

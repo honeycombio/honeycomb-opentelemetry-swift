@@ -15,7 +15,7 @@ struct HoneycombSessionIdLogRecordProcessor: LogRecordProcessor {
         var enhancedRecord = logRecord
 
         enhancedRecord.setAttribute(
-            key: SemanticConventions.Session.id.rawValue,
+            key: SemanticConventions.Session.id,
             value: AttributeValue.string(sessionManager.sessionId)
         )
 
