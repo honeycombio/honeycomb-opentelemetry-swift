@@ -14,7 +14,10 @@ struct HoneycombSessionIdLogRecordProcessor: LogRecordProcessor {
     public func onEmit(logRecord: ReadableLogRecord) {
         var enhancedRecord = logRecord
 
-        enhancedRecord.setAttribute(key: "session.id", value: AttributeValue.string(sessionManager.sessionId))
+        enhancedRecord.setAttribute(
+            key: "session.id",
+            value: AttributeValue.string(sessionManager.sessionId)
+        )
 
         nextProcessor.onEmit(logRecord: enhancedRecord)
     }
