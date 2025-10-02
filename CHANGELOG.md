@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* fix: add session ID to log records
+
 ## 2.1.1
 
 * fix: update to use otel-swift-core 2.1.1 and otel-swift 2.1.0
