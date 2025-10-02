@@ -1,5 +1,5 @@
 {
-  "originHash" : "03ae30e0f061fce8b5f061f13d1211be91d77c1321b310187e384f2605fb483f",
+  "originHash" : "76dae4f38c3114bc56182aeea1ae58d021e6b12c9a5a5fe3986a6cc9352d052b",
   "pins" : [
     {
       "identity" : "grpc-swift",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/open-telemetry/opentelemetry-swift-core.git",
       "state" : {
-        "revision" : "6aebc7734e154cd221ea9fb76bd4f611262be962",
-        "version" : "2.1.1"
+        "revision" : "fd787757decabfa93319cc3c04f03a49e0cf40b6",
+        "version" : "2.2.0"
       }
     },
     {
