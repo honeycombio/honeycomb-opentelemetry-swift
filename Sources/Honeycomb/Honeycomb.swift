@@ -235,9 +235,13 @@ public class Honeycomb {
         }
 
         let logProcessor = SimpleLogRecordProcessor(logRecordExporter: logExporter)
+        let sessionLogProcessor = HoneycombSessionIdLogRecordProcessor(
+            nextProcessor: logProcessor,
+            sessionManager: sessionManager!
+        )
 
         let loggerProvider = LoggerProviderBuilder()
-            .with(processors: [logProcessor])
+            .with(processors: [sessionLogProcessor])
             .with(resource: resource)
             .build()
 
