@@ -28,7 +28,7 @@ internal class HoneycombNavigationProcessor {
     private init() {
         setupAppLifecycleTracking()
     }
-    
+
     public var currentNavigationPath: [String] { _currentNavigationPath }
 
     @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
@@ -166,7 +166,7 @@ internal class HoneycombNavigationProcessor {
             maybeLastNavigationTime = self.lastNavigationTime
         }
         guard let screenName = maybeScreenName else { return }
-        
+
         // Emit a NavigationTo span to indicate we're returning to this screen
         let span = getTracer().spanBuilder(spanName: navigationFromSpanName).startSpan()
         span.setAttribute(key: "screen.name", value: screenName)
