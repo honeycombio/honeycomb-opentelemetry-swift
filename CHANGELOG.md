@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.1.3
+
 * fix: Make HoneycombNavigationPathSpanProcessor threadsafe.
 
 ## 2.1.2
