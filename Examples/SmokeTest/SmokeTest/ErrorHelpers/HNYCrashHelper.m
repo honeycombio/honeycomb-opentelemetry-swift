@@ -1,6 +1,6 @@
-#import "CatchNSException.h"
+#import "HNYCrashHelper.h"
 
-@implementation CatchNSException
+@implementation HNYCrashHelper
 
 + (NSException *)throwAndCatchNSException {
     NSException *exception = nil;
@@ -15,7 +15,12 @@
     }
 }
 
-+ (void)crashTheApp {
++ (void)segfault {
+    int *p = NULL;
+    *p = 0;
+}
+
++ (void)throwNSException {
     @throw [NSException exceptionWithName:@"IntentionalCrash"
                                    reason:@"Pushed the crash button"
                                  userInfo:nil];

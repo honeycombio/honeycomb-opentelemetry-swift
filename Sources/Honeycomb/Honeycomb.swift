@@ -269,6 +269,9 @@ public class Honeycomb {
                 }
             }
         #endif
+        
+        // TODO: Add a config option for this.
+        installCrashInstrumentation()
     }
 
     public static func currentSession() -> HoneycombSession? {
@@ -382,7 +385,7 @@ public class Honeycomb {
         logError(errorAttributes, severity, logger, timestamp)
     }
 
-    private static func logError(
+    internal static func logError(
         _ attributes: [String: AttributeValue],
         _ severity: Severity,
         _ logger: OpenTelemetryApi.Logger = getDefaultErrorLogger(),
