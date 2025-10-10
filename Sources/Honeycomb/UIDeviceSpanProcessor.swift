@@ -14,6 +14,11 @@
         ) {
             let device = UIDevice.current
 
+            // OpenTelemetry semantic conventions
+            span.setAttribute(key: "device.manufacturer", value: "Apple")
+            span.setAttribute(key: "device.model.name", value: device.model)
+
+            // Additional device attributes
             span.setAttribute(key: "device.name", value: device.name)
             span.setAttribute(key: "device.systemName", value: device.systemName)
             span.setAttribute(key: "device.systemVersion", value: device.systemVersion)

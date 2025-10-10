@@ -177,6 +177,8 @@ All telemetry will include the following attributes
 - `telemetry.sdk.version`: Version of the OpenTelemetry Swift SDK being used.
 - [UIDevice](https://developer.apple.com/documentation/uikit/uidevice) attributes (only available on platforms where `UIKit` is available):
     - `device.id`: [UIDevice.identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/identifierforvendor)
+    - `device.manufacturer` - Hardcoded to "Apple" per [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/device/)
+    - `device.model.name` - [UIDevice.model](https://developer.apple.com/documentation/uikit/uidevice/model) per [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/device/)
     - `device.name` - [UIDevice.name](https://developer.apple.com/documentation/uikit/uidevice/name)
     - `device.systemName` - [UIDevice.systemName](https://developer.apple.com/documentation/uikit/uidevice/systemname)
     - `device.systemVersion` - [UIDevice.systemVersion](https://developer.apple.com/documentation/uikit/uidevice/systemversion)

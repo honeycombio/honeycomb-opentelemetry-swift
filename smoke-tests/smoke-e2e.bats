@@ -47,6 +47,18 @@ teardown_file() {
   assert_not_empty "$result"
 }
 
+@test "Spans have device semantic convention attributes" {
+  name="test-span"
+
+  # device.manufacturer should be hardcoded to "Apple"
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name "device.manufacturer" string)
+  assert_equal "$result" '"Apple"'
+
+  # device.model.name should be present
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name "device.model.name" string)
+  assert_not_empty "$result"
+}
+
 @test "SDK sends correct resource attributes" {
   result=$(resource_attributes_received | jq ".key" | sort | uniq)
   assert_equal "$result" '"app.bundle.executable"
@@ -156,7 +168,9 @@ mk_attr() {
 "device.isLowPowerModeEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
+"device.manufacturer"
 "device.model"
+"device.model.name"
 "device.name"
 "device.orientation"
 "device.systemName"
@@ -383,7 +397,9 @@ mk_diag_attr() {
 "device.isLowPowerModeEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
+"device.manufacturer"
 "device.model"
+"device.model.name"
 "device.name"
 "device.orientation"
 "device.systemName"
@@ -408,7 +424,9 @@ mk_diag_attr() {
 "device.isLowPowerModeEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
+"device.manufacturer"
 "device.model"
+"device.model.name"
 "device.name"
 "device.orientation"
 "device.systemName"
