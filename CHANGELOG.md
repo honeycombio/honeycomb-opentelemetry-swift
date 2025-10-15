@@ -4,17 +4,21 @@ Honeycomb OpenTelemetry SDK Changelog
 
 * feat: add device.manufacturer and device.model.name attributes
 
+## 2.1.3
+
+* fix: Make HoneycombNavigationPathSpanProcessor threadsafe.
+
 ## 2.1.2
 
-* fix: add session ID to log records
+* fix: Add session ID to log records.
 
 ## 2.1.1
 
-* fix: update to use otel-swift-core 2.1.1 and otel-swift 2.1.0
+* fix: Update to use otel-swift-core 2.1.1 and otel-swift 2.1.0.
 
 ## 2.1.0
 
-* feat: expose OpenTelemetry Resource as public property
+* feat: Expose OpenTelemetry Resource as a public property.
 
 ## 2.0.0
 
@@ -41,7 +45,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ### Fixes
 
-* fix: update `app.debug.buildUUID` attribute to `app.debug.build_uuid`
+* fix: Update `app.debug.buildUUID` attribute to `app.debug.build_uuid`.
 
 ## 0.0.13
 

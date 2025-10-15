@@ -41,7 +41,7 @@ If you're using `Package.swift` to manage dependencies...
 ```swift
     dependencies: [
         .package(url: "https://github.com/honeycombio/honeycomb-opentelemetry-swift.git",
-                 from: "2.1.2")
+                 from: "2.1.3")
     ],
 ```
 

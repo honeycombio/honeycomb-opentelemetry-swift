@@ -20,12 +20,16 @@ func getTracer() -> Tracer {
 
 internal class HoneycombNavigationProcessor {
     static let shared = HoneycombNavigationProcessor()
-    var currentNavigationPath: [String] = []
-    var lastNavigationTime: Date? = nil
+
+    private var lock: NSLock = NSLock()
+    private var _currentNavigationPath: [String] = []
+    private var lastNavigationTime: Date? = nil
 
     private init() {
         setupAppLifecycleTracking()
     }
+
+    public var currentNavigationPath: [String] { _currentNavigationPath }
 
     @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
     func reportNavigation(prefix: String? = nil, path: NavigationPath, reason: String? = nil) {
@@ -69,9 +73,11 @@ internal class HoneycombNavigationProcessor {
         navigationEnd(reason: reason ?? "navigation")
 
         // Update current path
-        currentNavigationPath = path
-        if prefix != nil {
-            currentNavigationPath = [prefix!] + currentNavigationPath
+        lock.withLock {
+            _currentNavigationPath = path
+            if prefix != nil {
+                _currentNavigationPath = [prefix!] + _currentNavigationPath
+            }
         }
 
         navigationStart(reason: reason ?? "navigation")
@@ -98,7 +104,9 @@ internal class HoneycombNavigationProcessor {
     }
 
     func setCurrentNavigationPath(_ path: [String]) {
-        currentNavigationPath = path
+        lock.withLock {
+            _currentNavigationPath = path
+        }
     }
 
     private func setupAppLifecycleTracking() {
@@ -149,21 +157,29 @@ internal class HoneycombNavigationProcessor {
     }
 
     private func navigationEnd(reason: String) {
-        if !self.currentNavigationPath.isEmpty, let screenName = self.currentNavigationPath.last {
-            // Emit a NavigationTo span to indicate we're returning to this screen
-            let span = getTracer().spanBuilder(spanName: navigationFromSpanName).startSpan()
-            span.setAttribute(key: "screen.name", value: screenName)
-            if let lastNavTime = self.lastNavigationTime {
-                let activeTime = Date().timeIntervalSince(lastNavTime)
-                span.setAttribute(key: "screen.active.time", value: Double(activeTime))
+        var maybeScreenName: String? = nil
+        var maybeLastNavigationTime: Date? = nil
+        lock.withLock {
+            if !self._currentNavigationPath.isEmpty {
+                maybeScreenName = self._currentNavigationPath.last
             }
-            span.setAttribute(key: "navigation.trigger", value: reason)
-            span.end()
+            maybeLastNavigationTime = self.lastNavigationTime
         }
+        guard let screenName = maybeScreenName else { return }
+
+        // Emit a NavigationTo span to indicate we're returning to this screen
+        let span = getTracer().spanBuilder(spanName: navigationFromSpanName).startSpan()
+        span.setAttribute(key: "screen.name", value: screenName)
+        if let lastNavTime = maybeLastNavigationTime {
+            let activeTime = Date().timeIntervalSince(lastNavTime)
+            span.setAttribute(key: "screen.active.time", value: Double(activeTime))
+        }
+        span.setAttribute(key: "navigation.trigger", value: reason)
+        span.end()
     }
 
     private func navigationStart(reason: String) {
-        let screenName = self.currentNavigationPath.last ?? "/"
+        let screenName = lock.withLock { self._currentNavigationPath.last ?? "/" }
 
         // Emit a NavigationTo span to indicate we're returning to this screen
         let span = getTracer().spanBuilder(spanName: navigationToSpanName).startSpan()
@@ -172,7 +188,9 @@ internal class HoneycombNavigationProcessor {
         span.end()
 
         // Update the last navigation time to now
-        self.lastNavigationTime = Date()
+        lock.withLock {
+            self.lastNavigationTime = Date()
+        }
     }
 }
 
