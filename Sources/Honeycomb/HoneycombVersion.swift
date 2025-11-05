@@ -1,4 +1,4 @@
 import Foundation
 
 // TODO: Make a build script that injects this.
-internal let honeycombLibraryVersion = "2.1.3"
+internal let honeycombLibraryVersion = "2.2.0"
