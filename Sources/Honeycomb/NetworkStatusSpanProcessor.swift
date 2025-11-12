@@ -19,6 +19,11 @@
             // This ensures CTTelephonyNetworkInfo is initialized during Honeycomb setup
             // (typically on main thread) rather than on background queues like MetricKit's,
             // which can cause hangs and XPC connection issues.
+            //
+            // Note: NetworkStatus holds a reference to NetworkMonitor, which actively
+            // monitors network state changes. When inject() is called, it should query
+            // the monitor for current state rather than using stale cached data.
+            // This provides both thread safety and up-to-date network information.
             networkStatus = NetworkStatus(with: monitor)
             injector = NetworkStatusInjector(netstat: networkStatus)
         }
@@ -27,7 +32,8 @@
             parentContext: SpanContext?,
             span: any ReadableSpan
         ) {
-            // Reuse the cached injector to avoid re-initializing NetworkStatus
+            // Reuse the cached NetworkStatus and injector. The NetworkMonitor reference
+            // within NetworkStatus should provide current network state on each injection.
             injector.inject(span: span)
         }
 
