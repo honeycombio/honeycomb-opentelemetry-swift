@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* feat: add `networkStatusTrackingEnabled` option to toggle collecting network status attributes 
+
 ## 2.2.0
 
 * feat: add device.manufacturer and device.model.name attributes
