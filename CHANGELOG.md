@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* fix: Fix crash caused by initializing CTTelephonyNetworkInfo on a background thread during MetricKit diagnostics. Initialization now happens safely on the main thread.
+
 ## 2.2.0
 
 * feat: add device.manufacturer and device.model.name attributes
