@@ -213,6 +213,7 @@ public struct HoneycombOptions {
     let uiKitInstrumentationEnabled: Bool
     let touchInstrumentationEnabled: Bool
     let unhandledExceptionInstrumentationEnabled: Bool
+    let networkStatusTrackingEnabled: Bool
 
     let offlineCachingEnabled: Bool
     @objc(HNYOptions) open class Builder: NSObject {
@@ -260,6 +261,7 @@ public struct HoneycombOptions {
         private var uiKitInstrumentationEnabled: Bool = true
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
+        private var networkStatusTrackingEnabled: Bool = true
 
         private var offlineCachingEnabled: Bool = false
 
@@ -495,6 +497,10 @@ public struct HoneycombOptions {
             unhandledExceptionInstrumentationEnabled = enabled
             return self
         }
+        @objc public func setNetworkStatusTrackingEnabled(_ enabled: Bool) -> Builder {
+            networkStatusTrackingEnabled = enabled
+            return self
+        }
 
         @objc public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
             offlineCachingEnabled = enabled
@@ -639,6 +645,7 @@ public struct HoneycombOptions {
                 uiKitInstrumentationEnabled: uiKitInstrumentationEnabled,
                 touchInstrumentationEnabled: touchInstrumentationEnabled,
                 unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled,
+                networkStatusTrackingEnabled: networkStatusTrackingEnabled,
                 offlineCachingEnabled: offlineCachingEnabled
             )
         }

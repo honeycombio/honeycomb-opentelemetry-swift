@@ -152,6 +152,7 @@ Run this in your CI or as part of your build process, as relevant.
 | `uiKitInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit view instrumentation. (default: true)                                                                                              |
 | `touchInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit touch instrumentation (default: false)                                                                                             |
 | `unhandledExceptionInstrumentationEnabled` | Bool     | No        | Whether to enable unhandle exception instrumentation. (default: true)                                                                                      |
+| `networkStatusTrackingEnabled`             | Bool     | No        | Whether to include network status attributes on emitted spans. (default: true)                                                                             |
 | `offlineCachingEnabled` | Bool | No | Whether to enable offline caching for telemetry (default: false). Warning: this feature is still in alpha and may be unstable. For more details, see [Offline Caching](#offline-caching) |
 
 ## Standard Attributes
