@@ -13,7 +13,7 @@ jobs:
   lint:
     macos:
       xcode: 26.1.0
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
 
     steps:
       - checkout
@@ -38,12 +38,12 @@ jobs:
 
     steps:
       - macos/preboot-simulator:
-          version: "17.5"
+          version: "18.6"
           platform: "iOS"
           device: "iPhone 15"
       - checkout
       - run: xcodebuild -version
-      - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator17.5 -destination 'OS=17.5,name=iPhone 15'
+      - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator18.6 -destination 'OS=18.6,name=iPhone 16'
 
   smoke_tests:
     parameters:
@@ -57,9 +57,9 @@ jobs:
       - attach_workspace:
           at: ./
       - macos/preboot-simulator:
-          version: "17.5"
+          version: "18.6"
           platform: "iOS"
-          device: "iPhone 15"
+          device: "iPhone 16"
       - checkout
       - bats/install
       - run:
