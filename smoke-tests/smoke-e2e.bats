@@ -47,6 +47,18 @@ teardown_file() {
   assert_not_empty "$result"
 }
 
+@test "Spans have device semantic convention attributes" {
+  name="test-span"
+
+  # device.manufacturer should be hardcoded to "Apple"
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name "device.manufacturer" string)
+  assert_equal "$result" '"Apple"'
+
+  # device.model.name should be present
+  result=$(attribute_for_span_key $SMOKE_TEST_SCOPE $name "device.model.name" string)
+  assert_not_empty "$result"
+}
+
 @test "SDK sends correct resource attributes" {
   result=$(resource_attributes_received | jq ".key" | sort | uniq)
   assert_equal "$result" '"app.bundle.executable"
@@ -156,7 +168,9 @@ mk_attr() {
 "device.isLowPowerModeEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
+"device.manufacturer"
 "device.model"
+"device.model.name"
 "device.name"
 "device.orientation"
 "device.systemName"
@@ -383,7 +397,9 @@ mk_diag_attr() {
 "device.isLowPowerModeEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
+"device.manufacturer"
 "device.model"
+"device.model.name"
 "device.name"
 "device.orientation"
 "device.systemName"
@@ -408,7 +424,9 @@ mk_diag_attr() {
 "device.isLowPowerModeEnabled"
 "device.isMultitaskingSupported"
 "device.localizedModel"
+"device.manufacturer"
 "device.model"
+"device.model.name"
 "device.name"
 "device.orientation"
 "device.systemName"
@@ -439,6 +457,7 @@ mk_diag_attr() {
     stacktrace=$(attribute_for_exception_log_of_type "TestException" "exception.stacktrace" string)
     type=$(attribute_for_exception_log_of_type "TestException" "exception.type" string)
     message=$(attribute_for_exception_log_of_type "TestException" "exception.message" string)
+    session_id=$(attribute_for_exception_log_of_type "TestException" "session.id" string)
     severity=$(logs_from_scope_named "io.honeycomb.error" \
         | jq "select(.attributes[].value.stringValue == \"TestException\") | .severityText")
 
@@ -446,6 +465,7 @@ mk_diag_attr() {
     assert_equal "$message" '"Exception Handling reason"'
     assert_equal "$type" '"TestException"'
     assert_equal "$severity" '"FATAL"'
+    assert_not_empty "$session_id"
 }
 
 @test "NSError attributes are correct" {
@@ -453,6 +473,7 @@ mk_diag_attr() {
     domain=$(attribute_for_exception_log_of_type "NSError" "nserror.domain" string)
     type=$(attribute_for_exception_log_of_type "NSError" "error.type" string)
     message=$(attribute_for_exception_log_of_type "NSError" "error.message" string)
+    session_id=$(attribute_for_exception_log_of_type "NSError" "session.id" string)
     severity=$(logs_from_scope_named "io.honeycomb.error" \
         | jq "select(.attributes[].value.stringValue == \"NSError\") | .severityText")
 
@@ -461,15 +482,18 @@ mk_diag_attr() {
     assert_equal "$type" '"NSError"'
     assert_equal "$message" "\"The operation couldn’t be completed. (Test Error error -1.)\""
     assert_equal "$severity" '"ERROR"'
+    assert_not_empty "$session_id"
 }
 
 @test "Swift Error attributes are correct" {
     type=$(attribute_for_exception_log_of_type "TestError" "error.type" string)
     message=$(attribute_for_exception_log_of_type "TestError" "error.message" string)
+    session_id=$(attribute_for_exception_log_of_type "TestError" "session.id" string)
     severity=$(logs_from_scope_named "io.honeycomb.error" \
         | jq "select(.attributes[].value.stringValue == \"TestError\") | .severityText")
 
     assert_equal "$type" '"TestError"'
     assert_equal "$message" "\"The operation couldn’t be completed. (SmokeTest.TestError error 0.)\""
     assert_equal "$severity" '"ERROR"'
+    assert_not_empty "$session_id"
 }

@@ -152,13 +152,15 @@ public class Honeycomb {
             .add(spanProcessor: HoneycombSessionIdSpanProcessor(sessionManager: sessionManager!))
 
         #if os(iOS) && !targetEnvironment(macCatalyst)
-            do {
-                let networkMonitor = try NetworkMonitor()
-                tracerProviderBuilder =
-                    tracerProviderBuilder
-                    .add(spanProcessor: NetworkStatusSpanProcessor(monitor: networkMonitor))
-            } catch {
-                NSLog("Unable to create NetworkMonitor: \(error)")
+            if options.networkStatusTrackingEnabled {
+                do {
+                    let networkMonitor = try NetworkMonitor()
+                    tracerProviderBuilder =
+                        tracerProviderBuilder
+                        .add(spanProcessor: NetworkStatusSpanProcessor(monitor: networkMonitor))
+                } catch {
+                    NSLog("Unable to create NetworkMonitor: \(error)")
+                }
             }
         #endif
 
@@ -235,9 +237,13 @@ public class Honeycomb {
         }
 
         let logProcessor = SimpleLogRecordProcessor(logRecordExporter: logExporter)
+        let sessionLogProcessor = HoneycombSessionIdLogRecordProcessor(
+            nextProcessor: logProcessor,
+            sessionManager: sessionManager!
+        )
 
         let loggerProvider = LoggerProviderBuilder()
-            .with(processors: [logProcessor])
+            .with(processors: [sessionLogProcessor])
             .with(resource: resource)
             .build()
 

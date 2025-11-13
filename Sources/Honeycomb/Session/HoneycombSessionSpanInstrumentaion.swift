@@ -16,7 +16,7 @@ struct HoneycombSessionIdSpanProcessor: SpanProcessor {
         span: any ReadableSpan
     ) {
         span.setAttribute(
-            key: "session.id",
+            key: SemanticConventions.Session.id,
             value: sessionManager.session.id
         )
     }
