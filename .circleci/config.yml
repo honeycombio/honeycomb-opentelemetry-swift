@@ -91,7 +91,7 @@ jobs:
           command: ./set-otel-version.sh << parameters.otel_version >>
       - run:
           name: Run iOS App
-          command: make ios-tests
+          command: SMOKE_TEST_DESTINATION="OS=18.6,name=iPhone 16" make ios-tests
       - run:
           name: Run Smoke Tests
           command: make smoke-bats
