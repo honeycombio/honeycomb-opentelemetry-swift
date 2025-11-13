@@ -40,7 +40,7 @@ jobs:
       - macos/preboot-simulator:
           version: "18.6"
           platform: "iOS"
-          device: "iPhone 15"
+          device: "iPhone 16"
       - checkout
       - run: xcodebuild -version
       - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator18.6 -destination 'OS=18.6,name=iPhone 16'
