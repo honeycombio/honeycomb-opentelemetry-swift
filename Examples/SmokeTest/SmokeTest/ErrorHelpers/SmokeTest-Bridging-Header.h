@@ -1,1 +1,1 @@
-#import "CatchNSException.h"
+#import "HNYCrashHelper.h"

@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		366309102CE51BDC00B97612 /* UIKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3663090F2CE51BDC00B97612 /* UIKitView.swift */; };
 		366309122CE51EF000B97612 /* UIKitViewStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 366309112CE51EF000B97612 /* UIKitViewStoryboard.storyboard */; };
-		36B8B9BB2D6FB87800DBFDDC /* CatchNSException.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B8B9B82D6FB87800DBFDDC /* CatchNSException.m */; };
+		36B8B9BB2D6FB87800DBFDDC /* HNYCrashHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B8B9B82D6FB87800DBFDDC /* HNYCrashHelper.m */; };
 		452B71DD2CE52C8600C27FB2 /* ViewInstrumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */; };
 		452B71E12CE6A52600C27FB2 /* NavigationExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */; };
 		45F3D2892D6903C9007C2225 /* SampleSpanProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F3D2882D6903C3007C2225 /* SampleSpanProcessor.swift */; };
@@ -20,6 +20,7 @@
 		AF6DEFFB2C8D3CE100363027 /* SmokeTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6DEFFA2C8D3CE100363027 /* SmokeTestTests.swift */; };
 		AF6DF0052C8D3CE100363027 /* SmokeTestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6DF0042C8D3CE100363027 /* SmokeTestUITests.swift */; };
 		AF6DF0072C8D3CE100363027 /* SmokeTestUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6DF0062C8D3CE100363027 /* SmokeTestUITestsLaunchTests.swift */; };
+		AF7667592E87436E0040EF16 /* CrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7667582E87436A0040EF16 /* CrashView.swift */; };
 		AFA0BA5A2C8D3E0000F54611 /* Honeycomb in Frameworks */ = {isa = PBXBuildFile; productRef = AFA0BA592C8D3E0000F54611 /* Honeycomb */; };
 		AFA0BA5C2C8E12E700F54611 /* MetricKitTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA0BA5B2C8E12E700F54611 /* MetricKitTestHelpers.swift */; };
 		AFA277C42CC71DF7007F8A46 /* NetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA277C32CC71DF5007F8A46 /* NetworkView.swift */; };
@@ -45,8 +46,8 @@
 /* Begin PBXFileReference section */
 		3663090F2CE51BDC00B97612 /* UIKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitView.swift; sourceTree = "<group>"; };
 		366309112CE51EF000B97612 /* UIKitViewStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UIKitViewStoryboard.storyboard; sourceTree = "<group>"; };
-		36B8B9B72D6FB87800DBFDDC /* CatchNSException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CatchNSException.h; sourceTree = "<group>"; };
-		36B8B9B82D6FB87800DBFDDC /* CatchNSException.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CatchNSException.m; sourceTree = "<group>"; };
+		36B8B9B72D6FB87800DBFDDC /* HNYCrashHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HNYCrashHelper.h; sourceTree = "<group>"; };
+		36B8B9B82D6FB87800DBFDDC /* HNYCrashHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HNYCrashHelper.m; sourceTree = "<group>"; };
 		36B8B9B92D6FB87800DBFDDC /* SmokeTest-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SmokeTest-Bridging-Header.h"; sourceTree = "<group>"; };
 		452B71DC2CE52C8600C27FB2 /* ViewInstrumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewInstrumentationView.swift; sourceTree = "<group>"; };
 		452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationExamplesView.swift; sourceTree = "<group>"; };
@@ -61,6 +62,7 @@
 		AF6DF0002C8D3CE100363027 /* SmokeTestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmokeTestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF6DF0042C8D3CE100363027 /* SmokeTestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTestUITests.swift; sourceTree = "<group>"; };
 		AF6DF0062C8D3CE100363027 /* SmokeTestUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTestUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		AF7667582E87436A0040EF16 /* CrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashView.swift; sourceTree = "<group>"; };
 		AFA0BA5B2C8E12E700F54611 /* MetricKitTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricKitTestHelpers.swift; sourceTree = "<group>"; };
 		AFA277C32CC71DF5007F8A46 /* NetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -94,8 +96,8 @@
 		36B8B9BA2D6FB87800DBFDDC /* ErrorHelpers */ = {
 			isa = PBXGroup;
 			children = (
-				36B8B9B72D6FB87800DBFDDC /* CatchNSException.h */,
-				36B8B9B82D6FB87800DBFDDC /* CatchNSException.m */,
+				36B8B9B72D6FB87800DBFDDC /* HNYCrashHelper.h */,
+				36B8B9B82D6FB87800DBFDDC /* HNYCrashHelper.m */,
 				36B8B9B92D6FB87800DBFDDC /* SmokeTest-Bridging-Header.h */,
 			);
 			path = ErrorHelpers;
@@ -127,6 +129,7 @@
 			children = (
 				36B8B9BA2D6FB87800DBFDDC /* ErrorHelpers */,
 				45F3D2882D6903C3007C2225 /* SampleSpanProcessor.swift */,
+				AF7667582E87436A0040EF16 /* CrashView.swift */,
 				AFA277C32CC71DF5007F8A46 /* NetworkView.swift */,
 				452B71E02CE6A52600C27FB2 /* NavigationExamplesView.swift */,
 				AFA0BA5B2C8E12E700F54611 /* MetricKitTestHelpers.swift */,
@@ -307,9 +310,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF7667592E87436E0040EF16 /* CrashView.swift in Sources */,
 				45F3D2892D6903C9007C2225 /* SampleSpanProcessor.swift in Sources */,
 				AF6DEFEC2C8D3CE000363027 /* ContentView.swift in Sources */,
-				36B8B9BB2D6FB87800DBFDDC /* CatchNSException.m in Sources */,
+				36B8B9BB2D6FB87800DBFDDC /* HNYCrashHelper.m in Sources */,
 				AFA277C42CC71DF7007F8A46 /* NetworkView.swift in Sources */,
 				366309102CE51BDC00B97612 /* UIKitView.swift in Sources */,
 				452B71E12CE6A52600C27FB2 /* NavigationExamplesView.swift in Sources */,

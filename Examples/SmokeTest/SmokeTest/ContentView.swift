@@ -51,7 +51,7 @@ private func sendFakeError() {
 }
 
 private func sendFakeNSException() {
-    guard let exception = CatchNSException.throwAndCatchNSException() else {
+    guard let exception = HNYCrashHelper.throwAndCatchNSException() else {
         return
     }
 
@@ -63,10 +63,6 @@ private func sendFakeErrorData() {
     sendFakeError()
     sendFakeNSError()
     sendFakeNSException()
-}
-
-private func crashTheApp() {
-    CatchNSException.crashTheApp()
 }
 
 struct ContentView: SwiftUI.View {
@@ -106,10 +102,14 @@ struct ContentView: SwiftUI.View {
                 }
                 .buttonStyle(.bordered)
 
+                /*
                 Button(action: crashTheApp) {
                     Text("Crash the App")
                 }
                 .buttonStyle(.bordered)
+                 */
+                
+                CrashView()
 
                 Button(action: sendFakeErrorData) {
                     Text("Send fake error data")
@@ -156,6 +156,16 @@ struct ContentView: SwiftUI.View {
             NavigationExamplesView()
                 .padding()
                 .tabItem { Label("Navigation", systemImage: "globe") }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "Navigation")
+                }
+
+            /*CrashView()
+                .padding()
+                .tabItem { Label("Crash", systemImage: "car") }
+                .onAppear {
+                    Honeycomb.setCurrentScreen(path: "Crash")
+                }*/
         }
 
         .onAppear {
@@ -173,6 +183,7 @@ struct ContentView: SwiftUI.View {
                 updateSessionInfo(session: session)
             }
         }
+        // .tabViewStyle(.automatic)
         .onDisappear {
             NotificationCenter.default.removeObserver(self)
         }
