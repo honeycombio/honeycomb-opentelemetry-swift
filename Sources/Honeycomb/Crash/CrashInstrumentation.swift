@@ -1,6 +1,30 @@
 
 import CrashReporter
 import OpenTelemetryApi
+import Foundation
+
+// MARK: - JSON Crash Report Format
+
+/// Represents a stack frame in the OpenTelemetry crash report format
+private struct StackFrame: Codable {
+    let binaryName: String?
+    let binaryUUID: String?
+    let offsetAddress: Int?
+}
+
+/// Represents a call stack for a single thread
+private struct CallStack: Codable {
+    let threadAttributed: Bool?
+    let callStackFrames: [StackFrame]
+}
+
+/// Root structure for the OpenTelemetry crash report JSON
+private struct StackTraceReport: Codable {
+    let callStackPerThread: Bool
+    let callStacks: [CallStack]
+}
+
+// MARK: - Helper Functions
 
 func isDebuggerAttached() -> Bool {
     var info = kinfo_proc()
@@ -15,6 +39,69 @@ func isDebuggerAttached() -> Bool {
 
     // Check the P_TRACED flag in the process status
     return (info.kp_proc.p_flag & P_TRACED) != 0
+}
+
+/// Builds a JSON crash report from a PLCrashReport following the OpenTelemetry stack trace format
+private func buildCrashReportJSON(from crash: PLCrashReport) -> String? {
+    guard let threads = crash.threads as? [PLCrashReportThreadInfo] else {
+        return nil
+    }
+
+    var callStacks: [CallStack] = []
+
+    // Process each thread
+    for thread in threads {
+        guard let stackFrames = thread.stackFrames as? [PLCrashReportStackFrameInfo] else {
+            continue
+        }
+
+        var frames: [StackFrame] = []
+
+        // Process each frame in the thread
+        for frameInfo in stackFrames {
+            let instructionPointer = frameInfo.instructionPointer
+
+            // Look up the binary image containing this address
+            let image = crash.image(forAddress: instructionPointer)
+
+            // Extract available information
+            let binaryName = image.map { URL(fileURLWithPath: $0.imageName).lastPathComponent }
+            let binaryUUID = image?.imageUUID
+            let offsetAddress = image.map { Int(instructionPointer - $0.imageBaseAddress) }
+
+            let frame = StackFrame(
+                binaryName: binaryName,
+                binaryUUID: binaryUUID,
+                offsetAddress: offsetAddress
+            )
+            frames.append(frame)
+        }
+
+        // Only include threads that have frames
+        if !frames.isEmpty {
+            let callStack = CallStack(
+                threadAttributed: thread.crashed ? true : nil,
+                callStackFrames: frames
+            )
+            callStacks.append(callStack)
+        }
+    }
+
+    // Build the complete report
+    let report = StackTraceReport(
+        callStackPerThread: false,
+        callStacks: callStacks
+    )
+
+    // Encode to JSON
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+
+    guard let jsonData = try? encoder.encode(report) else {
+        return nil
+    }
+
+    return String(data: jsonData, encoding: .utf8)
 }
 
 private func log(
@@ -36,40 +123,14 @@ private func log(
     if crash.hasExceptionInfo {
         let type: String = crash.exceptionInfo.exceptionName
         let message: String = crash.exceptionInfo.exceptionReason
-        
+
         errorAttributes[SemanticAttributes.exceptionType.rawValue] = type.attributeValue()
         errorAttributes[SemanticAttributes.exceptionMessage.rawValue] = message.attributeValue()
-
-        if let stackFrames = crash.exceptionInfo.stackFrames {
-            let frames = stackFrames.map { frame in
-                let frame = frame as! PLCrashReportStackFrameInfo
-                let instructionPointer = frame.instructionPointer
-                if let symbolName = frame.symbolInfo.symbolName {
-                    return String(format: "%x %s")
-                } else {
-                    return String(format: "%x")
-                }
-            }
-            errorAttributes[SemanticAttributes.exceptionStacktrace.rawValue] = frames.joined(separator: "\n").attributeValue()
-        }
     }
 
-    if crash.hasProcessInfo {
-    }
-
-    // crash.applicationInfo
-
-    // TODO: Do something useful with this.
-    // TODO: Consider image(forAddress)?
-    if let crashImages = crash.images {
-        let images = crashImages.map { image in
-            let image = image as! PLCrashReportBinaryImageInfo
-            if let uuid = image.imageUUID {
-                return uuid
-            } else {
-                return ""
-            }
-        }
+    // Generate JSON crash report with all threads
+    if let crashReportJSON = buildCrashReportJSON(from: crash) {
+        errorAttributes[SemanticAttributes.exceptionStacktrace.rawValue] = crashReportJSON.attributeValue()
     }
     
     // Signal
