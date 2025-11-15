@@ -86,7 +86,7 @@ resource_attributes_received() {
 }
 
 resource_attribute_named() {
-    spans_received | jq ".resource.attributes[]? | select(.key == \"$1\").value.${2}Value"
+    spans_received | jq ".resource.attributes[]? | select(.key == \"$1\").value.${2}Value" | uniq
 }
 
 # Spans for a given scope

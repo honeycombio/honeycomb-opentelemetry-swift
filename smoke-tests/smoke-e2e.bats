@@ -28,15 +28,23 @@ teardown_file() {
 }
 
 @test "SDK has default resources" {
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "telemetry.sdk.language").value.stringValue' | uniq)" '"swift"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.name").value.stringValue' | uniq)" '"ios-test"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "service.version").value.stringValue' | uniq)" '"0.0.1"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "device.model.identifier").value.stringValue' | uniq)" '"arm64"'
-  assert_not_empty "$(resource_attributes_received | jq 'select (.key == "device.id").value.stringValue' | uniq)"
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.type").value.stringValue' | uniq)" '"darwin"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.description").value.stringValue' | uniq)" '"iOS Version 17.5 (Build 21F79)"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.name").value.stringValue' | uniq)" '"iOS"'
-  assert_equal "$(resource_attributes_received | jq 'select (.key == "os.version").value.stringValue' | uniq)" '"17.5.0"'
+  assert_equal "$(resource_attribute_named "telemetry.sdk.language" string)" '"swift"'
+  assert_equal "$(resource_attribute_named "service.name" string)" '"ios-test"'
+  assert_equal "$(resource_attribute_named "service.version" string)" '"0.0.1"'
+  assert_equal "$(resource_attribute_named "device.model.identifier" string)" '"arm64"'
+
+  assert_not_empty "$(resource_attribute_named "device.id" string)"
+
+  assert_equal "$(resource_attribute_named "os.type" string)" '"darwin"'
+  assert_equal "$(resource_attribute_named "os.name" string)" '"iOS"'
+
+  os_version="$(resource_attribute_named "os.version" string \
+    | grep -E '^"[0-9.]+"$')"
+  assert_not_empty "$os_version"
+
+  os_description="$(resource_attribute_named "os.description" string \
+    | grep -E '^"iOS Version [0-9.]+ \(Build [0-9A-Z]+\)"$')"
+  assert_not_empty "$os_description"
 }
 
 @test "Spans have network attributes" {
@@ -292,7 +300,7 @@ mk_diag_attr() {
         | uniq)
     assert_equal "$result" '"UIKit Menu"'
 
-        result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidAppear \
+    result=$(attributes_from_span_named "io.honeycomb.uikit" viewDidAppear \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UI KIT SCREEN OVERRIDE\").value.stringValue" \
         | uniq)
@@ -329,13 +337,6 @@ mk_diag_attr() {
     )
     assert_equal "$screen_name_attr" '"UI KIT SCREEN OVERRIDE"'
 
-    screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
-        | jq "select (.key == \"screen.path\")" \
-        | jq "select (.value.stringValue == \"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE\").value.stringValue" \
-        | uniq
-    )
-    assert_equal "$screen_path_attr" '"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
-
     screen_name_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
         | jq "select (.key == \"screen.name\")" \
         | jq "select (.value.stringValue == \"UIKit Menu\").value.stringValue" \
@@ -343,12 +344,25 @@ mk_diag_attr() {
     )
     assert_equal "$screen_name_attr" '"UIKit Menu"'
 
+    #
+    # SwiftUI hierarchies are subject to change, so only check the UIKit part of the path.
+    #
+
     screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
-        | jq "select (.key == \"screen.path\")" \
-        | jq "select (.value.stringValue == \"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu\").value.stringValue" \
+        | jq "select (.key == \"screen.path\").value.stringValue" \
+        | grep "UI KIT SCREEN OVERRIDE" \
+        | sed -e 's/^".*\(\/UIKitNavigationRoot\/UI KIT SCREEN OVERRIDE\)"$/"\1"/' \
         | uniq
     )
-    assert_equal "$screen_path_attr" '"/SwiftUI.UIKitTabBarController/UIKitNavigationRoot/UIKit Menu"'
+    assert_equal "$screen_path_attr" '"/UIKitNavigationRoot/UI KIT SCREEN OVERRIDE"'
+
+    screen_path_attr=$(attributes_from_span_named "io.honeycomb.uikit" "Touch Began" \
+        | jq "select (.key == \"screen.path\").value.stringValue" \
+        | grep "UIKit Menu" \
+        | sed -e 's/^".*\(\/UIKitNavigationRoot\/UIKit Menu\)"$/"\1"/' \
+        | uniq
+    )
+    assert_equal "$screen_path_attr" '"/UIKitNavigationRoot/UIKit Menu"'
 }
 
 @test "UIKit click events are captured" {
@@ -439,18 +453,29 @@ mk_diag_attr() {
 "screen.path"
 "session.id"'
 
-    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string | sort | uniq -c | grep "Split View")
+    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string \
+      | sort \
+      | uniq -c \
+      | grep "Split View")
     assert_equal "$split_view_paths" '   2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
    1 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
 }
 
 @test "Navigation attributes are correct" {
-    result=$(attribute_for_span_key "io.honeycomb.view" "View Render" "screen.name" string | uniq)
+    # Check that a name set explicitly works.
+    # Apple doesn't make specific guarantees about when onAppear is called, and it seems to vary
+    # based on OS version, so we need to check the attribute on a span that happens after the
+    # screen is rendered.
+    result=$(spans_received \
+      | jq '.scopeSpans[]?.spans[]?.attributes[]?.value.stringValue' \
+      | grep -E '^"View Instrumentation"$' \
+      | sort -u)
     assert_equal "$result" '"View Instrumentation"'
 }
 
 @test "Span Processor gets added correctly" {
-    result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "app.metadata" string | uniq)
+    result=$(attribute_for_span_key "io.honeycomb.uikit" "Touch Began" "app.metadata" string | uniq)
+    assert_equal "$result" '"extra metadata"'
 }
 
 @test "NSException attributes are correct" {
