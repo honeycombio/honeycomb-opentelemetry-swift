@@ -43,7 +43,7 @@ teardown_file() {
   assert_not_empty "$os_version"
 
   os_description="$(resource_attribute_named "os.description" string \
-    | grep -E '^"iOS Version [0-9.]+ \(Build [0-9A-F]+\)"$')"
+    | grep -E '^"iOS Version [0-9.]+ \(Build [0-9A-Z]+\)"$')"
   assert_not_empty "$os_description"
 }
 
