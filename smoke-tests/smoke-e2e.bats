@@ -466,9 +466,10 @@ mk_diag_attr() {
     # Apple doesn't make specific guarantees about when onAppear is called, and it seems to vary
     # based on OS version, so we need to check the attribute on a span that happens after the
     # screen is rendered.
-    result=$(attribute_for_span_key "io.honeycomb.uikit" "Touch Began" "screen.name" string \
-      | uniq \
-      | grep "View Instrumentation")
+    result=$(spans_received \
+      | jq '.scopeSpans[]?.spans[]?.attributes[]?.value.stringValue' \
+      | grep -E '^"View Instrumentation"$' \
+      | sort -u)
     assert_equal "$result" '"View Instrumentation"'
 }
 
