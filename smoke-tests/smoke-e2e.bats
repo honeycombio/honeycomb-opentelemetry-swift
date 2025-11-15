@@ -453,18 +453,28 @@ mk_diag_attr() {
 "screen.path"
 "session.id"'
 
-    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string | sort | uniq -c | grep "Split View")
+    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string \
+      | sort \
+      | uniq -c \
+      | grep "Split View")
     assert_equal "$split_view_paths" '   2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
    1 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
 }
 
 @test "Navigation attributes are correct" {
-    result=$(attribute_for_span_key "io.honeycomb.view" "View Render" "screen.name" string | uniq)
+    # Check that a name set explicitly works.
+    # Apple doesn't make specific guarantees about when onAppear is called, and it seems to vary
+    # based on OS version, so we need to check the attribute on a span that happens after the
+    # screen is rendered.
+    result=$(attribute_for_span_key "io.honeycomb.uikit" "Touch Began" "screen.name" string \
+      | uniq \
+      | grep "View Instrumentation")
     assert_equal "$result" '"View Instrumentation"'
 }
 
 @test "Span Processor gets added correctly" {
-    result=$(spans_received | jq ".attributes[] | select (.key == \"app.metadata\").value.stringValue" "app.metadata" string | uniq)
+    result=$(attribute_for_span_key "io.honeycomb.uikit" "Touch Began" "app.metadata" string | uniq)
+    assert_equal "$result" '"extra metadata"'
 }
 
 @test "NSException attributes are correct" {
