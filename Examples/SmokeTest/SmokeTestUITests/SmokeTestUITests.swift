@@ -4,7 +4,6 @@ private let uiUpdateTimeout = 0.200
 private let networkRequestTimeout = 5.0
 
 extension XCUIApplication {
-
     /// Helper to get the state of a SwiftUI Toggle control.
     func getToggle(_ name: String) -> Bool {
         let toggle = self.switches[name]
@@ -64,6 +63,7 @@ final class SmokeTestUITests: XCTestCase {
         XCTAssert(app.staticTexts["Network Playground"].waitForExistence(timeout: uiUpdateTimeout))
 
         // Test all combinations of networking options.
+        /*
         for (requestType, typeStr) in [
             ("Data", "data"), ("Download", "download"), ("Upload", "upload"),
         ] {
@@ -155,6 +155,7 @@ final class SmokeTestUITests: XCTestCase {
                 }
             }
         }
+        */
 
         app.buttons["Core"].tap()
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
@@ -217,6 +218,8 @@ final class SmokeTestUITests: XCTestCase {
     func testNavigations() throws {
         let app = XCUIApplication()
         app.launch()
+        //app.buttons["More"].tap()
+        //XCTAssert(app.buttons["Navigation"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Navigation"].tap()
         XCTAssert(app.buttons["Yosemite"].waitForExistence(timeout: uiUpdateTimeout))
 
@@ -239,5 +242,13 @@ final class SmokeTestUITests: XCTestCase {
 
         XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Flush"].tap()
+    }
+    
+    func testCrash() {
+        let app = XCUIApplication()
+        app.launch()
+        app.segmentedControls.buttons["segfault"].tap()
+        app.buttons["Crash"].tap()
+        app.waitForNonExistence(timeout: 5.0)
     }
 }

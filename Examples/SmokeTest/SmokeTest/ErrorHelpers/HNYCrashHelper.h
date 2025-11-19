@@ -4,7 +4,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CatchNSException : NSObject
+@interface HNYCrashHelper : NSObject
+
 + (NSException *)throwAndCatchNSException;
-+ (void)crashTheApp;
+
++ (void)segfault;
+
++ (void)throwNSException;
+
 @end
