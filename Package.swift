@@ -20,10 +20,11 @@ let package = Package(
             url: "https://github.com/open-telemetry/opentelemetry-swift-core.git",
             exact: "2.2.0"
         ),
-        .package(
-            url: "https://github.com/open-telemetry/opentelemetry-swift.git",
-            exact: "2.1.0"
-        ),
+        // .package(
+        //     url: "https://github.com/open-telemetry/opentelemetry-swift.git",
+        //     exact: "2.1.0"
+        // ),
+        .package(path: "/Users/beeklimt/src/opentelemetry-swift"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -38,6 +39,8 @@ let package = Package(
                 .product(name: "OpenTelemetryProtocolExporterHTTP", package: "opentelemetry-swift"),
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
                 .product(name: "StdoutExporter", package: "opentelemetry-swift-core"),
+                .product(name: "URLSessionInstrumentation", package: "opentelemetry-swift"),
+                //.product(name: "MetricKitInstrumentation", package: "opentelemetry-swift"),
             ]
         ),
         .testTarget(

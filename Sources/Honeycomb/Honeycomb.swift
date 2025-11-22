@@ -8,6 +8,7 @@ import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
+import URLSessionInstrumentation
 
 #if canImport(MetricKit)
     import MetricKit
@@ -253,7 +254,22 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        if options.urlSessionInstrumentationEnabled {
+        if options.otelUrlSessionInstrumentationEnabled {
+            // Configure OpenTelemetry URLSession instrumentation to behave the same as
+            // Honeycomb's original custom instrumentation (io.honeycomb.urlsession)
+            let customTracer = OpenTelemetry.instance.tracerProvider.get(
+                instrumentationName: "io.honeycomb.urlsession",
+                instrumentationVersion: honeycombLibraryVersion
+            )
+            let config = URLSessionInstrumentationConfiguration(
+                nameSpan: { request in
+                    return request.httpMethod ?? "UNKNOWN"
+                },
+                tracer: customTracer,
+                semanticConvention: .stable
+            )
+            let urlSessionInstrumentation = URLSessionInstrumentation(configuration: config)
+        } else if options.urlSessionInstrumentationEnabled {
             installNetworkInstrumentation(options: options)
         }
         #if canImport(UIKit) && !os(watchOS)

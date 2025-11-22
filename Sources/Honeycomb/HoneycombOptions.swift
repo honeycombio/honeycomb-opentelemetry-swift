@@ -214,6 +214,9 @@ public struct HoneycombOptions {
     let touchInstrumentationEnabled: Bool
     let unhandledExceptionInstrumentationEnabled: Bool
     let networkStatusTrackingEnabled: Bool
+    
+    let otelMetricKitInstrumentationEnabled: Bool
+    let otelUrlSessionInstrumentationEnabled: Bool
 
     let offlineCachingEnabled: Bool
     @objc(HNYOptions) open class Builder: NSObject {
@@ -257,7 +260,9 @@ public struct HoneycombOptions {
         private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
 
         private var metricKitInstrumentationEnabled: Bool = true
+        private var otelMetricKitInstrumentationEnabled: Bool = false
         private var urlSessionInstrumentationEnabled: Bool = true
+        private var otelUrlSessionInstrumentationEnabled: Bool = true
         private var uiKitInstrumentationEnabled: Bool = true
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
@@ -481,8 +486,16 @@ public struct HoneycombOptions {
             metricKitInstrumentationEnabled = enabled
             return self
         }
+        @objc public func setOTELMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            otelMetricKitInstrumentationEnabled = enabled
+            return self
+        }
         @objc public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             urlSessionInstrumentationEnabled = enabled
+            return self
+        }
+        @objc public func setOTELURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+            otelUrlSessionInstrumentationEnabled = enabled
             return self
         }
         @objc public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
@@ -646,6 +659,8 @@ public struct HoneycombOptions {
                 touchInstrumentationEnabled: touchInstrumentationEnabled,
                 unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled,
                 networkStatusTrackingEnabled: networkStatusTrackingEnabled,
+                otelMetricKitInstrumentationEnabled: otelMetricKitInstrumentationEnabled,
+                otelUrlSessionInstrumentationEnabled: otelUrlSessionInstrumentationEnabled,
                 offlineCachingEnabled: offlineCachingEnabled
             )
         }
