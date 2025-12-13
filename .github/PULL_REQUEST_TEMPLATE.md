@@ -15,3 +15,4 @@ Please see our [OSS process document](https://github.com/honeycombio/home/blob/m
 
 - [ ] CHANGELOG is updated
 - [ ] README is updated with documentation
+- [ ] Update `honeycombLibraryVersion` in `Sources/Honeycomb/HoneycombVersion.swift`
