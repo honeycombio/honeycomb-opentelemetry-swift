@@ -18,13 +18,12 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/open-telemetry/opentelemetry-swift-core.git",
-            exact: "2.2.0"
+            exact: "2.3.0"
         ),
-        // .package(
-        //     url: "https://github.com/open-telemetry/opentelemetry-swift.git",
-        //     exact: "2.1.0"
-        // ),
-        .package(path: "/Users/beeklimt/src/opentelemetry-swift"),
+        .package(
+            url: "https://github.com/open-telemetry/opentelemetry-swift.git",
+            exact: "2.3.0"
+        ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

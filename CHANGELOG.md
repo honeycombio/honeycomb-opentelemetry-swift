@@ -2,10 +2,14 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.3.0
+
+* fix: Update to use opentelemetry-swift 2.3.0
+
 ## 2.2.1
 
 * fix: Fix crash caused by initializing CTTelephonyNetworkInfo on a background thread during MetricKit diagnostics. Initialization now happens safely on the main thread.
-* feat: add `networkStatusTrackingEnabled` option to toggle collecting network status attributes 
+* feat: add `networkStatusTrackingEnabled` option to toggle collecting network status attributes
 
 ## 2.2.0
 
