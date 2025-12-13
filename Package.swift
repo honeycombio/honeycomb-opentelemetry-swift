@@ -22,7 +22,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/open-telemetry/opentelemetry-swift.git",
-            exact: "2.1.0"
+            exact: "2.3.0"
         ),
     ],
     targets: [
