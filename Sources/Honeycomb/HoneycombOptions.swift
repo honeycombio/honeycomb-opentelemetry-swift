@@ -214,7 +214,7 @@ public struct HoneycombOptions {
     let touchInstrumentationEnabled: Bool
     let unhandledExceptionInstrumentationEnabled: Bool
     let networkStatusTrackingEnabled: Bool
-    
+
     let otelMetricKitInstrumentationEnabled: Bool
     let otelUrlSessionInstrumentationEnabled: Bool
 

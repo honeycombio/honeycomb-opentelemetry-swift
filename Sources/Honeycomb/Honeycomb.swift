@@ -1,6 +1,6 @@
 import BaggagePropagationProcessor
-import MetricKitInstrumentation
 import Foundation
+import MetricKitInstrumentation
 import NetworkStatus
 import OpenTelemetryApi
 import OpenTelemetryProtocolExporterCommon
@@ -53,7 +53,7 @@ public class Honeycomb {
     public private(set) static var resource: Resource = DefaultResources().get()
 
     #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
-      static private var metricKitSubscriber: MXMetricManagerSubscriber? = nil
+        static private var metricKitSubscriber: MXMetricManagerSubscriber? = nil
     #endif
 
     static public func configure(options: HoneycombOptions) throws {
@@ -287,15 +287,15 @@ public class Honeycomb {
 
         #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
             if #available(iOS 13.0, *) {
-              if options.otelMetricKitInstrumentationEnabled {
-                var subscriber = MetricKitInstrumentation()
-                self.metricKitSubscriber = subscriber
-                MXMetricManager.shared.add(subscriber)
-              } else if options.metricKitInstrumentationEnabled {
-                var subscriber = MetricKitSubscriber()
-                self.metricKitSubscriber = subscriber
-                MXMetricManager.shared.add(subscriber)
-              }
+                if options.otelMetricKitInstrumentationEnabled {
+                    var subscriber = MetricKitInstrumentation()
+                    self.metricKitSubscriber = subscriber
+                    MXMetricManager.shared.add(subscriber)
+                } else if options.metricKitInstrumentationEnabled {
+                    var subscriber = MetricKitSubscriber()
+                    self.metricKitSubscriber = subscriber
+                    MXMetricManager.shared.add(subscriber)
+                }
             }
         #endif
     }
