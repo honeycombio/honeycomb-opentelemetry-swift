@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* feat: Add options for using OpenTelemetry URLSession and MetricKit instrumentation instead of Honeycomb versions.
+
 ## 2.3.0
 
 * fix: Update to use opentelemetry-swift 2.3.0
