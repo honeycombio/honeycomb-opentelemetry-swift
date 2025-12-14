@@ -260,13 +260,13 @@ public struct HoneycombOptions {
         private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
 
         private var metricKitInstrumentationEnabled: Bool = true
-        private var otelMetricKitInstrumentationEnabled: Bool = false
         private var urlSessionInstrumentationEnabled: Bool = true
-        private var otelUrlSessionInstrumentationEnabled: Bool = true
         private var uiKitInstrumentationEnabled: Bool = true
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
         private var networkStatusTrackingEnabled: Bool = true
+        private var otelMetricKitInstrumentationEnabled: Bool = false
+        private var otelUrlSessionInstrumentationEnabled: Bool = true
 
         private var offlineCachingEnabled: Bool = false
 
