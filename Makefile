@@ -1,5 +1,5 @@
 
-swift_files := Package.swift Sources Tests Examples/SmokeTest Examples/CocoaPodsTest/CocoaPodsTest*
+swift_files := Package.swift Sources Tests Examples/SmokeTest
 
 lint:
 	swift format lint --strict --recursive $(swift_files)

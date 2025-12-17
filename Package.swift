@@ -38,6 +38,8 @@ let package = Package(
                 .product(name: "OpenTelemetryProtocolExporterHTTP", package: "opentelemetry-swift"),
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
                 .product(name: "StdoutExporter", package: "opentelemetry-swift-core"),
+                .product(name: "URLSessionInstrumentation", package: "opentelemetry-swift"),
+                .product(name: "MetricKitInstrumentation", package: "opentelemetry-swift"),
             ]
         ),
         .testTarget(

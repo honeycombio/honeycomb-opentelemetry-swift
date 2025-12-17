@@ -1,5 +1,6 @@
 import BaggagePropagationProcessor
 import Foundation
+import MetricKitInstrumentation
 import NetworkStatus
 import OpenTelemetryApi
 import OpenTelemetryProtocolExporterCommon
@@ -8,6 +9,7 @@ import OpenTelemetrySdk
 import ResourceExtension
 import StdoutExporter
 import SwiftUI
+import URLSessionInstrumentation
 
 #if canImport(MetricKit)
     import MetricKit
@@ -51,7 +53,7 @@ public class Honeycomb {
     public private(set) static var resource: Resource = DefaultResources().get()
 
     #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
-        static private let metricKitSubscriber = MetricKitSubscriber()
+        static private var metricKitSubscriber: MXMetricManagerSubscriber? = nil
     #endif
 
     static public func configure(options: HoneycombOptions) throws {
@@ -253,7 +255,22 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        if options.urlSessionInstrumentationEnabled {
+        if options.otelUrlSessionInstrumentationEnabled {
+            // Configure OpenTelemetry URLSession instrumentation to behave the same as
+            // Honeycomb's original custom instrumentation (io.honeycomb.urlsession)
+            let customTracer = OpenTelemetry.instance.tracerProvider.get(
+                instrumentationName: "io.honeycomb.urlsession",
+                instrumentationVersion: honeycombLibraryVersion
+            )
+            let config = URLSessionInstrumentationConfiguration(
+                nameSpan: { request in
+                    return request.httpMethod ?? "UNKNOWN"
+                },
+                tracer: customTracer,
+                semanticConvention: .stable
+            )
+            let urlSessionInstrumentation = URLSessionInstrumentation(configuration: config)
+        } else if options.urlSessionInstrumentationEnabled {
             installNetworkInstrumentation(options: options)
         }
         #if canImport(UIKit) && !os(watchOS)
@@ -270,8 +287,14 @@ public class Honeycomb {
 
         #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
             if #available(iOS 13.0, *) {
-                if options.metricKitInstrumentationEnabled {
-                    MXMetricManager.shared.add(self.metricKitSubscriber)
+                if options.otelMetricKitInstrumentationEnabled {
+                    var subscriber = MetricKitInstrumentation()
+                    self.metricKitSubscriber = subscriber
+                    MXMetricManager.shared.add(subscriber)
+                } else if options.metricKitInstrumentationEnabled {
+                    var subscriber = MetricKitSubscriber()
+                    self.metricKitSubscriber = subscriber
+                    MXMetricManager.shared.add(subscriber)
                 }
             }
         #endif
