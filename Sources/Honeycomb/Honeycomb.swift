@@ -7,6 +7,7 @@ import OpenTelemetryProtocolExporterCommon
 import OpenTelemetryProtocolExporterHttp
 import OpenTelemetrySdk
 import ResourceExtension
+import Sessions
 import StdoutExporter
 import SwiftUI
 import URLSessionInstrumentation
@@ -38,7 +39,8 @@ private func createKeyValueList(_ dict: [String: String]) -> [(String, String)] 
 }
 
 public class Honeycomb {
-    static private var sessionManager: HoneycombSessionManager? = nil
+    static private var sessionManager: SessionManager? = nil
+    static private var notificationBridge: SessionNotificationBridge? = nil
     /// The OpenTelemetry Resource containing service information, custom attributes, and telemetry metadata.
     ///
     /// This property initially returns the default OpenTelemetry resource with system information.
@@ -142,16 +144,23 @@ public class Honeycomb {
 
         let baggageSpanProcessor = BaggagePropagationProcessor(filter: { _ in true })
 
-        sessionManager = HoneycombSessionManager(
-            debug: options.debug,
-            sessionLifetimeSeconds: options.sessionTimeout
-        )
+        // Initialize OpenTelemetry session manager
+        let sessionConfig = SessionConfig(sessionTimeout: options.sessionTimeout)
+        let otelSessionManager = SessionManager(configuration: sessionConfig)
+        SessionManagerProvider.register(sessionManager: otelSessionManager)
+        sessionManager = otelSessionManager
+
+        // Install session event instrumentation for lifecycle events
+        SessionEventInstrumentation.install()
+
+        // Initialize notification bridge for backward compatibility
+        notificationBridge = SessionNotificationBridge()
 
         var tracerProviderBuilder = TracerProviderBuilder()
             .add(spanProcessor: spanProcessor)
             .add(spanProcessor: baggageSpanProcessor)
             .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
-            .add(spanProcessor: HoneycombSessionIdSpanProcessor(sessionManager: sessionManager!))
+            .add(spanProcessor: SessionSpanProcessor(sessionManager: sessionManager!))
 
         #if os(iOS) && !targetEnvironment(macCatalyst)
             if options.networkStatusTrackingEnabled {
@@ -239,7 +248,7 @@ public class Honeycomb {
         }
 
         let logProcessor = SimpleLogRecordProcessor(logRecordExporter: logExporter)
-        let sessionLogProcessor = HoneycombSessionIdLogRecordProcessor(
+        let sessionLogProcessor = SessionLogRecordProcessor(
             nextProcessor: logProcessor,
             sessionManager: sessionManager!
         )
@@ -301,7 +310,8 @@ public class Honeycomb {
     }
 
     public static func currentSession() -> HoneycombSession? {
-        sessionManager?.session
+        guard let otelSession = sessionManager?.getSession() else { return nil }
+        return HoneycombSession.from(otelSession)
     }
 
     private static let errorLoggerInstrumentationName = "io.honeycomb.error"

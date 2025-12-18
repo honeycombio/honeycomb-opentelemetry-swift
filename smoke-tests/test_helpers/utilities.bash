@@ -164,3 +164,72 @@ assert_not_empty() {
         return 1
     fi
 }
+
+# Assert that two multi-line strings match exactly (line by line)
+# Arguments:
+#   $1 - actual result
+#   $2 - expected result
+assert_lines_match_exactly() {
+    local actual="$1"
+    local expected="$2"
+
+    if [ "$actual" = "$expected" ]; then
+        return 0
+    fi
+
+    # Show a readable diff on failure
+    {
+        echo
+        echo "-- 💥 lines do not match exactly 💥 --"
+        echo "Expected:"
+        echo "$expected"
+        echo ""
+        echo "Actual:"
+        echo "$actual"
+        echo ""
+        echo "Diff:"
+        diff -u <(echo "$expected") <(echo "$actual") || true
+        echo "--"
+        echo
+    } >&2
+    return 1
+}
+
+# Assert that all expected lines are present in actual (but actual can have more)
+# Uses exact line matching - no partial/substring matches
+# Arguments:
+#   $1 - actual result (can have extra lines)
+#   $2 - expected lines (all must be present)
+assert_lines_present() {
+    local actual="$1"
+    local expected="$2"
+
+    local missing_lines=()
+
+    # Check each expected line is in actual (exact line match with -Fx)
+    while IFS= read -r line; do
+        if ! echo "$actual" | grep -Fxq "$line"; then
+            missing_lines+=("$line")
+        fi
+    done <<< "$expected"
+
+    if [ ${#missing_lines[@]} -eq 0 ]; then
+        return 0
+    fi
+
+    # Show which lines are missing
+    {
+        echo
+        echo "-- 💥 missing required lines 💥 --"
+        echo "Missing lines:"
+        for line in "${missing_lines[@]}"; do
+            echo "  $line"
+        done
+        echo ""
+        echo "Actual output:"
+        echo "$actual"
+        echo "--"
+        echo
+    } >&2
+    return 1
+}

@@ -68,8 +68,8 @@ teardown_file() {
 }
 
 @test "SDK sends correct resource attributes" {
-  result=$(resource_attributes_received | jq ".key" | sort | uniq)
-  assert_equal "$result" '"app.bundle.executable"
+  actual=$(resource_attributes_received | jq ".key" | sort | uniq)
+  expected='"app.bundle.executable"
 "app.bundle.shortVersionString"
 "app.bundle.version"
 "app.debug.binaryName"
@@ -89,6 +89,7 @@ teardown_file() {
 "telemetry.sdk.language"
 "telemetry.sdk.name"
 "telemetry.sdk.version"'
+  assert_lines_match_exactly "$actual" "$expected"
 
   result=$(resource_attribute_named "telemetry.sdk.language" "string" | uniq)
   assert_equal "$result" '"swift"'
@@ -168,9 +169,10 @@ mk_attr() {
   scope="io.honeycomb.metrickit"
   span="MXSignpostMetric"
 
-  result=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
+  actual=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
 
-   assert_equal "$result" '"SampleRate"
+  # Required attributes (session.previous_id is optional)
+  required='"SampleRate"
 "app.metadata"
 "device.isBatteryMonitoringEnabled"
 "device.isLowPowerModeEnabled"
@@ -195,6 +197,8 @@ mk_attr() {
 "signpost.logical_write_count"
 "signpost.memory_average"
 "signpost.name"'
+
+  assert_lines_present "$actual" "$required"
 }
 
 # A helper just for MetricKit /diagnostic/ attributes, because there's so many of them.
@@ -229,8 +233,8 @@ mk_diag_attr() {
 }
 
 @test "URLSession all requests are present" {
-  result=$(attribute_for_span_key "io.honeycomb.urlsession" GET request-id string | sort)
-  assert_equal "$result" '"data-async-obj"
+  actual=$(attribute_for_span_key "io.honeycomb.urlsession" GET request-id string | sort)
+  expected='"data-async-obj"
 "data-async-obj-session"
 "data-async-url"
 "data-async-url-session"
@@ -260,6 +264,7 @@ mk_diag_attr() {
 "upload-callback-obj-session"
 "upload-callback-obj-task"
 "upload-callback-obj-task-session"'
+  assert_lines_match_exactly "$actual" "$expected"
 }
 
 @test "URLSession attributes are correct" {
@@ -272,19 +277,21 @@ mk_diag_attr() {
 
 @test "Render Instrumentation attributes are correct" {
   # we got the spans we expect
-  result=$(span_names_for "io.honeycomb.view" | sort | uniq -c)
-  assert_equal "$result" '   7 "View Body"
+  actual=$(span_names_for "io.honeycomb.view" | sort | uniq -c)
+  expected='   7 "View Body"
    7 "View Render"'
+  assert_lines_match_exactly "$actual" "$expected"
 
   # the View Render spans are tracking the views we expect
-  total_duration=$(attribute_for_span_key "io.honeycomb.view" "View Render" "view.name" string | sort)
-  assert_equal "$total_duration" '"expensive text 1"
+  actual_view_names=$(attribute_for_span_key "io.honeycomb.view" "View Render" "view.name" string | sort)
+  expected_view_names='"expensive text 1"
 "expensive text 2"
 "expensive text 3"
 "expensive text 4"
 "main view"
 "nested expensive text"
 "nested expensive view"'
+  assert_lines_match_exactly "$actual_view_names" "$expected_view_names"
 }
 
 @test "UIViewController attributes are correct" {
@@ -399,13 +406,14 @@ mk_diag_attr() {
     assert_equal "$stack_root_count" '   1 "NavigationStackRoot"'
     assert_equal "$yosemite_count" '   3 "{\"name\":\"Yosemite\"}"'
 
-    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationTo" "screen.path" string | sort | uniq -c | grep "Split View")
-    assert_equal "$split_view_paths" '   1 "/Split View Parks Root"
+    actual_split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationTo" "screen.path" string | sort | uniq -c | grep "Split View")
+    expected_split_view_paths='   1 "/Split View Parks Root"
    2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
    1 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
+    assert_lines_match_exactly "$actual_split_view_paths" "$expected_split_view_paths"
 
-    navigation_to_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationTo" | jq .key | sort | uniq)
-    assert_equal "$navigation_to_attributes" '"SampleRate"
+    actual_navigation_to_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationTo" | jq .key | sort | uniq)
+    required_navigation_to_attributes='"SampleRate"
 "app.metadata"
 "device.isBatteryMonitoringEnabled"
 "device.isLowPowerModeEnabled"
@@ -424,6 +432,7 @@ mk_diag_attr() {
 "screen.name"
 "screen.path"
 "session.id"'
+    assert_lines_present "$actual_navigation_to_attributes" "$required_navigation_to_attributes"
 
     result=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.name" string \
         | sort \
@@ -431,8 +440,8 @@ mk_diag_attr() {
     yosemite_count=$(echo "$result" | grep "Yosemite")
     assert_equal "$yosemite_count" '   3 "{\"name\":\"Yosemite\"}"'
 
-    navigation_from_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationFrom" | jq .key | sort | uniq)
-    assert_equal "$navigation_from_attributes" '"SampleRate"
+    actual_navigation_from_attributes=$(attributes_from_span_named "io.honeycomb.navigation" "NavigationFrom" | jq .key | sort | uniq)
+    required_navigation_from_attributes='"SampleRate"
 "app.metadata"
 "device.isBatteryMonitoringEnabled"
 "device.isLowPowerModeEnabled"
@@ -452,13 +461,15 @@ mk_diag_attr() {
 "screen.name"
 "screen.path"
 "session.id"'
+    assert_lines_present "$actual_navigation_from_attributes" "$required_navigation_from_attributes"
 
-    split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string \
+    actual_split_view_paths=$(attribute_for_span_key "io.honeycomb.navigation" "NavigationFrom" "screen.path" string \
       | sort \
       | uniq -c \
       | grep "Split View")
-    assert_equal "$split_view_paths" '   2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
+    expected_split_view_paths='   2 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}"
    1 "/\"Split View Parks Root\"/{\"name\":\"Yosemite\"}/{\"name\":\"Oak Tree\"}"'
+    assert_lines_match_exactly "$actual_split_view_paths" "$expected_split_view_paths"
 }
 
 @test "Navigation attributes are correct" {
