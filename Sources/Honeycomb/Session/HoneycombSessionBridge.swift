@@ -1,14 +1,22 @@
 import Foundation
-import Sessions
 import OpenTelemetryApi
+import Sessions
 
 // MARK: - Deprecated Notifications (maintained for backward compatibility)
 
 extension Notification.Name {
-    @available(*, deprecated, message: "Use SessionEventNotification from OpenTelemetry Sessions instead")
+    @available(
+        *,
+        deprecated,
+        message: "Use SessionEventNotification from OpenTelemetry Sessions instead"
+    )
     public static let sessionStarted = Notification.Name("io.honeycomb.app.session.started")
 
-    @available(*, deprecated, message: "Use SessionEventNotification from OpenTelemetry Sessions instead")
+    @available(
+        *,
+        deprecated,
+        message: "Use SessionEventNotification from OpenTelemetry Sessions instead"
+    )
     public static let sessionEnded = Notification.Name("io.honeycomb.app.session.ended")
 }
 
