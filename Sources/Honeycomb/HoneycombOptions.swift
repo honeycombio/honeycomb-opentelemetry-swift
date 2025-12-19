@@ -257,6 +257,8 @@ public struct HoneycombOptions {
 
         private var spanProcessor: SpanProcessor? = nil
 
+        /// Session timeout in seconds. Default is 4 hours.
+        /// Sessions automatically extend on activity and expire after this period of inactivity.
         private var sessionTimeout: TimeInterval = TimeInterval(60 * 60 * 4)  // 4 hours
 
         private var metricKitInstrumentationEnabled: Bool = true

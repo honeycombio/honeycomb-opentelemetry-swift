@@ -237,20 +237,45 @@ These events may have the following attributes. In the case of name attributes, 
 
 #### Session
 
-The default session manager will create a new session on startup and will expire the session after a timeout.
-You can call `HoneycombOptions.setSessionTimeout` to set the timeout duration.
+The SDK uses OpenTelemetry's session manager, which creates a new session on startup and automatically extends the session on activity. Sessions expire after a period of inactivity (defaults to 4 hours). You can call `HoneycombOptions.setSessionTimeout` to set the timeout duration.
 
-Spans will have the following attributes:
-* `session.id` will be added to spans
+Spans and logs will have the following attributes:
+* `session.id` - The current session identifier
+* `session.previous_id` - The previous session identifier, when available
 
 To get the current session ID, call `Honeycomb.currentSession().id`.
 
-You can subscribe to `.sessionStarted` and `sessionEnded` with `NotificationCenter` to be notified of session start and end events.
-For `.sessionStarted`:
-* `userInfo["session"]` contains the session just created
-* `userInfo["previousSession"]` contains the previous session or `nil` if there is no previous session.
-For `.sessionEnded`:
-* `userInfo["previousSession"]` contains the session just ended.
+##### Session Events
+
+To be notified of session lifecycle events, subscribe to the OpenTelemetry session event notification:
+
+```swift
+import Sessions
+
+NotificationCenter.default.addObserver(
+    forName: Notification.Name(SessionConstants.sessionEventNotification),
+    object: nil,
+    queue: .main
+) { notification in
+    guard let sessionEvent = notification.object as? SessionEvent else { return }
+
+    switch sessionEvent.eventType {
+    case .start:
+        print("Session started: \(sessionEvent.session.id)")
+        if let previousId = sessionEvent.session.previousId {
+            print("Previous session: \(previousId)")
+        }
+    case .end:
+        print("Session ended: \(sessionEvent.session.id)")
+    }
+}
+```
+
+The `SessionEvent` object contains:
+* `session` - The `Session` object with properties `id`, `startTime`, `expireTime`, and optional `previousId`
+* `eventType` - Either `.start` or `.end`
+
+**Deprecated**: The legacy Honeycomb notification names `.sessionStarted` and `.sessionEnded` are still available for backward compatibility but are deprecated. Use the OpenTelemetry `SessionConstants.sessionEventNotification` instead.
 
 #### Network
 Network events on `URLSession` will automatically be instrumented.
