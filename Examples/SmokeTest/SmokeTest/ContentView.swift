@@ -1,4 +1,5 @@
 import Honeycomb
+import MetricKitInstrumentation
 import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI

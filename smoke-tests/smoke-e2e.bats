@@ -103,7 +103,7 @@ teardown_file() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_attr() {
-  scope="io.honeycomb.metrickit"
+  scope="MetricKit"
   span="MXMetricPayload"
   attribute_for_span_key $scope $span $1 $2
 }
@@ -166,7 +166,7 @@ mk_attr() {
 }
 
 @test "MXSignpostMetric data is present" {
-  scope="io.honeycomb.metrickit"
+  scope="MetricKit"
   span="MXSignpostMetric"
 
   actual=$(attributes_from_span_named $scope $span | jq .key | sort | uniq)
@@ -206,8 +206,20 @@ mk_attr() {
 #   $1 - attribute key
 #   $2 - attribute type
 mk_diag_attr() {
-  scope="io.honeycomb.metrickit"
+  scope="MetricKit"
   attribute_for_log_key $scope $1 $2
+}
+
+# A helper for MetricKit diagnostic attributes filtered by diagnostic type
+# Arguments:
+#   $1 - diagnostic type (e.g., "hang", "crash", "cpu_exception")
+#   $2 - attribute key
+#   $3 - attribute type
+mk_diag_attr_for_type() {
+  scope="MetricKit"
+  diagnostic_type="metrickit.diagnostic.$1"
+  attributes_for_log_with_value $scope "$diagnostic_type" string | \
+    jq "select (.key == \"$2\").value | .${3}Value"
 }
 
 @test "MetricKit diagnostic values are present and units are converted" {
@@ -215,7 +227,7 @@ mk_diag_attr() {
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.cpu_exception.total_sampled_time" double)" 194400  # 54 hours
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.disk_write_exception.total_writes_caused" double)" 55000000  # 55 MB
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.hang.hang_duration" double)" 56
-  assert_equal "$(mk_diag_attr "metrickit.diagnostic.hang.exception.stacktrace_json" string)" '"fake json stacktrace"'
+  assert_equal "$(mk_diag_attr_for_type "hang" "exception.stacktrace" string)" '"fake json stacktrace"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_exception.type" int)" '"57"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_exception.name" string)" '"Unknown exception type: 57"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.mach_exception.description" string)" '"Unknown exception type: 57"'
@@ -228,7 +240,7 @@ mk_diag_attr() {
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.termination_reason" string)" '"reason"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.name" string)" '"MyCrash"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.objc.classname" string)" '"MyClass"'
-  assert_equal "$(mk_diag_attr "metrickit.diagnostic.crash.exception.stacktrace_json" string)" '"fake json stacktrace"'
+  assert_equal "$(mk_diag_attr_for_type "crash" "exception.stacktrace" string)" '"fake json stacktrace"'
   assert_equal "$(mk_diag_attr "metrickit.diagnostic.app_launch.launch_duration" double)" 60
 }
 

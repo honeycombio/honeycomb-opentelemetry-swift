@@ -2,8 +2,11 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
-* feat: Switch to using OpenTelemetry's SessionManager, rather than Honeycomb's.
-* feat: Add options for using OpenTelemetry URLSession and MetricKit instrumentation instead of Honeycomb versions.
+## 3.0.0
+
+This major release brings improved compatibility with the upstream [OpenTelemetry Swift SDK](https://github.com/open-telemetry/opentelemetry-swift). We've migrated from Honeycomb's custom instrumentation to the community-maintained versions for URLSession, MetricKit, and SessionManager. This ensures better alignment with OpenTelemetry standards and ongoing improvements from the broader ecosystem.
+
+Due to differences in telemetry shape between the custom and upstream implementations, this may be a breaking change for some users. See [MIGRATING.md](MIGRATING.md) for details.
 
 ## 2.3.0
 

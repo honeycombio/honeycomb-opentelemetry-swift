@@ -215,9 +215,6 @@ public struct HoneycombOptions {
     let unhandledExceptionInstrumentationEnabled: Bool
     let networkStatusTrackingEnabled: Bool
 
-    let otelMetricKitInstrumentationEnabled: Bool
-    let otelUrlSessionInstrumentationEnabled: Bool
-
     let offlineCachingEnabled: Bool
     @objc(HNYOptions) open class Builder: NSObject {
         private var apiKey: String? = nil
@@ -267,8 +264,6 @@ public struct HoneycombOptions {
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
         private var networkStatusTrackingEnabled: Bool = true
-        private var otelMetricKitInstrumentationEnabled: Bool = false
-        private var otelUrlSessionInstrumentationEnabled: Bool = true
 
         private var offlineCachingEnabled: Bool = false
 
@@ -488,16 +483,8 @@ public struct HoneycombOptions {
             metricKitInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setOTELMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
-            otelMetricKitInstrumentationEnabled = enabled
-            return self
-        }
         @objc public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             urlSessionInstrumentationEnabled = enabled
-            return self
-        }
-        @objc public func setOTELURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
-            otelUrlSessionInstrumentationEnabled = enabled
             return self
         }
         @objc public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
@@ -661,8 +648,6 @@ public struct HoneycombOptions {
                 touchInstrumentationEnabled: touchInstrumentationEnabled,
                 unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled,
                 networkStatusTrackingEnabled: networkStatusTrackingEnabled,
-                otelMetricKitInstrumentationEnabled: otelMetricKitInstrumentationEnabled,
-                otelUrlSessionInstrumentationEnabled: otelUrlSessionInstrumentationEnabled,
                 offlineCachingEnabled: offlineCachingEnabled
             )
         }

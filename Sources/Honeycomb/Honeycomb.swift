@@ -264,7 +264,7 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        if options.otelUrlSessionInstrumentationEnabled {
+        if options.urlSessionInstrumentationEnabled {
             // Configure OpenTelemetry URLSession instrumentation to behave the same as
             // Honeycomb's original custom instrumentation (io.honeycomb.urlsession)
             let customTracer = OpenTelemetry.instance.tracerProvider.get(
@@ -279,8 +279,6 @@ public class Honeycomb {
                 semanticConvention: .stable
             )
             let urlSessionInstrumentation = URLSessionInstrumentation(configuration: config)
-        } else if options.urlSessionInstrumentationEnabled {
-            installNetworkInstrumentation(options: options)
         }
         #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
@@ -296,12 +294,8 @@ public class Honeycomb {
 
         #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
             if #available(iOS 13.0, *) {
-                if options.otelMetricKitInstrumentationEnabled {
+                if options.metricKitInstrumentationEnabled {
                     var subscriber = MetricKitInstrumentation()
-                    self.metricKitSubscriber = subscriber
-                    MXMetricManager.shared.add(subscriber)
-                } else if options.metricKitInstrumentationEnabled {
-                    var subscriber = MetricKitSubscriber()
                     self.metricKitSubscriber = subscriber
                     MXMetricManager.shared.add(subscriber)
                 }
