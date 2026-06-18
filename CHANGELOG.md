@@ -4,6 +4,7 @@ Honeycomb OpenTelemetry SDK Changelog
 
 * feat: Switch to using OpenTelemetry's SessionManager, rather than Honeycomb's.
 * feat: Add options for using OpenTelemetry URLSession and MetricKit instrumentation instead of Honeycomb versions.
+* maint: update to latest version of swift-nio and friends.
 
 ## 2.3.0
 
