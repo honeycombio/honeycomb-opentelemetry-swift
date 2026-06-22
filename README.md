@@ -15,8 +15,8 @@ These are the current versions of libraries we have tested for compatibility:
 
   | Dependency                                             | Version        |
   |--------------------------------------------------------|----------------|
-  | `opentelemetry-swift-core`                             | `2.3.0`.       |
-  | `opentelemetry-swift`                                  | `2.3.0`.       |
+  | `opentelemetry-swift-core`                             | `2.4.0`.       |
+  | `opentelemetry-swift`                                  | `2.4.0`.       |
 
 For a complete list of tested dependencies and versions, see
 [Package.swift](Package.swift)
