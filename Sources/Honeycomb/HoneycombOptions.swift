@@ -268,7 +268,7 @@ public struct HoneycombOptions {
         private var unhandledExceptionInstrumentationEnabled: Bool = true
         private var networkStatusTrackingEnabled: Bool = true
         private var otelMetricKitInstrumentationEnabled: Bool = false
-        private var otelUrlSessionInstrumentationEnabled: Bool = true
+        private var otelUrlSessionInstrumentationEnabled: Bool = false
 
         private var offlineCachingEnabled: Bool = false
 

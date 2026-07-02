@@ -62,6 +62,7 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertTrue(options.metricKitInstrumentationEnabled)
         XCTAssertTrue(options.urlSessionInstrumentationEnabled)
+        XCTAssertFalse(options.otelUrlSessionInstrumentationEnabled)
         XCTAssertTrue(options.uiKitInstrumentationEnabled)
         XCTAssertFalse(options.touchInstrumentationEnabled)
         XCTAssertTrue(options.unhandledExceptionInstrumentationEnabled)
@@ -336,6 +337,7 @@ final class HoneycombOptionsTests: XCTestCase {
             .setLogsProtocol(OTLPProtocol.grpc)
             .setMetricKitInstrumentationEnabled(false)
             .setURLSessionInstrumentationEnabled(false)
+            .setOTELURLSessionInstrumentationEnabled(true)
             .setUIKitInstrumentationEnabled(false)
             .setTouchInstrumentationEnabled(true)
             .setUnhandledExceptionInstrumentationEnabled(false)
@@ -400,6 +402,7 @@ final class HoneycombOptionsTests: XCTestCase {
 
         XCTAssertFalse(options.metricKitInstrumentationEnabled)
         XCTAssertFalse(options.urlSessionInstrumentationEnabled)
+        XCTAssertTrue(options.otelUrlSessionInstrumentationEnabled)
         XCTAssertFalse(options.uiKitInstrumentationEnabled)
         XCTAssertTrue(options.touchInstrumentationEnabled)
         XCTAssertFalse(options.unhandledExceptionInstrumentationEnabled)
