@@ -2,6 +2,9 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.4.2
+* maint: update to latest version of swift-nio and friends.
+
 ## 2.4.1
 
 * fix: Default `otelUrlSessionInstrumentationEnabled` to `false` to avoid a crash during `Honeycomb.configure` caused by OpenTelemetry's `URLSessionInstrumentation` realizing ObjC classes concurrently. Honeycomb's own URLSession instrumentation remains the default.
