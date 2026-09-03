@@ -109,13 +109,29 @@ jobs:
           command: touch ./smoke-tests/collector/data.json && ./otelcol --config=./smoke-tests/collector/otel-collector-config.yaml --set="exporters::file::path=./smoke-tests/collector/data.json"
           background: true
       - run:
+          name: Install Mock Server dependencies
+          working_directory: smoke-tests/mock-server
+          command: npm install
+      - run:
           name: Start Mock Server
           working_directory: smoke-tests/mock-server
-          command: npm install && npm start
+          command: npm start
           background: true
       - run:
           name: Set opentelemetry-swift version
           command: ./set-otel-version.sh << parameters.otel_version >>
+      - run:
+          name: Wait for Mock Server
+          command: |
+            for _ in $(seq 60); do
+              if curl -sf http://localhost:1080/simple-api > /dev/null; then
+                echo "mock server is up"
+                exit 0
+              fi
+              sleep 1
+            done
+            echo "mock server never answered on port 1080" >&2
+            exit 1
       - run:
           name: Run iOS App
           command: |
