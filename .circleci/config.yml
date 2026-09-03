@@ -56,7 +56,7 @@ jobs:
           name: Available runtimes and destinations
           command: |
             xcrun simctl list runtimes
-            xcodebuild -scheme HoneycombTests -showdestinations
+            xcrun simctl list devices available
       - run:
           name: Run unit tests
           command: |
@@ -96,7 +96,7 @@ jobs:
           name: Available runtimes and destinations
           command: |
             xcrun simctl list runtimes
-            xcodebuild -scheme HoneycombTests -showdestinations
+            xcrun simctl list devices available
       - run:
           name: Install OTel Collector
           environment:
