@@ -9,10 +9,24 @@ orbs:
   macos: circleci/macos@2
   bats: circleci/bats@1.0.0
 
+# Xcode image / iOS runtime pairings, for reference when editing the legs below.
+# CircleCI images ship only the default runtimes for a release plus the previous
+# major, and device types are runtime-specific:
+#
+#   xcode: 26.6    -> iOS 18.6, iOS 26.5   (iPhone 16 and iPhone 17 families)
+#   xcode: 27.0.0  -> iOS 26.5, iOS 27.0   (iPhone 17 family only)
+#
+# So `iPhone 17` does not exist under iOS 18.6, and `iPhone 16` does not exist in
+# the 27.0.0 image at all. Each test leg is a matched (image, iOS, device) triple,
+# which is why the legs are listed out individually rather than built as a matrix.
+
 jobs:
   lint:
+    # Lint stays on the GA Xcode image only. `make lint` runs
+    # `swift format lint --strict`, and a beta toolchain's formatter can disagree
+    # for reasons that have nothing to do with the code under review.
     macos:
-      xcode: 26.1.0
+      xcode: 26.6
     resource_class: m4pro.medium
 
     steps:
@@ -23,8 +37,10 @@ jobs:
     parameters:
       destination:
         type: string
+      xcode_version:
+        type: string
     macos:
-      xcode: 26.1.0
+      xcode: << parameters.xcode_version >>
     resource_class: m4pro.medium
     steps:
       - checkout
@@ -32,36 +48,56 @@ jobs:
       - run: xcodebuild -scheme honeycomb-opentelemetry-swift -destination << parameters.destination >>
 
   tests:
+    parameters:
+      xcode_version:
+        type: string
+      ios_version:
+        type: string
+      simulator_device:
+        type: string
     macos:
-      xcode: 26.1.0
+      xcode: << parameters.xcode_version >>
     resource_class: m4pro.medium
 
     steps:
       - macos/preboot-simulator:
-          version: "18.6"
+          version: << parameters.ios_version >>
           platform: "iOS"
-          device: "iPhone 16"
+          device: << parameters.simulator_device >>
       - checkout
       - run: xcodebuild -version
-      - run: xcodebuild -showsdks
-      - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator26.1 -showdestinations
-      - run: xcodebuild test -scheme HoneycombTests -sdk iphonesimulator26.1 -destination 'OS=18.6,name=iPhone 16'
+      - run:
+          name: Available runtimes and destinations
+          command: |
+            xcrun simctl list runtimes
+            xcodebuild -scheme HoneycombTests -showdestinations
+      - run:
+          name: Run unit tests
+          command: |
+            xcodebuild test -scheme HoneycombTests \
+              -destination 'platform=iOS Simulator,OS=<< parameters.ios_version >>,name=<< parameters.simulator_device >>'
 
   smoke_tests:
     parameters:
       otel_version:
         type: string
+      xcode_version:
+        type: string
+      ios_version:
+        type: string
+      simulator_device:
+        type: string
     macos:
-      xcode: 26.1.0
+      xcode: << parameters.xcode_version >>
     resource_class: m4pro.medium
 
     steps:
       - attach_workspace:
           at: ./
       - macos/preboot-simulator:
-          version: "18.6"
+          version: << parameters.ios_version >>
           platform: "iOS"
-          device: "iPhone 16"
+          device: << parameters.simulator_device >>
       - checkout
       - bats/install
       - run:
@@ -70,6 +106,11 @@ jobs:
             which bats
             bats --version
       - run: xcodebuild -version
+      - run:
+          name: Available runtimes and destinations
+          command: |
+            xcrun simctl list runtimes
+            xcodebuild -scheme HoneycombTests -showdestinations
       - run:
           name: Install OTel Collector
           environment:
@@ -91,7 +132,9 @@ jobs:
           command: ./set-otel-version.sh << parameters.otel_version >>
       - run:
           name: Run iOS App
-          command: SMOKE_TEST_DESTINATION="OS=18.6,name=iPhone 16" make ios-tests
+          command: |
+            SMOKE_TEST_DESTINATION='platform=iOS Simulator,OS=<< parameters.ios_version >>,name=<< parameters.simulator_device >>' \
+              make ios-tests
       - run:
           name: Run Smoke Tests
           command: make smoke-bats
@@ -112,17 +155,48 @@ workflows:
       - build:
           matrix:
             parameters:
+              xcode_version:
+                - "26.6"
+                # Beta image. See the CAUTION note in the build workflow below.
+                - "27.0.0"
               destination:
                 - generic/platform=macOS
                 - generic/platform=iOS
                 - generic/platform=tvOS
                 - generic/platform=watchOS
-      - tests
+      - tests:
+          name: tests-ios-18
+          xcode_version: "26.6"
+          ios_version: "18.6"
+          simulator_device: "iPhone 16"
+      - tests:
+          name: tests-ios-26
+          xcode_version: "26.6"
+          ios_version: "26.5"
+          simulator_device: "iPhone 17"
+      - tests:
+          name: tests-ios-27-preview
+          xcode_version: "27.0.0"
+          ios_version: "27.0"
+          simulator_device: "iPhone 17"
       - smoke_tests:
-          matrix:
-            parameters:
-              otel_version:
-                - 2.0.2
+          name: smoke-tests-ios-18
+          otel_version: "2.0.2"
+          xcode_version: "26.6"
+          ios_version: "18.6"
+          simulator_device: "iPhone 16"
+      - smoke_tests:
+          name: smoke-tests-ios-26
+          otel_version: "2.0.2"
+          xcode_version: "26.6"
+          ios_version: "26.5"
+          simulator_device: "iPhone 17"
+      - smoke_tests:
+          name: smoke-tests-ios-27-preview
+          otel_version: "2.0.2"
+          xcode_version: "27.0.0"
+          ios_version: "27.0"
+          simulator_device: "iPhone 17"
 
   build:
     jobs:
@@ -132,16 +206,58 @@ workflows:
           <<: *filters_always
           matrix:
             parameters:
+              xcode_version:
+                - "26.6"
+                # Beta image. See the CAUTION note below.
+                - "27.0.0"
               destination:
                 - generic/platform=macOS
                 - generic/platform=iOS
                 - generic/platform=tvOS
                 - generic/platform=watchOS
       - tests:
+          name: tests-ios-18
           <<: *filters_always
+          xcode_version: "26.6"
+          ios_version: "18.6"
+          simulator_device: "iPhone 16"
+      - tests:
+          name: tests-ios-26
+          <<: *filters_always
+          xcode_version: "26.6"
+          ios_version: "26.5"
+          simulator_device: "iPhone 17"
+      # CAUTION: `xcode: 27.0.0` is a *beta* image. CircleCI overwrites it in place
+      # with each new Xcode 27 beta -- so this leg always tracks the latest iOS 27
+      # preview, by design -- and REMOVES it entirely once Xcode 27 reaches RC.
+      # Because this leg is blocking on PRs, that means:
+      #   - an Apple beta regression will block merges until this file is edited
+      #   - at RC, every PR fails on image resolution
+      # Follow-up: switch to the Xcode 27 GA version string once it ships.
+      - tests:
+          name: tests-ios-27-preview
+          <<: *filters_always
+          xcode_version: "27.0.0"
+          ios_version: "27.0"
+          simulator_device: "iPhone 17"
       - smoke_tests:
+          name: smoke-tests-ios-18
           <<: *filters_always
-          matrix:
-            parameters:
-              otel_version:
-                - 2.0.2
+          otel_version: "2.0.2"
+          xcode_version: "26.6"
+          ios_version: "18.6"
+          simulator_device: "iPhone 16"
+      - smoke_tests:
+          name: smoke-tests-ios-26
+          <<: *filters_always
+          otel_version: "2.0.2"
+          xcode_version: "26.6"
+          ios_version: "26.5"
+          simulator_device: "iPhone 17"
+      - smoke_tests:
+          name: smoke-tests-ios-27-preview
+          <<: *filters_always
+          otel_version: "2.0.2"
+          xcode_version: "27.0.0"
+          ios_version: "27.0"
+          simulator_device: "iPhone 17"
