@@ -47,7 +47,7 @@ jobs:
       - run: xcodebuild -version
       - run: xcodebuild -scheme honeycomb-opentelemetry-swift -destination << parameters.destination >>
 
-  tests:
+  ios_tests:
     parameters:
       xcode_version:
         type: string
@@ -77,7 +77,7 @@ jobs:
             xcodebuild test -scheme HoneycombTests \
               -destination 'platform=iOS Simulator,OS=<< parameters.ios_version >>,name=<< parameters.simulator_device >>'
 
-  smoke_tests:
+  ios_smoke_tests:
     parameters:
       otel_version:
         type: string
@@ -141,6 +141,26 @@ jobs:
       - store_artifacts:
           path: smoke-tests/collector/data.json
 
+  # Fan-in gate for branch protection. Does no work of its own -- it succeeds
+  # only once every leg it requires has succeeded.
+  #
+  # main's branch protection requires the contexts `ci/circleci: tests` and
+  # `ci/circleci: smoke_tests-2.0.2`, which were the job names before the
+  # per-OS legs existed. Renaming those jobs orphaned the required checks and
+  # left PRs blocked on statuses nothing would ever report. These gates re-emit
+  # those exact names, and because each requires all three legs, they gate more
+  # strictly than the single-runtime checks they replace.
+  #
+  # If someone with repo admin updates the required-check list, these can be
+  # dropped -- or kept and renamed to something honest, so that renaming an OS
+  # leg never breaks the merge gate again.
+  all_legs_passed:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - run: echo "All required legs passed."
+
 workflows:
   nightly:
     triggers:
@@ -164,39 +184,51 @@ workflows:
                 - generic/platform=iOS
                 - generic/platform=tvOS
                 - generic/platform=watchOS
-      - tests:
+      - ios_tests:
           name: tests-ios-18
           xcode_version: "26.6"
           ios_version: "18.6"
           simulator_device: "iPhone 16"
-      - tests:
+      - ios_tests:
           name: tests-ios-26
           xcode_version: "26.6"
           ios_version: "26.5"
           simulator_device: "iPhone 17"
-      - tests:
+      - ios_tests:
           name: tests-ios-27-preview
           xcode_version: "27.0.0"
           ios_version: "27.0"
           simulator_device: "iPhone 17"
-      - smoke_tests:
+      - ios_smoke_tests:
           name: smoke-tests-ios-18
           otel_version: "2.0.2"
           xcode_version: "26.6"
           ios_version: "18.6"
           simulator_device: "iPhone 16"
-      - smoke_tests:
+      - ios_smoke_tests:
           name: smoke-tests-ios-26
           otel_version: "2.0.2"
           xcode_version: "26.6"
           ios_version: "26.5"
           simulator_device: "iPhone 17"
-      - smoke_tests:
+      - ios_smoke_tests:
           name: smoke-tests-ios-27-preview
           otel_version: "2.0.2"
           xcode_version: "27.0.0"
           ios_version: "27.0"
           simulator_device: "iPhone 17"
+      - all_legs_passed:
+          name: tests
+          requires:
+            - tests-ios-18
+            - tests-ios-26
+            - tests-ios-27-preview
+      - all_legs_passed:
+          name: smoke_tests-2.0.2
+          requires:
+            - smoke-tests-ios-18
+            - smoke-tests-ios-26
+            - smoke-tests-ios-27-preview
 
   build:
     jobs:
@@ -215,13 +247,13 @@ workflows:
                 - generic/platform=iOS
                 - generic/platform=tvOS
                 - generic/platform=watchOS
-      - tests:
+      - ios_tests:
           name: tests-ios-18
           <<: *filters_always
           xcode_version: "26.6"
           ios_version: "18.6"
           simulator_device: "iPhone 16"
-      - tests:
+      - ios_tests:
           name: tests-ios-26
           <<: *filters_always
           xcode_version: "26.6"
@@ -234,30 +266,44 @@ workflows:
       #   - an Apple beta regression will block merges until this file is edited
       #   - at RC, every PR fails on image resolution
       # Follow-up: switch to the Xcode 27 GA version string once it ships.
-      - tests:
+      - ios_tests:
           name: tests-ios-27-preview
           <<: *filters_always
           xcode_version: "27.0.0"
           ios_version: "27.0"
           simulator_device: "iPhone 17"
-      - smoke_tests:
+      - ios_smoke_tests:
           name: smoke-tests-ios-18
           <<: *filters_always
           otel_version: "2.0.2"
           xcode_version: "26.6"
           ios_version: "18.6"
           simulator_device: "iPhone 16"
-      - smoke_tests:
+      - ios_smoke_tests:
           name: smoke-tests-ios-26
           <<: *filters_always
           otel_version: "2.0.2"
           xcode_version: "26.6"
           ios_version: "26.5"
           simulator_device: "iPhone 17"
-      - smoke_tests:
+      - ios_smoke_tests:
           name: smoke-tests-ios-27-preview
           <<: *filters_always
           otel_version: "2.0.2"
           xcode_version: "27.0.0"
           ios_version: "27.0"
           simulator_device: "iPhone 17"
+      - all_legs_passed:
+          name: tests
+          <<: *filters_always
+          requires:
+            - tests-ios-18
+            - tests-ios-26
+            - tests-ios-27-preview
+      - all_legs_passed:
+          name: smoke_tests-2.0.2
+          <<: *filters_always
+          requires:
+            - smoke-tests-ios-18
+            - smoke-tests-ios-26
+            - smoke-tests-ios-27-preview
