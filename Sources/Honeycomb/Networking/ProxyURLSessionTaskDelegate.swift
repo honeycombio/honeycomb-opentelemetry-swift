@@ -49,13 +49,21 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         return span
     }
 
-    // Ends the span for a task, recording the response.
-    private static func endSpan(for task: URLSessionTask) {
+    // Ends the span for a task, recording the response and any transport error.
+    //
+    // task.error carries the error for both callbacks, and is the path that actually runs for any
+    // task that collects metrics: didFinishCollecting fires first and takes the span, so the error
+    // passed to didCompleteWithError below never gets this far. It is still passed, for tasks that
+    // never collect metrics and so are only ended there.
+    private static func endSpan(for task: URLSessionTask, error: (any Error)? = nil) {
         guard let span = takeSpan(for: task) else {
             return
         }
         if let httpResponse = task.response as? HTTPURLResponse {
             updateSpan(span, with: httpResponse)
+        }
+        if let error = error ?? task.error {
+            updateSpan(span, with: error)
         }
         span.end()
     }
@@ -103,7 +111,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         task: URLSessionTask,
         didCompleteWithError error: (any Error)?
     ) {
-        ProxyURLSessionTaskDelegate.endSpan(for: task)
+        ProxyURLSessionTaskDelegate.endSpan(for: task, error: error)
 
         wrapped?.urlSession?(session, task: task, didCompleteWithError: error)
     }

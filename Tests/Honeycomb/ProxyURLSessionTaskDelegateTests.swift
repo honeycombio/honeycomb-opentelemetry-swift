@@ -1,4 +1,7 @@
 import Foundation
+import InMemoryExporter
+import OpenTelemetryApi
+import OpenTelemetrySdk
 import XCTest
 
 @testable import Honeycomb
@@ -151,5 +154,85 @@ final class ProxyURLSessionTaskDelegateTests: XCTestCase {
 
         XCTAssertTrue(wrapped.receivedCompletion)
         session.invalidateAndCancel()
+    }
+}
+
+/// Tests that drive a real URLSession against a port nothing is listening on, to check what the
+/// proxy records for requests that fail below the HTTP layer.
+///
+/// These use a loopback address rather than an unresolvable hostname so they don't depend on DNS,
+/// and port 1 because binding it requires root, so nothing will be there.
+final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
+    private let unreachable = URL(string: "http://127.0.0.1:1/")!
+
+    private var exporter: InMemoryExporter!
+
+    override func setUp() {
+        super.setUp()
+        exporter = InMemoryExporter()
+        OpenTelemetry.registerTracerProvider(
+            tracerProvider: TracerProviderBuilder()
+                .add(spanProcessor: SimpleSpanProcessor(spanExporter: exporter))
+                .build()
+        )
+    }
+
+    /// Starts a task the way _instrumented_resume does, and waits for the proxy to end its span.
+    private func exportedSpan(
+        for makeTask: (URLSession, URLRequest) -> URLSessionTask
+    ) throws -> SpanData {
+        let session = URLSession(
+            configuration: .ephemeral,
+            delegate: ProxyURLSessionTaskDelegate(nil),
+            delegateQueue: nil
+        )
+        defer { session.invalidateAndCancel() }
+
+        let request = URLRequest(url: unreachable)
+        let task = makeTask(session, request)
+        ProxyURLSessionTaskDelegate.setSpan(createSpan(from: request), for: task)
+        task.resume()
+
+        let exported = expectation(description: "span exported")
+        let poll = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) {
+            [weak self] timer in
+            if self?.exporter.getFinishedSpanItems().isEmpty == false {
+                timer.invalidate()
+                exported.fulfill()
+            }
+        }
+        defer { poll.invalidate() }
+        wait(for: [exported], timeout: 10)
+
+        return try XCTUnwrap(exporter.getFinishedSpanItems().first)
+    }
+
+    private func assertRecordsConnectionFailure(_ span: SpanData, _ message: String) {
+        guard case .error = span.status else {
+            return XCTFail("\(message): span status is \(span.status), expected .error")
+        }
+        XCTAssertEqual(
+            span.attributes["error.type"],
+            AttributeValue.string("\(NSURLErrorDomain).\(NSURLErrorCannotConnectToHost)"),
+            message
+        )
+    }
+
+    /// A delegate-driven task gets didCompleteWithError, which is handed the error directly.
+    func testRecordsErrorForDelegateDrivenTask() throws {
+        let span = try exportedSpan { session, request in
+            session.dataTask(with: request)
+        }
+        assertRecordsConnectionFailure(span, "delegate-driven task")
+    }
+
+    /// A task with a completion handler never gets didCompleteWithError, so the span is ended by
+    /// didFinishCollecting, which has to read task.error instead. This test exists to confirm that
+    /// task.error is already populated at that point.
+    func testRecordsErrorForCompletionHandlerTask() throws {
+        let span = try exportedSpan { session, request in
+            session.dataTask(with: request) { _, _, _ in }
+        }
+        assertRecordsConnectionFailure(span, "completion-handler task")
     }
 }
