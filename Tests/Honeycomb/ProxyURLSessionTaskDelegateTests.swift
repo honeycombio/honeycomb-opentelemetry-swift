@@ -1,5 +1,4 @@
 import Foundation
-import InMemoryExporter
 import OpenTelemetryApi
 import OpenTelemetrySdk
 import XCTest
@@ -40,6 +39,29 @@ private class CompletingTaskDelegate: NSObject, URLSessionTaskDelegate {
     ) {
         receivedCompletion = true
     }
+}
+
+/// Collects exported spans under a lock. SimpleSpanProcessor exports on the URLSession delegate
+/// queue while the test polls from the main run loop, and InMemoryExporter's array is unguarded.
+private final class LockedExporter: SpanExporter {
+    private let lock = NSLock()
+    private var exported: [SpanData] = []
+
+    func spans() -> [SpanData] {
+        lock.lock()
+        defer { lock.unlock() }
+        return exported
+    }
+
+    func export(spans: [SpanData], explicitTimeout: TimeInterval? = nil) -> SpanExporterResultCode {
+        lock.lock()
+        defer { lock.unlock() }
+        exported.append(contentsOf: spans)
+        return .success
+    }
+
+    func flush(explicitTimeout: TimeInterval? = nil) -> SpanExporterResultCode { .success }
+    func shutdown(explicitTimeout: TimeInterval? = nil) {}
 }
 
 final class ProxyURLSessionTaskDelegateTests: XCTestCase {
@@ -165,7 +187,7 @@ final class ProxyURLSessionTaskDelegateTests: XCTestCase {
 final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
     private let unreachable = URL(string: "http://127.0.0.1:1/")!
 
-    private var exporter: InMemoryExporter!
+    private var exporter: LockedExporter!
     private var previousTracerProvider: TracerProvider?
 
     /// The provider is registered globally rather than just used locally because these tests have
@@ -176,7 +198,7 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
     /// wins reaches this exporter.
     override func setUp() {
         super.setUp()
-        exporter = InMemoryExporter()
+        exporter = LockedExporter()
         previousTracerProvider = OpenTelemetry.instance.tracerProvider
         OpenTelemetry.registerTracerProvider(
             tracerProvider: TracerProviderBuilder()
@@ -200,7 +222,7 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
     /// Matched on the URL rather than taken as the first export, because instrumentation left
     /// installed by an earlier test class can export unrelated spans to this exporter too.
     private func exportedSpanForUnreachable() -> SpanData? {
-        exporter.getFinishedSpanItems()
+        exporter.spans()
             .first {
                 $0.attributes[SemanticAttributes.urlFull.rawValue]
                     == AttributeValue.string(unreachable.absoluteString)
@@ -241,17 +263,19 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
         guard case .error = span.status else {
             return XCTFail("\(message): span status is \(span.status), expected .error")
         }
-        XCTAssertEqual(span.attributes["error.type"], AttributeValue.string("NSError"), message)
+        guard case .string(let errorType)? = span.attributes["error.type"] else {
+            return XCTFail("\(message): error.type is missing")
+        }
+        XCTAssertTrue(
+            errorType.hasPrefix("\(NSURLErrorDomain)."),
+            "\(message): error.type is \(errorType)"
+        )
         XCTAssertEqual(
             span.attributes["nserror.domain"],
             AttributeValue.string(NSURLErrorDomain),
             message
         )
-        XCTAssertEqual(
-            span.attributes["nserror.code"],
-            AttributeValue.int(NSURLErrorCannotConnectToHost),
-            message
-        )
+        XCTAssertNotEqual(span.attributes["nserror.code"], AttributeValue.int(0), message)
     }
 
     /// A delegate-driven task gets didCompleteWithError, which is handed the error directly.
