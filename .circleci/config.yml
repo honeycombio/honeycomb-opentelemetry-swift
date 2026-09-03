@@ -9,24 +9,10 @@ orbs:
   macos: circleci/macos@2
   bats: circleci/bats@1.0.0
 
-# Xcode image / iOS runtime pairings, for reference when editing the legs below.
-# CircleCI images ship only the default runtimes for a release plus the previous
-# major, and device types are runtime-specific:
-#
-#   xcode: 26.6    -> iOS 18.6, iOS 26.5   (iPhone 16 and iPhone 17 families)
-#   xcode: 27.0.0  -> iOS 26.5, iOS 27.0   (iPhone 17 family only)
-#
-# So `iPhone 17` does not exist under iOS 18.6, and `iPhone 16` does not exist in
-# the 27.0.0 image at all. Each test leg is a matched (image, iOS, device) triple,
-# which is why the legs are listed out individually rather than built as a matrix.
-
 jobs:
   lint:
-    # Lint stays on the GA Xcode image only. `make lint` runs
-    # `swift format lint --strict`, and a beta toolchain's formatter can disagree
-    # for reasons that have nothing to do with the code under review.
     macos:
-      xcode: 26.6
+      xcode: "26.6"
     resource_class: m4pro.medium
 
     steps:
@@ -141,19 +127,6 @@ jobs:
       - store_artifacts:
           path: smoke-tests/collector/data.json
 
-  # Fan-in gate for branch protection. Does no work of its own -- it succeeds
-  # only once every leg it requires has succeeded.
-  #
-  # main's branch protection requires the contexts `ci/circleci: tests` and
-  # `ci/circleci: smoke_tests-2.0.2`, which were the job names before the
-  # per-OS legs existed. Renaming those jobs orphaned the required checks and
-  # left PRs blocked on statuses nothing would ever report. These gates re-emit
-  # those exact names, and because each requires all three legs, they gate more
-  # strictly than the single-runtime checks they replace.
-  #
-  # If someone with repo admin updates the required-check list, these can be
-  # dropped -- or kept and renamed to something honest, so that renaming an OS
-  # leg never breaks the merge gate again.
   all_legs_passed:
     docker:
       - image: cimg/base:stable
@@ -177,7 +150,7 @@ workflows:
             parameters:
               xcode_version:
                 - "26.6"
-                # Beta image. See the CAUTION note in the build workflow below.
+                # Beta image. See the CAUTION note below.
                 - "27.0.0"
               destination:
                 - generic/platform=macOS
@@ -259,13 +232,8 @@ workflows:
           xcode_version: "26.6"
           ios_version: "26.5"
           simulator_device: "iPhone 17"
-      # CAUTION: `xcode: 27.0.0` is a *beta* image. CircleCI overwrites it in place
-      # with each new Xcode 27 beta -- so this leg always tracks the latest iOS 27
-      # preview, by design -- and REMOVES it entirely once Xcode 27 reaches RC.
-      # Because this leg is blocking on PRs, that means:
-      #   - an Apple beta regression will block merges until this file is edited
-      #   - at RC, every PR fails on image resolution
-      # Follow-up: switch to the Xcode 27 GA version string once it ships.
+      # CAUTION: `xcode: 27.0.0` is a *beta* image.
+      # Switch to the Xcode 27 GA version string once it ships.
       - ios_tests:
           name: tests-ios-27-preview
           <<: *filters_always

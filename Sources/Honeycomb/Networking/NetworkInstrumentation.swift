@@ -45,10 +45,10 @@ internal func updateSpan(_ span: Span, with response: HTTPURLResponse) {
 internal func updateSpan(_ span: Span, with error: any Error) {
     let nsError = error as NSError
     span.status = .error(description: nsError.localizedDescription)
-    // Low-cardinality, per the OTel http client conventions, and still says what went wrong:
-    // e.g. "NSURLErrorDomain.-1001" for a timeout.
-    span.setAttribute(key: "error.type", value: "\(nsError.domain).\(nsError.code)")
+    span.setAttribute(key: "error.type", value: "NSError")
     span.setAttribute(key: "error.message", value: nsError.localizedDescription)
+    span.setAttribute(key: "nserror.domain", value: nsError.domain)
+    span.setAttribute(key: "nserror.code", value: nsError.code)
 }
 
 /// Installs the auto-instrumentation for URLSession.

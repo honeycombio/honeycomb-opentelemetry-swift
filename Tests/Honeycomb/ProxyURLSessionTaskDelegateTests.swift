@@ -166,15 +166,45 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
     private let unreachable = URL(string: "http://127.0.0.1:1/")!
 
     private var exporter: InMemoryExporter!
+    private var previousTracerProvider: TracerProvider?
 
+    /// The provider is registered globally rather than just used locally because these tests have
+    /// to keep working when they run after anything that calls Honeycomb.configure. That swizzles
+    /// URLSessionTask.resume for the rest of the process, so on resume below _instrumented_resume
+    /// builds its own span from the global provider and overwrites the one set here. Both are the
+    /// production path, but only a globally registered provider guarantees that whichever span
+    /// wins reaches this exporter.
     override func setUp() {
         super.setUp()
         exporter = InMemoryExporter()
+        previousTracerProvider = OpenTelemetry.instance.tracerProvider
         OpenTelemetry.registerTracerProvider(
             tracerProvider: TracerProviderBuilder()
                 .add(spanProcessor: SimpleSpanProcessor(spanExporter: exporter))
                 .build()
         )
+    }
+
+    /// Puts the previous provider back, so later tests aren't left writing to a discarded exporter.
+    override func tearDown() {
+        if let previousTracerProvider {
+            OpenTelemetry.registerTracerProvider(tracerProvider: previousTracerProvider)
+        }
+        previousTracerProvider = nil
+        exporter = nil
+        super.tearDown()
+    }
+
+    /// The exported span for a request to `unreachable`, if it has been exported yet.
+    ///
+    /// Matched on the URL rather than taken as the first export, because instrumentation left
+    /// installed by an earlier test class can export unrelated spans to this exporter too.
+    private func exportedSpanForUnreachable() -> SpanData? {
+        exporter.getFinishedSpanItems()
+            .first {
+                $0.attributes[SemanticAttributes.urlFull.rawValue]
+                    == AttributeValue.string(unreachable.absoluteString)
+            }
     }
 
     /// Starts a task the way _instrumented_resume does, and waits for the proxy to end its span.
@@ -196,7 +226,7 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
         let exported = expectation(description: "span exported")
         let poll = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) {
             [weak self] timer in
-            if self?.exporter.getFinishedSpanItems().isEmpty == false {
+            if self?.exportedSpanForUnreachable() != nil {
                 timer.invalidate()
                 exported.fulfill()
             }
@@ -204,16 +234,22 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
         defer { poll.invalidate() }
         wait(for: [exported], timeout: 10)
 
-        return try XCTUnwrap(exporter.getFinishedSpanItems().first)
+        return try XCTUnwrap(exportedSpanForUnreachable())
     }
 
     private func assertRecordsConnectionFailure(_ span: SpanData, _ message: String) {
         guard case .error = span.status else {
             return XCTFail("\(message): span status is \(span.status), expected .error")
         }
+        XCTAssertEqual(span.attributes["error.type"], AttributeValue.string("NSError"), message)
         XCTAssertEqual(
-            span.attributes["error.type"],
-            AttributeValue.string("\(NSURLErrorDomain).\(NSURLErrorCannotConnectToHost)"),
+            span.attributes["nserror.domain"],
+            AttributeValue.string(NSURLErrorDomain),
+            message
+        )
+        XCTAssertEqual(
+            span.attributes["nserror.code"],
+            AttributeValue.int(NSURLErrorCannotConnectToHost),
             message
         )
     }
@@ -234,5 +270,43 @@ final class ProxyURLSessionTaskDelegateErrorTests: XCTestCase {
             session.dataTask(with: request) { _, _, _ in }
         }
         assertRecordsConnectionFailure(span, "completion-handler task")
+    }
+
+    /// Cancellation is not a failure. SwiftUI cancels image loads whenever a view scrolls
+    /// offscreen, so recording these as errors would swamp the real ones.
+    ///
+    /// The error is delivered to the delegate directly rather than by cancelling a live task,
+    /// so that the test doesn't race the connection.
+    func testDoesNotRecordErrorForCancelledTask() throws {
+        let session = URLSession(configuration: .ephemeral)
+        defer { session.invalidateAndCancel() }
+
+        let task = session.dataTask(with: unreachable)
+
+        // Built from a tracer of its own rather than createSpan, so this doesn't depend on the
+        // process-global TracerProvider that other test classes replace.
+        let span = TracerProviderBuilder().build()
+            .get(instrumentationName: "test", instrumentationVersion: nil)
+            .spanBuilder(spanName: "GET")
+            .startSpan()
+        ProxyURLSessionTaskDelegate.setSpan(span, for: task)
+
+        ProxyURLSessionTaskDelegate(nil)
+            .urlSession(
+                session,
+                task: task,
+                didCompleteWithError: NSError(
+                    domain: NSURLErrorDomain,
+                    code: NSURLErrorCancelled,
+                    userInfo: nil
+                )
+            )
+
+        let data = try XCTUnwrap((span as? ReadableSpan)?.toSpanData())
+        XCTAssertTrue(data.hasEnded, "cancelled task: span was not ended")
+        if case .error = data.status {
+            XCTFail("cancelled task: span status is \(data.status), expected no error")
+        }
+        XCTAssertNil(data.attributes["error.type"])
     }
 }

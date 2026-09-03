@@ -49,12 +49,12 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         return span
     }
 
+    private static func isCancellation(_ error: any Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled
+    }
+
     // Ends the span for a task, recording the response and any transport error.
-    //
-    // task.error carries the error for both callbacks, and is the path that actually runs for any
-    // task that collects metrics: didFinishCollecting fires first and takes the span, so the error
-    // passed to didCompleteWithError below never gets this far. It is still passed, for tasks that
-    // never collect metrics and so are only ended there.
     private static func endSpan(for task: URLSessionTask, error: (any Error)? = nil) {
         guard let span = takeSpan(for: task) else {
             return
@@ -62,7 +62,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         if let httpResponse = task.response as? HTTPURLResponse {
             updateSpan(span, with: httpResponse)
         }
-        if let error = error ?? task.error {
+        if let error = error ?? task.error, !isCancellation(error) {
             updateSpan(span, with: error)
         }
         span.end()
@@ -70,10 +70,6 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
 
     // Because the protocol is full of optional methods, we have to forward requests about which
     // methods are actually implemented.
-    //
-    // super.responds(to:) covers the methods this class implements itself, so this stays correct
-    // as methods are added or removed below. Claiming a method that isn't actually implemented
-    // anywhere in the chain traps in the ObjC runtime, so it must not be hardcoded.
     override func responds(to aSelector: Selector!) -> Bool {
         if super.responds(to: aSelector) {
             return true
@@ -81,9 +77,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         return wrapped?.responds(to: aSelector) ?? false
     }
 
-    // Forward any unhandled methods to the underlying delegate, but only the ones it can actually
-    // handle. Forwarding a method the wrapped delegate doesn't implement would reach the end of
-    // the forwarding chain and trap.
+    // Forward any unhandled methods to the underlying delegate.
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
         guard let wrapped = self.wrapped, wrapped.responds(to: aSelector) else {
             return nil
@@ -91,8 +85,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         return wrapped
     }
 
-    // Called whenever a request completes. This fires for tasks with a completion handler, which
-    // never receive didCompleteWithError below.
+    // Called whenever a request completes.
     @available(iOS 10.0, *)
     func urlSession(
         _ session: URLSession,
@@ -104,8 +97,7 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         wrapped?.urlSession?(session, task: task, didFinishCollecting: metrics)
     }
 
-    // Called whenever a request completes, successfully or not. This fires for delegate-driven
-    // tasks, which may not collect metrics.
+    // Called whenever a request completes, successfully or not.
     func urlSession(
         _ session: URLSession,
         task: URLSessionTask,
