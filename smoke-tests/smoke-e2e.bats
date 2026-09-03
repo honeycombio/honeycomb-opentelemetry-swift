@@ -42,8 +42,11 @@ teardown_file() {
     | grep -E '^"[0-9.]+"$')"
   assert_not_empty "$os_version"
 
+  # Build identifiers are digits and uppercase letters on released OSes (23F77),
+  # with a trailing lowercase letter on betas (24A5423a) -- so the character class
+  # must permit lowercase or every prerelease iOS leg fails here.
   os_description="$(resource_attribute_named "os.description" string \
-    | grep -E '^"iOS Version [0-9.]+ \(Build [0-9A-Z]+\)"$')"
+    | grep -E '^"iOS Version [0-9.]+ \(Build [0-9A-Za-z]+\)"$')"
   assert_not_empty "$os_description"
 }
 
