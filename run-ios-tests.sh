@@ -6,7 +6,9 @@ echo "SDK: $SDK"
 if [[ "$SMOKE_TEST_DESTINATION" != "" ]]; then
     DESTINATION="$SMOKE_TEST_DESTINATION"
 else
-    DESTINATION="OS=17.5,name=iPhone 15"
+    # Local default: follow whatever runtime the developer has installed.
+    # CI pins explicit versions instead -- see .circleci/config.yml.
+    DESTINATION="platform=iOS Simulator,name=iPhone 17,OS=latest"
 fi
 echo "DESTINATION: $DESTINATION"
 

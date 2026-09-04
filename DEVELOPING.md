@@ -4,7 +4,12 @@
 
 **Required:**
 
-- Xcode 16.0 or later (from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835))
+- Xcode 26.0 or later (from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835))
+
+CI is the source of truth for which runtimes are actually tested. Today that is
+iOS 18.6, iOS 26.5, and the latest iOS 27 preview -- see `.circleci/config.yml`.
+Reproducing the iOS 27 leg locally requires an Xcode 27 beta from the
+[Apple Developer downloads page](https://developer.apple.com/download/).
 
 Development and unit tests are done within Xcode. However, there is also a smoke-test, which must be run using the included Makefile.
 

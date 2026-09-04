@@ -2,7 +2,13 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.5.0-beta
+
+* fix: Fix an `unrecognized selector` crash when a `URLSessionTask` delegate does not implement `urlSession(_:task:didCompleteWithError:)`. This affects any screen using SwiftUI's `AsyncImage` on iOS 27.
+* fix: Record transport-level failures (timeouts, refused connections, DNS failures) on `URLSession` client spans.
+
 ## 2.4.2
+
 * maint: update to latest version of swift-nio and friends.
 
 ## 2.4.1

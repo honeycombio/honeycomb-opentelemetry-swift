@@ -38,6 +38,19 @@ internal func updateSpan(_ span: Span, with response: HTTPURLResponse) {
     span.setAttribute(key: SemanticAttributes.httpResponseStatusCode, value: code)
 }
 
+/// Updates the given span with a transport-level error, such as a timeout or a refused connection.
+///
+/// These requests have no HTTP status code, so without this the span is indistinguishable from a
+/// successful one.
+internal func updateSpan(_ span: Span, with error: any Error) {
+    let nsError = error as NSError
+    span.status = .error(description: nsError.localizedDescription)
+    span.setAttribute(key: "error.type", value: "\(nsError.domain).\(nsError.code)")
+    span.setAttribute(key: "error.message", value: nsError.localizedDescription)
+    span.setAttribute(key: "nserror.domain", value: nsError.domain)
+    span.setAttribute(key: "nserror.code", value: nsError.code)
+}
+
 /// Installs the auto-instrumentation for URLSession.
 ///
 /// For now, networking auto-instrumentation is only available on iOS 15.0+, because older versions

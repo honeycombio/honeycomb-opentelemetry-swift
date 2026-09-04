@@ -34,26 +34,55 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         )
     }
 
+    // Takes the span for a task, clearing it, so that a task's span is only ended once even
+    // though more than one of the delegate methods below may fire for the same task.
+    private static func takeSpan(for task: URLSessionTask) -> Span? {
+        guard let span = getSpan(for: task) else {
+            return nil
+        }
+        objc_setAssociatedObject(
+            task,
+            &spanKey,
+            nil,
+            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN
+        )
+        return span
+    }
+
+    private static func isCancellation(_ error: any Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled
+    }
+
+    // Ends the span for a task, recording the response and any transport error.
+    private static func endSpan(for task: URLSessionTask, error: (any Error)? = nil) {
+        guard let span = takeSpan(for: task) else {
+            return
+        }
+        if let httpResponse = task.response as? HTTPURLResponse {
+            updateSpan(span, with: httpResponse)
+        }
+        if let error = error ?? task.error, !isCancellation(error) {
+            updateSpan(span, with: error)
+        }
+        span.end()
+    }
+
     // Because the protocol is full of optional methods, we have to forward requests about which
     // methods are actually implemented.
     override func responds(to aSelector: Selector!) -> Bool {
-        if aSelector == #selector(URLSessionTaskDelegate.urlSession(_:task:didCompleteWithError:)) {
+        if super.responds(to: aSelector) {
             return true
         }
-        if aSelector == #selector(URLSessionTaskDelegate.urlSession(_:task:didFinishCollecting:)) {
-            return true
-        }
-
-        guard let wrapped = self.wrapped else {
-            return false
-        }
-        let answer = wrapped.responds(to: aSelector)
-        return answer
+        return wrapped?.responds(to: aSelector) ?? false
     }
 
     // Forward any unhandled methods to the underlying delegate.
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
-        return self.wrapped
+        guard let wrapped = self.wrapped, wrapped.responds(to: aSelector) else {
+            return nil
+        }
+        return wrapped
     }
 
     // Called whenever a request completes.
@@ -63,15 +92,19 @@ internal class ProxyURLSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
         task: URLSessionTask,
         didFinishCollecting metrics: URLSessionTaskMetrics
     ) {
-        if let span = ProxyURLSessionTaskDelegate.getSpan(for: task) {
-            if let response = task.response {
-                if let httpResponse = response as? HTTPURLResponse {
-                    updateSpan(span, with: httpResponse)
-                }
-            }
-            span.end()
-        }
+        ProxyURLSessionTaskDelegate.endSpan(for: task)
 
         wrapped?.urlSession?(session, task: task, didFinishCollecting: metrics)
+    }
+
+    // Called whenever a request completes, successfully or not.
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didCompleteWithError error: (any Error)?
+    ) {
+        ProxyURLSessionTaskDelegate.endSpan(for: task, error: error)
+
+        wrapped?.urlSession?(session, task: task, didCompleteWithError: error)
     }
 }
