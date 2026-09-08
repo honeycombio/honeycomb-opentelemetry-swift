@@ -13,10 +13,10 @@ is subject to change in major version updates.
 
 These are the current versions of libraries we have tested for compatibility:
 
-  | Dependency                                             | Version        |
-  |--------------------------------------------------------|----------------|
-  | `opentelemetry-swift-core`                             | `2.4.0`.       |
-  | `opentelemetry-swift`                                  | `2.4.0`.       |
+| Dependency                 | Version  |
+| -------------------------- | -------- |
+| `opentelemetry-swift-core` | `2.4.0`. |
+| `opentelemetry-swift`      | `2.4.0`. |
 
 For a complete list of tested dependencies and versions, see
 [Package.swift](Package.swift)
@@ -27,10 +27,10 @@ For a complete list of tested dependencies and versions, see
 
 If you're using Xcode to manage dependencies...
 
-  1. Select "Add Package Dependencies..." from the "File" menu.
-  2. In the search field in the upper right, labeled “Search or Enter Package URL”, enter the Swift
-     Honeycomb OpenTelemetry package url: https://github.com/honeycombio/honeycomb-opentelemetry-swift
-  3. Add a project dependency on `Honeycomb`.
+1. Select "Add Package Dependencies..." from the "File" menu.
+2. In the search field in the upper right, labeled “Search or Enter Package URL”, enter the Swift
+   Honeycomb OpenTelemetry package url: https://github.com/honeycombio/honeycomb-opentelemetry-swift
+3. Add a project dependency on `Honeycomb`.
 
 ### Package.swift
 
@@ -41,7 +41,7 @@ If you're using `Package.swift` to manage dependencies...
 ```swift
     dependencies: [
         .package(url: "https://github.com/honeycombio/honeycomb-opentelemetry-swift.git",
-                 from: "2.4.2")
+                 from: "2.5.0")
     ],
 ```
 
@@ -56,6 +56,7 @@ If you're using `Package.swift` to manage dependencies...
 ### Initializing the SDK
 
 To configure the SDK in your `App` class:
+
 ```swift
 import Honeycomb
 
@@ -76,6 +77,7 @@ struct ExampleApp: App {
 ```
 
 To manually send a span:
+
 ```swift
     let tracerProvider = OpenTelemetry.instance.tracerProvider.get(
         instrumentationName: "YOUR-INSTRUMENTATION-NAME",
@@ -86,6 +88,7 @@ To manually send a span:
 ```
 
 ### Error Symbolication
+
 Xcode embeds a build UUID inside compiled app, and generates a corresponding dSYM file with that UUID embedded in it. The following script pulls the UUID out, uses it to rename the dSYM file, and then uploads that file to S3. For more details on the symbolication process, see [our documentation here](https://docs.honeycomb.io/send-data/swift/symbolicate/).
 
 ```sh
@@ -118,46 +121,47 @@ Run this in your CI or as part of your build process, as relevant.
 
 ## Configuration Options
 
-| Option               | Type                           | Required? | Description                                                                                                                                                |
-|----------------------|--------------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `tracesAPIKey`       | String                         | No        | Dedicated API Key to use when sending traces.                                                                                                              |
-| `metricsAPIKey`      | String                         | No        | Dedicated API Key to use when sending metrics.                                                                                                             |
-| `logsAPIKey`         | String                         | No        | Dedicated API Key to use when sending logs.                                                                                                                |
-| `dataset`            | String                         | No        | Name of Honeycomb dataset to send traces to. Required if sending to a classic Honeycomb environment.                                                       |
-| `metricsDataset`     | String                         | No        | Name of Honeycomb dataset to send metrics to, instead of `dataset`.                                                                                        |
-| `tracesEndpoint`     | String                         | No        | API endpoint to send traces to.                                                                                                                            |
-| `metricsEndpoint`    | String                         | No        | API endpoint to send metrics to.                                                                                                                           |
-| `logsEndpoint`       | String                         | No        | API endpoint to send trace to.                                                                                                                             |
-| `sampleRate`         | Int                            | No        | Sample rate to apply (ie. a value of `40` means 1 in 40 traces will be exported).                                                                          |
-| `debug`              | Boolean                        | No        | Enable debug logging.                                                                                                                                      |
-| `serviceName`        | String?                        | No        | This determines the Honeycomb service to send data to, and also appears as the contents of the `service.name` resource attribute.|
-| `serviceVersion`     | String?                        | No        | Current version of your application. Appears as the value of the `service.version` resource attribute.                                                     |
-| `resourceAttributes` | Map<String, String>            | No        | Attributes to attach to outgoing resources.                                                                                                                |
-| `headers`            | Map<String, String>            | No        | Headers to include on exported data.                                                                                                                       |
-| `tracesHeaders`      | Map<String, String>            | No        | Headers to add to exported trace data.                                                                                                                     |
-| `metricsHeaders`     | Map<String, String>            | No        | Headers to add to exported metrics data.                                                                                                                   |
-| `logsHeaders`        | Map<String, String>            | No        | Headers to add to exported logs data.                                                                                                                      |
-| `timeout`            | Duration                       | No        | Timeout used by exporter when sending data.                                                                                                                |
-| `tracesTimeout`      | Duration                       | No        | Timeout used by traces exporter. Overrides `timeout` for trace data.                                                                                       |
-| `metricsTimeout`     | Duration                       | No        | Timeout used by metrics exporter. Overrides `timeout` for metrics data.                                                                                    |
-| `logsTimeout`        | Duration                       | No        | Timeout used by logs exporter. Overrides `timeout` for logs data.                                                                                          |
-| `protocol`           | HoneycombOptions.OtlpProtocol  | No        | Protocol to use when sending data.                                                                                                                         |
-| `tracesProtocol`     | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for trace data.                                                                                                                       |
-| `metricsProtocol`    | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for metrics data.                                                                                                                     |
-| `logsProtocol`       | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for logs data.                                                                                                                        |
-| `spanProcessor`      | OpenTelemetryApi.SpanProcessor | No        | Additional span processor to use.                                                                                                                          |
-| `sessionTimeout`     | TimeInterval                   | No        | Maximum length of time for a single user session. Used to generate `session.id` span attribute.                                                            |
-| `metricKitInstrumentationEnabled`          | Bool     | No        | Whether to enable MetricKit instrumentation. (default: true)                                                                                               |
-| `otelMetricKitInstrumentationEnabled`      | Bool     | No        | Whether to enable OpenTelemetry's MetricKit instrumentation. (overrides `metricKitInstrumentationEnabled`) (default: false)                                |
-| `urlSessionInstrumentationEnabled`         | Bool     | No        | Whether to enable URLSession instrumentation. (default: true)                                                                                              |
-| `otelURLSessionInstrumentationEnabled`     | Bool     | No        | Whether to enable OpenTelemetry's URLSession instrumentation. (overrides `urlSessionInstrumentationEnabled`). (default: false)                             |
-| `uiKitInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit view instrumentation. (default: true)                                                                                              |
-| `touchInstrumentationEnabled`              | Bool     | No        | Whether to enable UIKit touch instrumentation. (default: false)                                                                                            |
-| `unhandledExceptionInstrumentationEnabled` | Bool     | No        | Whether to enable unhandle exception instrumentation. (default: true)                                                                                      |
-| `networkStatusTrackingEnabled`             | Bool     | No        | Whether to include network status attributes on emitted spans. (default: true)                                                                             |
-| `offlineCachingEnabled` | Bool | No | Whether to enable offline caching for telemetry (default: false). Warning: this feature is still in alpha and may be unstable. For more details, see [Offline Caching](#offline-caching) |
+| Option                                     | Type                           | Required? | Description                                                                                                                                                                              |
+| ------------------------------------------ | ------------------------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tracesAPIKey`                             | String                         | No        | Dedicated API Key to use when sending traces.                                                                                                                                            |
+| `metricsAPIKey`                            | String                         | No        | Dedicated API Key to use when sending metrics.                                                                                                                                           |
+| `logsAPIKey`                               | String                         | No        | Dedicated API Key to use when sending logs.                                                                                                                                              |
+| `dataset`                                  | String                         | No        | Name of Honeycomb dataset to send traces to. Required if sending to a classic Honeycomb environment.                                                                                     |
+| `metricsDataset`                           | String                         | No        | Name of Honeycomb dataset to send metrics to, instead of `dataset`.                                                                                                                      |
+| `tracesEndpoint`                           | String                         | No        | API endpoint to send traces to.                                                                                                                                                          |
+| `metricsEndpoint`                          | String                         | No        | API endpoint to send metrics to.                                                                                                                                                         |
+| `logsEndpoint`                             | String                         | No        | API endpoint to send trace to.                                                                                                                                                           |
+| `sampleRate`                               | Int                            | No        | Sample rate to apply (ie. a value of `40` means 1 in 40 traces will be exported).                                                                                                        |
+| `debug`                                    | Boolean                        | No        | Enable debug logging.                                                                                                                                                                    |
+| `serviceName`                              | String?                        | No        | This determines the Honeycomb service to send data to, and also appears as the contents of the `service.name` resource attribute.                                                        |
+| `serviceVersion`                           | String?                        | No        | Current version of your application. Appears as the value of the `service.version` resource attribute.                                                                                   |
+| `resourceAttributes`                       | Map<String, String>            | No        | Attributes to attach to outgoing resources.                                                                                                                                              |
+| `headers`                                  | Map<String, String>            | No        | Headers to include on exported data.                                                                                                                                                     |
+| `tracesHeaders`                            | Map<String, String>            | No        | Headers to add to exported trace data.                                                                                                                                                   |
+| `metricsHeaders`                           | Map<String, String>            | No        | Headers to add to exported metrics data.                                                                                                                                                 |
+| `logsHeaders`                              | Map<String, String>            | No        | Headers to add to exported logs data.                                                                                                                                                    |
+| `timeout`                                  | Duration                       | No        | Timeout used by exporter when sending data.                                                                                                                                              |
+| `tracesTimeout`                            | Duration                       | No        | Timeout used by traces exporter. Overrides `timeout` for trace data.                                                                                                                     |
+| `metricsTimeout`                           | Duration                       | No        | Timeout used by metrics exporter. Overrides `timeout` for metrics data.                                                                                                                  |
+| `logsTimeout`                              | Duration                       | No        | Timeout used by logs exporter. Overrides `timeout` for logs data.                                                                                                                        |
+| `protocol`                                 | HoneycombOptions.OtlpProtocol  | No        | Protocol to use when sending data.                                                                                                                                                       |
+| `tracesProtocol`                           | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for trace data.                                                                                                                                                     |
+| `metricsProtocol`                          | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for metrics data.                                                                                                                                                   |
+| `logsProtocol`                             | HoneycombOptions.OtlpProtocol  | No        | Overrides `protocol` for logs data.                                                                                                                                                      |
+| `spanProcessor`                            | OpenTelemetryApi.SpanProcessor | No        | Additional span processor to use.                                                                                                                                                        |
+| `sessionTimeout`                           | TimeInterval                   | No        | Maximum length of time for a single user session. Used to generate `session.id` span attribute.                                                                                          |
+| `metricKitInstrumentationEnabled`          | Bool                           | No        | Whether to enable MetricKit instrumentation. (default: true)                                                                                                                             |
+| `otelMetricKitInstrumentationEnabled`      | Bool                           | No        | Whether to enable OpenTelemetry's MetricKit instrumentation. (overrides `metricKitInstrumentationEnabled`) (default: false)                                                              |
+| `urlSessionInstrumentationEnabled`         | Bool                           | No        | Whether to enable URLSession instrumentation. (default: true)                                                                                                                            |
+| `otelURLSessionInstrumentationEnabled`     | Bool                           | No        | Whether to enable OpenTelemetry's URLSession instrumentation. (overrides `urlSessionInstrumentationEnabled`). (default: false)                                                           |
+| `uiKitInstrumentationEnabled`              | Bool                           | No        | Whether to enable UIKit view instrumentation. (default: true)                                                                                                                            |
+| `touchInstrumentationEnabled`              | Bool                           | No        | Whether to enable UIKit touch instrumentation. (default: false)                                                                                                                          |
+| `unhandledExceptionInstrumentationEnabled` | Bool                           | No        | Whether to enable unhandle exception instrumentation. (default: true)                                                                                                                    |
+| `networkStatusTrackingEnabled`             | Bool                           | No        | Whether to include network status attributes on emitted spans. (default: true)                                                                                                           |
+| `offlineCachingEnabled`                    | Bool                           | No        | Whether to enable offline caching for telemetry (default: false). Warning: this feature is still in alpha and may be unstable. For more details, see [Offline Caching](#offline-caching) |
 
 ## Standard Attributes
+
 All telemetry will include the following attributes
 
 - `app.bundle.version`: The version number of the app, as given by [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion)
@@ -179,27 +183,28 @@ All telemetry will include the following attributes
 - `telemetry.sdk.name`: "opentelemetry"
 - `telemetry.sdk.version`: Version of the OpenTelemetry Swift SDK being used.
 - [UIDevice](https://developer.apple.com/documentation/uikit/uidevice) attributes (only available on platforms where `UIKit` is available):
-    - `device.id`: [UIDevice.identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/identifierforvendor)
-    - `device.manufacturer` - Hardcoded to "Apple" per [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/device/)
-    - `device.model.name` - [UIDevice.model](https://developer.apple.com/documentation/uikit/uidevice/model) per [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/device/)
-    - `device.name` - [UIDevice.name](https://developer.apple.com/documentation/uikit/uidevice/name)
-    - `device.systemName` - [UIDevice.systemName](https://developer.apple.com/documentation/uikit/uidevice/systemname)
-    - `device.systemVersion` - [UIDevice.systemVersion](https://developer.apple.com/documentation/uikit/uidevice/systemversion)
-    - `device.model` - [UIDevice.model](https://developer.apple.com/documentation/uikit/uidevice/model)
-    - `device.localizedModel` - [UIDevice.localizedModel](https://developer.apple.com/documentation/uikit/uidevice/localizedmodel)
-    - `device.userInterfaceIdiom` - [UIDevice.userInterfaceIdiom](https://developer.apple.com/documentation/uikit/uidevice/userinterfaceidiom)
-    - `device.isMultitaskingSupported` - [UIDevice.isMultitaskingSupported](https://developer.apple.com/documentation/uikit/uidevice/ismultitaskingsupported)
-    - `device.orientation` - [UIDevice.orientation](https://developer.apple.com/documentation/uikit/uidevice/orientation)
-    - `device.isLowPowerModeEnabled` - If the user has Low Power Mode enabled on their device.
-    - `device.isBatteryMonitoringEnabled` - [UIDevice.isBatteryMonitoringEnabled](https://developer.apple.com/documentation/uikit/uidevice/isbatterymonitoringenabled)
-    - `device.batteryLevel` - [UIDevice.batteryLevel](https://developer.apple.com/documentation/uikit/uidevice/batterylevel). Only included if `UIDevice.current.batteryStateAttributesEnabled` is set to `true`.
-    - `device.batteryState` - [UIDevice.batteryState](https://developer.apple.com/documentation/uikit/uidevice/batterystate-swift.property). Only included if `UIDevice.current.batteryStateAttributesEnabled` is set to `true`.
+  - `device.id`: [UIDevice.identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/identifierforvendor)
+  - `device.manufacturer` - Hardcoded to "Apple" per [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/device/)
+  - `device.model.name` - [UIDevice.model](https://developer.apple.com/documentation/uikit/uidevice/model) per [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/device/)
+  - `device.name` - [UIDevice.name](https://developer.apple.com/documentation/uikit/uidevice/name)
+  - `device.systemName` - [UIDevice.systemName](https://developer.apple.com/documentation/uikit/uidevice/systemname)
+  - `device.systemVersion` - [UIDevice.systemVersion](https://developer.apple.com/documentation/uikit/uidevice/systemversion)
+  - `device.model` - [UIDevice.model](https://developer.apple.com/documentation/uikit/uidevice/model)
+  - `device.localizedModel` - [UIDevice.localizedModel](https://developer.apple.com/documentation/uikit/uidevice/localizedmodel)
+  - `device.userInterfaceIdiom` - [UIDevice.userInterfaceIdiom](https://developer.apple.com/documentation/uikit/uidevice/userinterfaceidiom)
+  - `device.isMultitaskingSupported` - [UIDevice.isMultitaskingSupported](https://developer.apple.com/documentation/uikit/uidevice/ismultitaskingsupported)
+  - `device.orientation` - [UIDevice.orientation](https://developer.apple.com/documentation/uikit/uidevice/orientation)
+  - `device.isLowPowerModeEnabled` - If the user has Low Power Mode enabled on their device.
+  - `device.isBatteryMonitoringEnabled` - [UIDevice.isBatteryMonitoringEnabled](https://developer.apple.com/documentation/uikit/uidevice/isbatterymonitoringenabled)
+  - `device.batteryLevel` - [UIDevice.batteryLevel](https://developer.apple.com/documentation/uikit/uidevice/batterylevel). Only included if `UIDevice.current.batteryStateAttributesEnabled` is set to `true`.
+  - `device.batteryState` - [UIDevice.batteryState](https://developer.apple.com/documentation/uikit/uidevice/batterystate-swift.property). Only included if `UIDevice.current.batteryStateAttributesEnabled` is set to `true`.
 
 ## Auto-instrumentation
 
 The following auto-instrumentation libraries are automatically included:
-* [MetricKit](https://developer.apple.com/documentation/metrickit) data is automatically collected.
-* Some UIKit controls are automatically instrumented as described below.
+
+- [MetricKit](https://developer.apple.com/documentation/metrickit) data is automatically collected.
+- Some UIKit controls are automatically instrumented as described below.
 
 ### UIKit Instrumentation
 
@@ -212,10 +217,10 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
 - `view.animated` - true if the transition to/from this view is animated, false if it isn't.
 - `view.class` - name of the swift/objective-c class this view controller has.
 - `screen.name` - name of the screen that appeared. In order of precedence, this attribute will have the value of the first of these to be set:
-    - `accessiblityIdentifier` of the view that appeared
-    - `view.title` - as defined above. If the view is a UINavigationController, Storybook Identifier (below) will be used in preference to `view.title`.
-    - Storybook Identifier - unique id identifying the view controller within its Storybook.
-    - `view.class` - as defined above
+  - `accessiblityIdentifier` of the view that appeared
+  - `view.title` - as defined above. If the view is a UINavigationController, Storybook Identifier (below) will be used in preference to `view.title`.
+  - Storybook Identifier - unique id identifying the view controller within its Storybook.
+  - `view.class` - as defined above
 - `screen.path` - the full path leading to the current view, consisting of the current view's `screen.name` as well as any parent views.
 
 `viewDidAppear` events will also track `screen.name` as the "current screen" (as with the manual instrumentation described below), and will include that value as `screen.name` on other, non-navigation spans emitted.
@@ -223,25 +228,28 @@ UIKit views will automatically be instrumented, emitting `viewDidAppear` and `vi
 #### Interaction
 
 Various touch events are instrumented, such as:
-* `Touch Began` - A touch started
-* `Touch Ended` - A touch ended
-* `click` - A "click". This is currently ony instrumented for `UIButton`s.
+
+- `Touch Began` - A touch started
+- `Touch Ended` - A touch ended
+- `click` - A "click". This is currently ony instrumented for `UIButton`s.
 
 These events may have the following attributes. In the case of name attributes, we may walk up the view hierarchy to find a valid entry.
-* `view.class`: e.g. `"UIButton"`
-* `view.accessibilityIdentifier`, The `accessibilityIdentifier` property of a `UIView`, e.g. `"accessibleButton"`
-* `view.accessibilityLabel` - The `accessibilityLabel` property of a `UIView`, e.g. `"Accessible Button"`
-* `view.currentTitle` - The `currentTitle` property of a `UIButton`.
-* `view.titleLabel.text` - The `text` of a `UIButton`'s `titleLabel`, e.g. `"Accessible Button"`
-* `view.name`: The "best" available name of the view, given the other identifiers, e.g. `"accessibleButton"`
+
+- `view.class`: e.g. `"UIButton"`
+- `view.accessibilityIdentifier`, The `accessibilityIdentifier` property of a `UIView`, e.g. `"accessibleButton"`
+- `view.accessibilityLabel` - The `accessibilityLabel` property of a `UIView`, e.g. `"Accessible Button"`
+- `view.currentTitle` - The `currentTitle` property of a `UIButton`.
+- `view.titleLabel.text` - The `text` of a `UIButton`'s `titleLabel`, e.g. `"Accessible Button"`
+- `view.name`: The "best" available name of the view, given the other identifiers, e.g. `"accessibleButton"`
 
 #### Session
 
 The SDK uses OpenTelemetry's session manager, which creates a new session on startup and automatically extends the session on activity. Sessions expire after a period of inactivity (defaults to 4 hours). You can call `HoneycombOptions.setSessionTimeout` to set the timeout duration.
 
 Spans and logs will have the following attributes:
-* `session.id` - The current session identifier
-* `session.previous_id` - The previous session identifier, when available
+
+- `session.id` - The current session identifier
+- `session.previous_id` - The previous session identifier, when available
 
 To get the current session ID, call `Honeycomb.currentSession().id`.
 
@@ -272,15 +280,18 @@ NotificationCenter.default.addObserver(
 ```
 
 The `SessionEvent` object contains:
-* `session` - The `Session` object with properties `id`, `startTime`, `expireTime`, and optional `previousId`
-* `eventType` - Either `.start` or `.end`
+
+- `session` - The `Session` object with properties `id`, `startTime`, `expireTime`, and optional `previousId`
+- `eventType` - Either `.start` or `.end`
 
 **Deprecated**: The legacy Honeycomb notification names `.sessionStarted` and `.sessionEnded` are still available for backward compatibility but are deprecated. Use the OpenTelemetry `SessionConstants.sessionEventNotification` instead.
 
 #### Network
+
 Network events on `URLSession` will automatically be instrumented.
 
 ##### Trace Propagation
+
 If you are connecting your app to a backend service that you wish to view as a unified trace with your app, you
 will need to manually add headers to all your outgoing requests. You must also create a span and set it as the active
 span. The span's context will be used to generate the headers needed for trace propagation.
@@ -340,6 +351,7 @@ func makeBackendRequest(data: Data) async throws {
 ```
 
 ## Manual Instrumentation
+
 ### SwiftUI View Instrumentation
 
 Wrap your SwiftUI views with `HoneycombInstrumentedView(name: String)`, like so:
@@ -361,19 +373,23 @@ This will measure and emit instrumentation for your View's render times, ex:
 Specifically, it will emit 2 kinds of span for each view that is wrapped:
 
 `View Render` spans encompass the entire rendering process, from initialization to appearing on screen. They include the following attributes:
+
 - `view.name` (string): the name passed to `HoneycombInstrumentedView`
 - `view.renderDuration` (double): amount of time to spent initializing the contents of `HoneycombInstrumentedView`
 - `view.totalDuration` (double): amount of time from when `HoneycombInstrumentedView.body()` is called to when the contents appear on screen
 
 `View Body` spans encompass just the `body()` call of `HoneycombInstrumentedView, and include the following attributes:
+
 - `view.name` (string): the name passed to `HoneycombInstrumentedView`
 
 ### SwiftUI Navigation Instrumentation
+
 iOS 16 introduced two [new Navigation types](https://developer.apple.com/documentation/swiftui/migrating-to-new-navigation-types) that replace the now-deprecated [NavigationView](https://developer.apple.com/documentation/swiftui/navigationview).
 
 We offer a convenience view modifier (`.instrumentNavigation(path: String)`) for cases where you are using a [`NavigationStack`](https://developer.apple.com/documentation/swiftui/navigationstack) and [managing navigation state externally](https://developer.apple.com/documentation/swiftui/navigationstack#Manage-navigation-state)
 
 ex.:
+
 ```swift
 import Honeycomb
 
@@ -400,6 +416,7 @@ Whenever the `path` variable changes, this View Modifier will emit a span with t
 - `navigation.trigger`: Normally `navigation`. May also be `appDidBecomeActive` if the app moves into the foreground and still has navigation context.
 
 If coming from another screen, we will also emit a `NavigationFrom` span with the following attributes:
+
 - `screen.name` (string): the name of the previous screen.
 - `screen.active.time` (double): time in seconds spent on that previous screen.
 - `navigation.trigger`: Normally `navigation`. May also be `appWillResignActive`, `appDidEnterBackground`, or `appWillTerminate` if the navigation is due to the app closing.
@@ -411,6 +428,7 @@ When using other kinds of navigation (ex. a `TabView` or `NavigationSplitView`),
 This function can be called from a view's `onAppear`, or inside a button's `action`, or wherever you decide to manage your navigation.
 
 ex.:
+
 ```swift
 struct ContentView: View {
     var body: some View {
@@ -443,6 +461,7 @@ struct ContentView: View {
 Regardless of which form you use, either helper will keep track of the most recent path value, and our instrumentation includes a SpanProcessor that will automatically propage that value as a `screen.name` attribute onto any other spans.
 
 This means that if you miss a navigation, you will see spans attributed to the wrong screen. For example:
+
 ```swift
 struct ContentView: View {
     var body: some View {
@@ -466,6 +485,7 @@ struct ContentView: View {
 In this case, since View B never reports the navigation, if the user navigates to `View A` and then to `View B`, any spans emitted from `View B` will still report `screen.name: "View A"`.
 
 Both helpers also accept 2 optional parameters: `prefix: String` and `reason: String`:
+
 - If the `prefix` parameter is provided, it will be prepended to the supplied path. This is useful to disambiguate between two different NavigationStacks within the same application.
 - If the `reason` parameter is provided, it will be included as `navigation.trigger` on the `NavigateTo` and `NavigateFrom` spans. See included attributes above for more details on this attribute.
 
@@ -493,7 +513,7 @@ catch let error {
 ```
 
 | Argument        | Type                               | Is Required | Description                                                                                                          |
-|-----------------|------------------------------------|-------------|----------------------------------------------------------------------------------------------------------------------|
+| --------------- | ---------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
 | error/exception | Error/NSError/NSException          | true        | The error or exception itself. Depending on the type of error, fields will be automatically added to the log record. |
 | attributes      | Dictionary<string, AttributeValue> | false       | Additional attributes you would like to log along with the default ones provided.                                    |
 | thread          | Thread                             | false       | Thread where the error occurred. Add this to include additional attributes related to the thread                     |
@@ -503,21 +523,25 @@ catch let error {
 The following attributes are automatically attached to the log entry.
 
 #### Swift `Error`
-* `error.type` - The type name of the `Error` subclass.
-* `error.message` - The `localizedDescription` of the `Error`.
+
+- `error.type` - The type name of the `Error` subclass.
+- `error.message` - The `localizedDescription` of the `Error`.
 
 #### `NSError`
-* `error.type` - The type name of the `NSError` subclass.
-* `error.message` - The `localizedDescription` of the `NSError`.
-* `nserror.code` - The `code` of the `NSError`.
-* `nserror.domain` - The `domain` of the `NSError`.
+
+- `error.type` - The type name of the `NSError` subclass.
+- `error.message` - The `localizedDescription` of the `NSError`.
+- `nserror.code` - The `code` of the `NSError`.
+- `nserror.domain` - The `domain` of the `NSError`.
 
 #### `NSException`
-* `exception.type` - The `name` of the `NSException`.
-* `exception.message` - The `reason` of the `NSException`.
-* `exception.stacktrace` - The stack trace of the exception.
+
+- `exception.type` - The `name` of the `NSException`.
+- `exception.message` - The `reason` of the `NSException`.
+- `exception.stacktrace` - The stack trace of the exception.
 
 ## Adding a Custom Span Processor
+
 You can implement and register your own custom span processor with the Honeycomb SDK. This allows you to perform custom operations on spans before they are exported, such as adding application-specific attributes.
 
 ```swift
