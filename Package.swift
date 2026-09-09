@@ -39,8 +39,6 @@ let package = Package(
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
                 .product(name: "Sessions", package: "opentelemetry-swift"),
                 .product(name: "StdoutExporter", package: "opentelemetry-swift-core"),
-                .product(name: "URLSessionInstrumentation", package: "opentelemetry-swift"),
-                .product(name: "MetricKitInstrumentation", package: "opentelemetry-swift"),
             ]
         ),
         .testTarget(
@@ -57,11 +55,18 @@ let package = Package(
 
 extension Package {
     func addPlatformSpecific() -> Self {
+        // These products are declared inside `#if canImport(Darwin)` in
+        // opentelemetry-swift, so referencing them unconditionally breaks manifest
+        // parsing on non-Darwin platforms (e.g. Dependabot's Linux updater).
         #if canImport(Darwin)
             targets[0].dependencies
                 .append(.product(name: "NetworkStatus", package: "opentelemetry-swift"))
             targets[0].dependencies
                 .append(.product(name: "ResourceExtension", package: "opentelemetry-swift"))
+            targets[0].dependencies
+                .append(.product(name: "URLSessionInstrumentation", package: "opentelemetry-swift"))
+            targets[0].dependencies
+                .append(.product(name: "MetricKitInstrumentation", package: "opentelemetry-swift"))
         #endif
         return self
     }
