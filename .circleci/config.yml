@@ -166,7 +166,6 @@ workflows:
             parameters:
               xcode_version:
                 - "26.6"
-                # Beta image. See the CAUTION note below.
                 - "27.0.0"
               destination:
                 - generic/platform=macOS
@@ -184,7 +183,7 @@ workflows:
           ios_version: "26.5"
           simulator_device: "iPhone 17"
       - ios_tests:
-          name: tests-ios-27-preview
+          name: tests-ios-27
           xcode_version: "27.0.0"
           ios_version: "27.0"
           simulator_device: "iPhone 17"
@@ -201,7 +200,7 @@ workflows:
           ios_version: "26.5"
           simulator_device: "iPhone 17"
       - ios_smoke_tests:
-          name: smoke-tests-ios-27-preview
+          name: smoke-tests-ios-27
           otel_version: "2.0.2"
           xcode_version: "27.0.0"
           ios_version: "27.0"
@@ -211,13 +210,13 @@ workflows:
           requires:
             - tests-ios-18
             - tests-ios-26
-            - tests-ios-27-preview
+            - tests-ios-27
       - all_legs_passed:
           name: smoke_tests-2.0.2
           requires:
             - smoke-tests-ios-18
             - smoke-tests-ios-26
-            - smoke-tests-ios-27-preview
+            - smoke-tests-ios-27
 
   build:
     jobs:
@@ -229,7 +228,6 @@ workflows:
             parameters:
               xcode_version:
                 - "26.6"
-                # Beta image. See the CAUTION note below.
                 - "27.0.0"
               destination:
                 - generic/platform=macOS
@@ -248,10 +246,8 @@ workflows:
           xcode_version: "26.6"
           ios_version: "26.5"
           simulator_device: "iPhone 17"
-      # CAUTION: `xcode: 27.0.0` is a *beta* image.
-      # Switch to the Xcode 27 GA version string once it ships.
       - ios_tests:
-          name: tests-ios-27-preview
+          name: tests-ios-27
           <<: *filters_always
           xcode_version: "27.0.0"
           ios_version: "27.0"
@@ -271,7 +267,7 @@ workflows:
           ios_version: "26.5"
           simulator_device: "iPhone 17"
       - ios_smoke_tests:
-          name: smoke-tests-ios-27-preview
+          name: smoke-tests-ios-27
           <<: *filters_always
           otel_version: "2.0.2"
           xcode_version: "27.0.0"
@@ -283,11 +279,11 @@ workflows:
           requires:
             - tests-ios-18
             - tests-ios-26
-            - tests-ios-27-preview
+            - tests-ios-27
       - all_legs_passed:
           name: smoke_tests-2.0.2
           <<: *filters_always
           requires:
             - smoke-tests-ios-18
             - smoke-tests-ios-26
-            - smoke-tests-ios-27-preview
+            - smoke-tests-ios-27
