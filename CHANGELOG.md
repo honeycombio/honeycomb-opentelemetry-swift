@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* maint: update `opentelemetry-swift` and `opentelemetry-swift-core` to 2.5.1. Note that
+  `opentelemetry-swift-core` 2.5.1 declares `swift-tools-version: 6.0`, so resolving this
+  package now requires a Swift 6.0 / Xcode 16 or newer toolchain.
+
 ## 2.5.0
 
 * fix: Fix an `unrecognized selector` crash when a `URLSessionTask` delegate does not implement `urlSession(_:task:didCompleteWithError:)`. This affects any screen using SwiftUI's `AsyncImage` on iOS 27.
