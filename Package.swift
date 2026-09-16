@@ -18,11 +18,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/open-telemetry/opentelemetry-swift-core.git",
-            exact: "2.3.0"
+            exact: "2.5.1"
         ),
         .package(
             url: "https://github.com/open-telemetry/opentelemetry-swift.git",
-            exact: "2.3.0"
+            exact: "2.5.1"
         ),
     ],
     targets: [
