@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+## 2.6.0
+
 * maint: update `opentelemetry-swift` and `opentelemetry-swift-core` to 2.5.1. Note that
   `opentelemetry-swift-core` 2.5.1 declares `swift-tools-version: 6.0`, so resolving this
   package now requires a Swift 6.0 / Xcode 16 or newer toolchain.
