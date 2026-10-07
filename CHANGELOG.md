@@ -2,6 +2,8 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* fix: Fix a data race on the current navigation path that could crash with `_ContiguousArrayStorage deallocated with non-zero retain count` when spans start off the main thread during UIKit navigation.
+
 ## 2.6.0
 
 * maint: update `opentelemetry-swift` and `opentelemetry-swift-core` to 2.5.1. Note that
