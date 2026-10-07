@@ -29,7 +29,7 @@ internal class HoneycombNavigationProcessor {
         setupAppLifecycleTracking()
     }
 
-    public var currentNavigationPath: [String] { _currentNavigationPath }
+    public var currentNavigationPath: [String] { lock.withLock { _currentNavigationPath } }
 
     @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
     func reportNavigation(prefix: String? = nil, path: NavigationPath, reason: String? = nil) {
