@@ -194,7 +194,7 @@ Carried over from the web experiment and applied here:
 2. *Use upstream session management.* Already true since `2.4.0`.
 3. *Ship compatibility shims for changed hook signatures.* Applies to `reportMetrics`/`reportDiagnostics`, the removed option setters, and the client `spanProcessor` (gaps 4 and 5).
 
-Open, for Wolfgang:
+Open decisions:
 
 1. **UI instrumentation (gap 1).** Keep in core, split into an optional product, or push upstream?
 2. **Parity or adopt upstream's shape,** per difference. Defaults used in this branch are parity (keeps saved queries working). The changes to consider adopting: status `ERROR` on 4xx and 5xx; the extra URLSession attributes; `traceparent` injection (a behavior change for third-party hosts, but makes the README's manual propagation steps unnecessary); the MetricKit additions; Apple's against upstream's simplified stack trace format.
