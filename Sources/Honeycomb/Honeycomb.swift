@@ -1,16 +1,29 @@
 import BaggagePropagationProcessor
 import Foundation
-import MetricKitInstrumentation
-import NetworkStatus
 import OpenTelemetryApi
 import OpenTelemetryProtocolExporterCommon
 import OpenTelemetryProtocolExporterHttp
 import OpenTelemetrySdk
-import ResourceExtension
 import Sessions
 import StdoutExporter
-import SwiftUI
-import URLSessionInstrumentation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+#endif
+
+// These upstream products are only built on Apple platforms.
+#if canImport(MetricKitInstrumentation)
+    import MetricKitInstrumentation
+#endif
+#if canImport(NetworkStatus)
+    import NetworkStatus
+#endif
+#if canImport(ResourceExtension)
+    import ResourceExtension
+#endif
+#if canImport(URLSessionInstrumentation)
+    import URLSessionInstrumentation
+#endif
 
 #if canImport(MetricKit)
     import MetricKit
@@ -52,7 +65,11 @@ public class Honeycomb {
     /// let resource = Honeycomb.resource
     /// print("Service name: \(resource.attributes["service.name"]?.description ?? "unknown")")
     /// ```
-    public private(set) static var resource: Resource = DefaultResources().get()
+    #if canImport(ResourceExtension)
+        public private(set) static var resource: Resource = DefaultResources().get()
+    #else
+        public private(set) static var resource: Resource = Resource()
+    #endif
 
     #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
         static private var metricKitSubscriber: MXMetricManagerSubscriber? = nil
@@ -86,7 +103,13 @@ public class Honeycomb {
             headers: createKeyValueList(options.logsHeaders)
         )
 
-        resource = DefaultResources().get()
+        #if canImport(ResourceExtension)
+            let baseResource = DefaultResources().get()
+        #else
+            let baseResource = Resource()
+        #endif
+        resource =
+            baseResource
             .merging(other: Resource(attributes: createAttributeDict(options.resourceAttributes)))
             .merging(other: Resource(attributes: createAttributeDict(getAppResources())))
 
@@ -129,6 +152,16 @@ public class Honeycomb {
             spanExporter = createPersistenceSpanExporter(spanExporter)
         }
 
+        // When Honeycomb's own instrumentation is replaced by upstream's, rewrite upstream's spans
+        // into the shape Honeycomb has always emitted. See Sources/Honeycomb/Passthrough.
+        var spanShapers: [SpanShaper] = []
+        if options.otelUrlSessionInstrumentationEnabled {
+            spanShapers.append(urlSessionSpanShaper())
+        }
+        if !spanShapers.isEmpty {
+            spanExporter = ShapingSpanExporter(inner: spanExporter, shapers: spanShapers)
+        }
+
         let spanProcessor = CompositeSpanProcessor()
         spanProcessor.addSpanProcessor(BatchSpanProcessor(spanExporter: spanExporter))
 
@@ -162,7 +195,7 @@ public class Honeycomb {
             .add(spanProcessor: HoneycombNavigationPathSpanProcessor())
             .add(spanProcessor: SessionSpanProcessor(sessionManager: sessionManager!))
 
-        #if os(iOS) && !targetEnvironment(macCatalyst)
+        #if os(iOS) && !targetEnvironment(macCatalyst) && canImport(NetworkStatus)
             if options.networkStatusTrackingEnabled {
                 do {
                     let networkMonitor = try NetworkMonitor()
@@ -248,8 +281,19 @@ public class Honeycomb {
         }
 
         let logProcessor = SimpleLogRecordProcessor(logRecordExporter: logExporter)
+        var logShapers: [LogRecordShaper] = []
+        if options.otelMetricKitInstrumentationEnabled {
+            logShapers.append(metricKitLogRecordShaper())
+            // Only touches records with event name `device.crash`, which upstream's Crash
+            // instrumentation (unreleased) emits. Harmless until that is installed.
+            logShapers.append(upstreamCrashLogRecordShaper())
+        }
+        let shapedLogProcessor: LogRecordProcessor =
+            logShapers.isEmpty
+            ? logProcessor
+            : ShapeLogRecordProcessor(next: logProcessor, shapers: logShapers)
         let sessionLogProcessor = SessionLogRecordProcessor(
-            nextProcessor: logProcessor,
+            nextProcessor: shapedLogProcessor,
             sessionManager: sessionManager!
         )
 
@@ -264,24 +308,17 @@ public class Honeycomb {
         OpenTelemetry.registerMeterProvider(meterProvider: meterProvider)
         OpenTelemetry.registerLoggerProvider(loggerProvider: loggerProvider)
 
-        if options.otelUrlSessionInstrumentationEnabled {
-            // Configure OpenTelemetry URLSession instrumentation to behave the same as
-            // Honeycomb's original custom instrumentation (io.honeycomb.urlsession)
-            let customTracer = OpenTelemetry.instance.tracerProvider.get(
-                instrumentationName: "io.honeycomb.urlsession",
-                instrumentationVersion: honeycombLibraryVersion
-            )
-            let config = URLSessionInstrumentationConfiguration(
-                nameSpan: { request in
-                    return request.httpMethod ?? "UNKNOWN"
-                },
-                tracer: customTracer,
-                semanticConvention: .stable
-            )
-            let urlSessionInstrumentation = URLSessionInstrumentation(configuration: config)
-        } else if options.urlSessionInstrumentationEnabled {
-            installNetworkInstrumentation(options: options)
-        }
+        #if canImport(URLSessionInstrumentation)
+            if options.otelUrlSessionInstrumentationEnabled {
+                // Configure OpenTelemetry URLSession instrumentation to behave the same as
+                // Honeycomb's original custom instrumentation (io.honeycomb.urlsession)
+                let urlSessionInstrumentation = URLSessionInstrumentation(
+                    configuration: makeHoneycombURLSessionConfiguration()
+                )
+            } else if options.urlSessionInstrumentationEnabled {
+                installNetworkInstrumentation(options: options)
+            }
+        #endif
         #if canImport(UIKit) && !os(watchOS)
             if options.uiKitInstrumentationEnabled {
                 installUINavigationInstrumentation()
@@ -290,14 +327,18 @@ public class Honeycomb {
                 installWindowInstrumentation()
             }
         #endif
-        if options.unhandledExceptionInstrumentationEnabled {
-            HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
-        }
+        #if canImport(Darwin)
+            if options.unhandledExceptionInstrumentationEnabled {
+                HoneycombUncaughtExceptionHandler.initializeUnhandledExceptionInstrumentation()
+            }
+        #endif
 
         #if canImport(MetricKit) && !os(tvOS) && !os(macOS)
             if #available(iOS 13.0, *) {
                 if options.otelMetricKitInstrumentationEnabled {
-                    var subscriber = MetricKitInstrumentation()
+                    var subscriber = MetricKitInstrumentation(
+                        configuration: makeHoneycombMetricKitConfiguration()
+                    )
                     self.metricKitSubscriber = subscriber
                     MXMetricManager.shared.add(subscriber)
                 } else if options.metricKitInstrumentationEnabled {
@@ -356,40 +397,42 @@ public class Honeycomb {
         logError(errorAttributes, severity, logger, timestamp)
     }
 
-    /// Logs an `NSException`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
-    /// - Parameters:
-    ///   - exception: The `NSException` itself
-    ///   - attributes: Additional attributes you would like to log along with the default ones provided.
-    ///   - thread: Thread where the exception occurred. Add this to include additional attributes related to the thread
-    ///   - severity: The severity of the exception. Typically .error or .fatal.
-    ///   - logger: Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`
-    public static func log(
-        exception: NSException,
-        attributes: [String: AttributeValue] = [:],
-        thread: Thread?,
-        severity: Severity = .error,
-        logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
-    ) {
-        let timestamp = Date()
-        let type = exception.name.rawValue
-        let message = exception.reason ?? exception.name.rawValue
+    #if canImport(Darwin)  // NSException does not exist in swift-corelibs-foundation.
+        /// Logs an `NSException`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
+        /// - Parameters:
+        ///   - exception: The `NSException` itself
+        ///   - attributes: Additional attributes you would like to log along with the default ones provided.
+        ///   - thread: Thread where the exception occurred. Add this to include additional attributes related to the thread
+        ///   - severity: The severity of the exception. Typically .error or .fatal.
+        ///   - logger: Defaults to the Honeycomb error `Logger`. Provide if you want to use a different OpenTelemetry `Logger`
+        public static func log(
+            exception: NSException,
+            attributes: [String: AttributeValue] = [:],
+            thread: Thread?,
+            severity: Severity = .error,
+            logger: OpenTelemetryApi.Logger = getDefaultErrorLogger()
+        ) {
+            let timestamp = Date()
+            let type = exception.name.rawValue
+            let message = exception.reason ?? exception.name.rawValue
 
-        // TODO: Type and name seem wrong here. Which is right?
-        var errorAttributes = [
-            SemanticAttributes.exceptionType.rawValue: type.attributeValue(),
-            SemanticAttributes.exceptionMessage.rawValue: message.attributeValue(),
-            SemanticAttributes.exceptionStacktrace.rawValue: exception.callStackSymbols
-                .joined(separator: "\n")
-                .attributeValue(),
-        ]
-        .merging(attributes, uniquingKeysWith: { (_, last) in last })
+            // TODO: Type and name seem wrong here. Which is right?
+            var errorAttributes = [
+                SemanticAttributes.exceptionType.rawValue: type.attributeValue(),
+                SemanticAttributes.exceptionMessage.rawValue: message.attributeValue(),
+                SemanticAttributes.exceptionStacktrace.rawValue: exception.callStackSymbols
+                    .joined(separator: "\n")
+                    .attributeValue(),
+            ]
+            .merging(attributes, uniquingKeysWith: { (_, last) in last })
 
-        if let name = thread?.name {
-            errorAttributes["thread.name"] = name.attributeValue()
+            if let name = thread?.name {
+                errorAttributes["thread.name"] = name.attributeValue()
+            }
+
+            logError(errorAttributes, .fatal, logger, timestamp)
         }
-
-        logError(errorAttributes, .fatal, logger, timestamp)
-    }
+    #endif
 
     /// Logs an `Error`. This can be used for logging any caught exceptions in your own code that will not be logged by our crash instrumentation.
     /// - Parameters:
@@ -439,18 +482,20 @@ public class Honeycomb {
             .emit()
     }
 
-    @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
-    public static func setCurrentScreen(
-        prefix: String? = nil,
-        path: NavigationPath,
-        reason: String? = nil
-    ) {
-        HoneycombNavigationProcessor.shared.reportNavigation(
-            prefix: prefix,
-            path: path,
-            reason: reason
-        )
-    }
+    #if canImport(SwiftUI)
+        @available(tvOS 16.0, iOS 16.0, macOS 13.0, watchOS 9, *)
+        public static func setCurrentScreen(
+            prefix: String? = nil,
+            path: NavigationPath,
+            reason: String? = nil
+        ) {
+            HoneycombNavigationProcessor.shared.reportNavigation(
+                prefix: prefix,
+                path: path,
+                reason: reason
+            )
+        }
+    #endif
     public static func setCurrentScreen(prefix: String? = nil, path: String, reason: String? = nil)
     {
         HoneycombNavigationProcessor.shared.reportNavigation(

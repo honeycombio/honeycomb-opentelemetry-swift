@@ -4,6 +4,13 @@ import XCTest
 
 @testable import Honeycomb
 
+#if !canImport(Darwin)
+    // swift-corelibs-xctest has no XCTContext; this keeps the test body unchanged on Linux.
+    private enum XCTContext {
+        static func runActivity(named: String, block: (Int) -> Void) { block(0) }
+    }
+#endif
+
 class HoneycombDeterministicSamplerTests: XCTestCase {
     func testSampler() {
         let testCases = [

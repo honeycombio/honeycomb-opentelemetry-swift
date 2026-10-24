@@ -1,0 +1,117 @@
+{
+ "_comment": "What Honeycomb's own instrumentation emits today. Attribute names and values are copied from the Swift sources named in each 'source'. These are hand-built fixtures, not captures from a device.",
+ "fixtures": [
+  {
+   "id": "urlsession.get_200",
+   "kind": "span",
+   "scope": "io.honeycomb.urlsession",
+   "name": "GET",
+   "spanKind": "client",
+   "source": "Sources/Honeycomb/Networking/NetworkInstrumentation.swift: createSpan, updateSpan(with: response)",
+   "attributes": {
+    "http.request.method": "GET",
+    "url.full": "http://127.0.0.1:9/items",
+    "server.address": "127.0.0.1",
+    "server.port": 9,
+    "http.scheme": "http",
+    "http.response.status_code": 200
+   }
+  },
+  {
+   "id": "urlsession.post_201",
+   "kind": "span",
+   "scope": "io.honeycomb.urlsession",
+   "name": "POST",
+   "spanKind": "client",
+   "source": "Sources/Honeycomb/Networking/NetworkInstrumentation.swift",
+   "attributes": {
+    "http.request.method": "POST",
+    "url.full": "http://127.0.0.1:9/items",
+    "server.address": "127.0.0.1",
+    "server.port": 9,
+    "http.scheme": "http",
+    "http.response.status_code": 201
+   }
+  },
+  {
+   "id": "urlsession.get_404",
+   "kind": "span",
+   "scope": "io.honeycomb.urlsession",
+   "name": "GET",
+   "spanKind": "client",
+   "source": "Sources/Honeycomb/Networking/NetworkInstrumentation.swift (status is not set for HTTP errors)",
+   "attributes": {
+    "http.request.method": "GET",
+    "url.full": "http://127.0.0.1:9/missing",
+    "server.address": "127.0.0.1",
+    "server.port": 9,
+    "http.scheme": "http",
+    "http.response.status_code": 404
+   }
+  },
+  {
+   "id": "urlsession.transport_error",
+   "kind": "span",
+   "scope": "io.honeycomb.urlsession",
+   "name": "GET",
+   "spanKind": "client",
+   "status": {
+    "error": "The request timed out."
+   },
+   "source": "Sources/Honeycomb/Networking/NetworkInstrumentation.swift: updateSpan(with: error)",
+   "attributes": {
+    "http.request.method": "GET",
+    "url.full": "http://127.0.0.1:9/slow",
+    "server.address": "127.0.0.1",
+    "server.port": 9,
+    "http.scheme": "http",
+    "error.type": "NSURLErrorDomain.-1001",
+    "error.message": "The request timed out.",
+    "nserror.domain": "NSURLErrorDomain",
+    "nserror.code": -1001
+   }
+  },
+  {
+   "id": "metrickit.diagnostic_hang",
+   "kind": "log",
+   "scope": "io.honeycomb.metrickit",
+   "source": "Sources/Honeycomb/MetricKitSubscriber.swift: reportDiagnostics (hang)",
+   "attributes": {
+    "name": "metrickit.diagnostic.hang",
+    "metrickit.diagnostic.hang.hang_duration": 2.5,
+    "metrickit.diagnostic.hang.exception.stacktrace_json": "@stacktrace"
+   }
+  },
+  {
+   "id": "metrickit.diagnostic_crash",
+   "kind": "log",
+   "scope": "io.honeycomb.metrickit",
+   "source": "Sources/Honeycomb/MetricKitSubscriber.swift: reportDiagnostics (crash)",
+   "attributes": {
+    "name": "metrickit.diagnostic.crash",
+    "metrickit.diagnostic.crash.exception.code": 1,
+    "metrickit.diagnostic.crash.exception.mach_exception.type": 1,
+    "metrickit.diagnostic.crash.exception.mach_exception.name": "EXC_BAD_ACCESS",
+    "metrickit.diagnostic.crash.exception.mach_exception.description": "Could not access memory",
+    "metrickit.diagnostic.crash.exception.signal": 11,
+    "metrickit.diagnostic.crash.exception.signal.name": "SIGSEGV",
+    "metrickit.diagnostic.crash.exception.signal.description": "segmentation violation",
+    "metrickit.diagnostic.crash.exception.termination_reason": "Namespace SIGNAL, Code 11",
+    "metrickit.diagnostic.crash.exception.stacktrace_json": "@stacktrace"
+   }
+  },
+  {
+   "id": "crash.uncaught_exception",
+   "kind": "log",
+   "scope": "io.honeycomb.error",
+   "severity": "fatal",
+   "source": "Sources/Honeycomb/Honeycomb.swift: log(exception:), HoneycombUncaughtExceptions.swift",
+   "attributes": {
+    "exception.type": "NSRangeException",
+    "exception.message": "index 3 beyond bounds",
+    "exception.stacktrace": "0 ExampleApp 0x0000000100001234 main + 20",
+    "thread.name": "main"
+   }
+  }
+ ]
+}

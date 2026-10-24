@@ -3,6 +3,18 @@
 
 import PackageDescription
 
+// Sources that only compile on Apple platforms (Objective-C runtime swizzling, SwiftUI, NSException).
+// Excluding them lets the configuration layer, its tests and the passthrough shapers build on Linux.
+#if canImport(Darwin)
+    let appleOnlySources: [String] = []
+    let appleOnlyTests: [String] = []
+#else
+    let appleOnlySources = [
+        "Networking", "HoneycombInstrumentedView.swift", "HoneycombUncaughtExceptions.swift",
+    ]
+    let appleOnlyTests = ["ProxyURLSessionTaskDelegateTests.swift"]
+#endif
+
 let package = Package(
     name: "honeycomb-opentelemetry-swift",
     platforms: [
@@ -39,6 +51,22 @@ let package = Package(
                 .product(name: "PersistenceExporter", package: "opentelemetry-swift"),
                 .product(name: "Sessions", package: "opentelemetry-swift"),
                 .product(name: "StdoutExporter", package: "opentelemetry-swift-core"),
+            ],
+            exclude: appleOnlySources
+        ),
+        // Gap-finding harness for the "configuration wrapper over upstream" experiment. Not a product.
+        .executableTarget(
+            name: "PassthroughHarness",
+            dependencies: [
+                "Honeycomb",
+                .product(name: "OpenTelemetryApi", package: "opentelemetry-swift-core"),
+                .product(name: "OpenTelemetrySdk", package: "opentelemetry-swift-core"),
+                .product(name: "OpenTelemetryProtocolExporterHTTP", package: "opentelemetry-swift"),
+            ],
+            path: "Experiments/PassthroughHarness",
+            exclude: [
+                "sink.py", "diff.py", "run.sh", "verify-fixtures.py", "fixtures-honeycomb.json",
+                "fixtures-upstream.json", "stacktraces.json",
             ]
         ),
         .testTarget(
@@ -47,7 +75,8 @@ let package = Package(
                 "Honeycomb",
                 .product(name: "InMemoryExporter", package: "opentelemetry-swift"),
             ],
-            path: "Tests/Honeycomb"
+            path: "Tests/Honeycomb",
+            exclude: appleOnlyTests
         ),
     ]
 )

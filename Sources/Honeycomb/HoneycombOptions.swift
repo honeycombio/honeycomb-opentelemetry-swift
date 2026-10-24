@@ -1,7 +1,7 @@
 import Foundation
 import OpenTelemetrySdk
 
-internal let runtimeVersion = ProcessInfo().operatingSystemVersionString
+internal let runtimeVersion = ProcessInfo.processInfo.operatingSystemVersionString
 internal let otlpVersion = Resource.OTEL_SWIFT_SDK_VERSION
 
 // Constants for keys and defaults in HoneycombOptions.
@@ -219,7 +219,10 @@ public struct HoneycombOptions {
     let otelUrlSessionInstrumentationEnabled: Bool
 
     let offlineCachingEnabled: Bool
-    @objc(HNYOptions) open class Builder: NSObject {
+    #if canImport(ObjectiveC)
+        @objc(HNYOptions)
+    #endif
+    open class Builder: NSObject {
         private var apiKey: String? = nil
         private var tracesApiKey: String? = nil
         private var metricsApiKey: String? = nil
@@ -329,77 +332,167 @@ public struct HoneycombOptions {
                 try source.getBool(offlineCachingEnabledKey) ?? offlineCachingEnabled
         }
 
-        @objc public func setAPIKey(_ apiKey: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setAPIKey(_ apiKey: String) -> Builder {
             self.apiKey = apiKey
             return self
         }
 
-        @objc public func setTracesAPIKey(_ apiKey: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setTracesAPIKey(_ apiKey: String) -> Builder {
             tracesApiKey = apiKey
             return self
         }
 
-        @objc public func setMetricsAPIKey(_ apiKey: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setMetricsAPIKey(_ apiKey: String) -> Builder {
             metricsApiKey = apiKey
             return self
         }
 
-        @objc public func setLogsAPIKey(_ apiKey: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setLogsAPIKey(_ apiKey: String) -> Builder {
             logsApiKey = apiKey
             return self
         }
 
-        @objc public func setDataset(_ dataset: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setDataset(_ dataset: String) -> Builder {
             self.dataset = dataset
             return self
         }
 
-        @objc public func setMetricsDataset(_ dataset: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setMetricsDataset(_ dataset: String) -> Builder {
             metricsDataset = dataset
             return self
         }
 
-        @objc public func setAPIEndpoint(_ endpoint: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setAPIEndpoint(_ endpoint: String) -> Builder {
             apiEndpoint = endpoint
             return self
         }
 
-        @objc public func setTracesAPIEndpoint(_ endpoint: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setTracesAPIEndpoint(_ endpoint: String) -> Builder {
             tracesEndpoint = endpoint
             return self
         }
 
-        @objc public func setMetricsAPIEndpoint(_ endpoint: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setMetricsAPIEndpoint(_ endpoint: String) -> Builder {
             metricsEndpoint = endpoint
             return self
         }
 
-        @objc public func setLogsAPIEndpoint(_ endpoint: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setLogsAPIEndpoint(_ endpoint: String) -> Builder {
             logsEndpoint = endpoint
             return self
         }
 
-        @objc public func setSampleRate(_ sampleRate: Int) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setSampleRate(_ sampleRate: Int) -> Builder {
             self.sampleRate = sampleRate
             return self
         }
 
-        @objc public func setDebug(_ debug: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setDebug(_ debug: Bool) -> Builder {
             self.debug = debug
             return self
         }
 
-        @objc public func setServiceName(_ serviceName: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setServiceName(_ serviceName: String) -> Builder {
             self.serviceName = serviceName
             return self
         }
 
-        @objc public func setServiceVersion(_ serviceVersion: String) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setServiceVersion(_ serviceVersion: String) -> Builder {
             self.serviceVersion = serviceVersion
             return self
         }
 
-        @objc public func setResourceAttributes(_ resources: [String: String]) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setResourceAttributes(_ resources: [String: String]) -> Builder {
             for (key, value) in resources {
                 resourceAttributes[key] = value
             }
@@ -414,42 +507,90 @@ public struct HoneycombOptions {
             return self
         }
 
-        @objc public func setHeaders(_ headers: [String: String]) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setHeaders(_ headers: [String: String]) -> Builder {
             self.headers = headers
             return self
         }
 
-        @objc public func setTracesHeaders(_ headers: [String: String]) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setTracesHeaders(_ headers: [String: String]) -> Builder {
             tracesHeaders = headers
             return self
         }
 
-        @objc public func setMetricsHeaders(_ headers: [String: String]) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setMetricsHeaders(_ headers: [String: String]) -> Builder {
             metricsHeaders = headers
             return self
         }
 
-        @objc public func setLogsHeaders(_ headers: [String: String]) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setLogsHeaders(_ headers: [String: String]) -> Builder {
             logsHeaders = headers
             return self
         }
 
-        @objc public func setTimeout(_ timeout: TimeInterval) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setTimeout(_ timeout: TimeInterval) -> Builder {
             self.timeout = timeout
             return self
         }
 
-        @objc public func setTracesTimeout(_ timeout: TimeInterval) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setTracesTimeout(_ timeout: TimeInterval) -> Builder {
             tracesTimeout = timeout
             return self
         }
 
-        @objc public func setMetricsTimeout(_ timeout: TimeInterval) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setMetricsTimeout(_ timeout: TimeInterval) -> Builder {
             metricsTimeout = timeout
             return self
         }
 
-        @objc public func setLogsTimeout(_ timeout: TimeInterval) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setLogsTimeout(_ timeout: TimeInterval) -> Builder {
             logsTimeout = timeout
             return self
         }
@@ -479,45 +620,84 @@ public struct HoneycombOptions {
             return self
         }
 
-        @objc public func setSessionTimeout(_ timeout: TimeInterval) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setSessionTimeout(_ timeout: TimeInterval) -> Builder {
             sessionTimeout = timeout
             return self
         }
 
-        @objc public func setMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
             metricKitInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setOTELMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setOTELMetricKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
             otelMetricKitInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             urlSessionInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setOTELURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setOTELURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             otelUrlSessionInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setUIKitInstrumentationEnabled(_ enabled: Bool) -> Builder {
             uiKitInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setTouchInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setTouchInstrumentationEnabled(_ enabled: Bool) -> Builder {
             touchInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setUnhandledExceptionInstrumentationEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setUnhandledExceptionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             unhandledExceptionInstrumentationEnabled = enabled
             return self
         }
-        @objc public func setNetworkStatusTrackingEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+            @objc
+        #endif
+        public func setNetworkStatusTrackingEnabled(_ enabled: Bool) -> Builder {
             networkStatusTrackingEnabled = enabled
             return self
         }
 
-        @objc public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
+        #if canImport(ObjectiveC)
+
+            @objc
+
+        #endif
+
+        public func setOfflineCachingEnabled(_ enabled: Bool) -> Builder {
             offlineCachingEnabled = enabled
             return self
         }

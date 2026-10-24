@@ -1,0 +1,4 @@
+{
+ "apple": "{\"callStackPerThread\":false,\"callStacks\":[{\"threadAttributed\":true,\"callStackRootFrames\":[{\"binaryUUID\":\"00000000-0000-0000-0000-00000000AAAA\",\"offsetIntoBinaryTextSegment\":4660,\"sampleCount\":1,\"binaryName\":\"ExampleApp\",\"address\":4300000000}]}]}",
+ "otel": "{\"callStackPerThread\":true,\"callStacks\":[{\"threadAttributed\":true,\"callStackFrames\":[{\"binaryUUID\":\"00000000-0000-0000-0000-00000000AAAA\",\"offsetAddress\":4660,\"binaryName\":\"ExampleApp\"}]}]}"
+}
