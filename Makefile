@@ -34,7 +34,7 @@ smoke-bats: smoke-tests/collector/data.json
 	@echo ""
 	@echo "+++ Running bats smoke tests."
 	@echo ""
-	cd smoke-tests && bats ./smoke-e2e.bats --report-formatter junit --output ./
+	cd smoke-tests && bats ./smoke-e2e.bats ./smoke-passthrough.bats --report-formatter junit --output ./
 
 smoke: unsmoke clean-smoke-tests smoke-docker ios-tests smoke-bats
 

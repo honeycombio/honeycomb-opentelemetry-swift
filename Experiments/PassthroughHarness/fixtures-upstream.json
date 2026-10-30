@@ -1,0 +1,177 @@
+{
+ "_comment": "What upstream opentelemetry-swift 2.5.1 / 2.6.0 emits, built by hand from the named upstream source files. 'raw' is the upstream default; 'configured' is what Honeycomb's configuration (tracer scope, nameSpan, receivedError) is expected to make of it. Not captures from a device.",
+ "fixtures": [
+  {
+   "id": "urlsession.get_200",
+   "kind": "span",
+   "spanKind": "client",
+   "raw": {
+    "scope": "NSURLSession",
+    "scopeVersion": "1.0.0",
+    "name": "HTTP GET"
+   },
+   "configured": {
+    "scope": "io.honeycomb.urlsession",
+    "name": "GET"
+   },
+   "source": "Sources/Instrumentation/URLSession/URLSessionLogger.swift: processAndLogRequest, logResponse (semanticConvention .stable)",
+   "attributes": {
+    "http.request.method": "GET",
+    "url.full": "http://127.0.0.1:9/items",
+    "url.path": "/items",
+    "server.address": "127.0.0.1",
+    "url.scheme": "http",
+    "server.port": 9,
+    "http.response.status_code": 200,
+    "http.response.body.size": 1234
+   }
+  },
+  {
+   "id": "urlsession.post_201",
+   "kind": "span",
+   "spanKind": "client",
+   "raw": {
+    "scope": "NSURLSession",
+    "scopeVersion": "1.0.0",
+    "name": "HTTP POST"
+   },
+   "configured": {
+    "scope": "io.honeycomb.urlsession",
+    "name": "POST"
+   },
+   "source": "URLSessionLogger.swift: processAndLogRequest (request body size)",
+   "attributes": {
+    "http.request.method": "POST",
+    "url.full": "http://127.0.0.1:9/items",
+    "url.path": "/items",
+    "server.address": "127.0.0.1",
+    "url.scheme": "http",
+    "server.port": 9,
+    "http.request.body.size": 12,
+    "http.response.status_code": 201
+   }
+  },
+  {
+   "id": "urlsession.get_404",
+   "kind": "span",
+   "spanKind": "client",
+   "raw": {
+    "scope": "NSURLSession",
+    "scopeVersion": "1.0.0",
+    "name": "HTTP GET"
+   },
+   "configured": {
+    "scope": "io.honeycomb.urlsession",
+    "name": "GET"
+   },
+   "status": {
+    "error": "404"
+   },
+   "source": "URLSessionLogger.swift: statusForStatusCode (>= 400 is an error)",
+   "attributes": {
+    "http.request.method": "GET",
+    "url.full": "http://127.0.0.1:9/missing",
+    "url.path": "/missing",
+    "server.address": "127.0.0.1",
+    "url.scheme": "http",
+    "server.port": 9,
+    "http.response.status_code": 404
+   }
+  },
+  {
+   "id": "urlsession.transport_error",
+   "kind": "span",
+   "spanKind": "client",
+   "raw": {
+    "scope": "NSURLSession",
+    "scopeVersion": "1.0.0",
+    "name": "HTTP GET"
+   },
+   "configured": {
+    "scope": "io.honeycomb.urlsession",
+    "name": "GET"
+   },
+   "status": {
+    "error": "0"
+   },
+   "transportError": {
+    "domain": "NSURLErrorDomain",
+    "code": -1001,
+    "message": "The request timed out."
+   },
+   "source": "URLSessionLogger.swift: logError with statusCode 0 when there is no HTTP response (URLSessionInstrumentation.swift lines ~357, ~706)",
+   "attributes": {
+    "http.request.method": "GET",
+    "url.full": "http://127.0.0.1:9/slow",
+    "url.path": "/slow",
+    "server.address": "127.0.0.1",
+    "url.scheme": "http",
+    "server.port": 9,
+    "http.response.status_code": 0
+   }
+  },
+  {
+   "id": "metrickit.diagnostic_hang",
+   "kind": "log",
+   "raw": {
+    "scope": "MetricKit",
+    "scopeVersion": "0.0.1"
+   },
+   "configured": {
+    "scope": "io.honeycomb.metrickit"
+   },
+   "eventName": "metrickit.diagnostic.hang",
+   "source": "Sources/Instrumentation/MetricKit/MetricKitInstrumentation.swift: reportDiagnostics (hang)",
+   "attributes": {
+    "name": "metrickit.diagnostic.hang",
+    "metrickit.diagnostic.hang.hang_duration": 2.5,
+    "exception.stacktrace": "@stacktrace"
+   }
+  },
+  {
+   "id": "metrickit.diagnostic_crash",
+   "kind": "log",
+   "raw": {
+    "scope": "MetricKit",
+    "scopeVersion": "0.0.1"
+   },
+   "configured": {
+    "scope": "io.honeycomb.metrickit"
+   },
+   "eventName": "metrickit.diagnostic.crash",
+   "source": "MetricKitInstrumentation.swift: reportDiagnostics (crash)",
+   "attributes": {
+    "name": "metrickit.diagnostic.crash",
+    "metrickit.diagnostic.crash.exception.code": 1,
+    "metrickit.diagnostic.crash.exception.mach_exception.type": 1,
+    "metrickit.diagnostic.crash.exception.mach_exception.name": "EXC_BAD_ACCESS",
+    "metrickit.diagnostic.crash.exception.mach_exception.description": "Could not access memory",
+    "metrickit.diagnostic.crash.exception.signal": 11,
+    "metrickit.diagnostic.crash.exception.signal.name": "SIGSEGV",
+    "metrickit.diagnostic.crash.exception.signal.description": "segmentation violation",
+    "metrickit.diagnostic.crash.exception.termination_reason": "Namespace SIGNAL, Code 11",
+    "exception.stacktrace": "@stacktrace",
+    "exception.type": "EXC_BAD_ACCESS",
+    "exception.message": "Could not access memory"
+   }
+  },
+  {
+   "id": "crash.kscrash",
+   "kind": "log",
+   "raw": {
+    "scope": "io.opentelemetry.kscrash"
+   },
+   "configured": {
+    "scope": "io.opentelemetry.kscrash"
+   },
+   "eventName": "device.crash",
+   "shapedByCrashShaper": true,
+   "source": "opentelemetry-swift main (unreleased): Sources/Instrumentation/Crash/KSCrashInstrumentation.swift",
+   "attributes": {
+    "exception.type": "EXC_BAD_ACCESS (SIGSEGV)",
+    "exception.message": "EXC_BAD_ACCESS (SIGSEGV) detected on thread 0 at ExampleApp + 4660",
+    "exception.stacktrace": "Incident Identifier: 00000000-0000-0000-0000-000000000000\nHardware Model: iPhone"
+   }
+  }
+ ]
+}

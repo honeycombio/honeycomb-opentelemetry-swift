@@ -234,6 +234,23 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
     }
 }
 
+/// Requests that do not return 200, for the passthrough experiment. They use methods other than GET
+/// so that the existing assertions about GET spans keep counting only successful requests.
+private func doFailingRequest(method: String, address: String) async -> String {
+    var request = URLRequest(url: URL(string: address)!)
+    request.httpMethod = method
+    request.timeoutInterval = 5
+    do {
+        // A session made with the initializer Honeycomb's own instrumentation swizzles, like the
+        // sessions in the rest of this file. `URLSession.shared` is not made that way.
+        let session = URLSession(configuration: URLSessionConfiguration.default)
+        let (_, response) = try await session.data(for: request)
+        return summarize(response: response, error: nil)
+    } catch {
+        return summarize(response: nil, error: error)
+    }
+}
+
 struct NetworkView: SwiftUI.View {
     @StateObject private var request = NetworkRequestSpec()
     @State private var responseSummary = ""
@@ -332,6 +349,32 @@ struct NetworkView: SwiftUI.View {
             Button(action: { responseSummary = "" }) {
                 Text("Clear")
             }
+
+            Button(action: {
+                Task {
+                    // An HTTP 404 from the mock server.
+                    responseSummary = await doFailingRequest(
+                        method: "DELETE",
+                        address: "http://localhost:1080/missing"
+                    )
+                }
+            }) {
+                Text("Request that gets a 404")
+            }
+            .buttonStyle(.bordered)
+
+            Button(action: {
+                Task {
+                    // Nothing listens on port 1, so the connection is refused: no HTTP response.
+                    responseSummary = await doFailingRequest(
+                        method: "PATCH",
+                        address: "http://localhost:1/refused"
+                    )
+                }
+            }) {
+                Text("Request that is refused")
+            }
+            .buttonStyle(.bordered)
         }
     }
 }

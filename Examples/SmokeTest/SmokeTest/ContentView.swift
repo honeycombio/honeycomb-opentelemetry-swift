@@ -1,4 +1,5 @@
 import Honeycomb
+import MetricKit
 import OpenTelemetryApi
 import OpenTelemetrySdk
 import SwiftUI
@@ -17,6 +18,13 @@ private func sendSimpleSpan() {
 }
 
 private func sendFakeMetrics() {
+    if smokeTestUsesUpstreamInstrumentation, #available(iOS 14.0, *) {
+        // Upstream's reportMetrics/reportDiagnostics are internal, so use its public subscriber.
+        let subscriber = makeHoneycombMetricKitSubscriber()
+        subscriber.didReceive?([FakeMetricPayload()] as [MXMetricPayload])
+        subscriber.didReceive?([FakeDiagnosticPayload()] as [MXDiagnosticPayload])
+        return
+    }
     reportMetrics(payload: FakeMetricPayload())
     if #available(iOS 14.0, *) {
         reportDiagnostics(payload: FakeDiagnosticPayload())
