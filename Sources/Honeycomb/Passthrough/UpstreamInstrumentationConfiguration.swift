@@ -40,6 +40,7 @@ import OpenTelemetryApi
 #endif
 
 #if canImport(MetricKitInstrumentation) && canImport(MetricKit) && !os(tvOS) && !os(macOS)
+    import MetricKit
     import MetricKitInstrumentation
 
     /// Configures upstream `MetricKitInstrumentation` to use Honeycomb's scope for spans and logs and
@@ -57,5 +58,13 @@ import OpenTelemetryApi
                 instrumentationScopeName: honeycombMetricKitScope
             )
         )
+    }
+
+    /// A second upstream subscriber, configured like the one `Honeycomb.configure` installs. It lets
+    /// the smoke test app feed fake MetricKit payloads through upstream's `didReceive(_:)`, because
+    /// upstream's `reportMetrics` and `reportDiagnostics` are internal.
+    @available(iOS 13.0, *)
+    public func makeHoneycombMetricKitSubscriber() -> MXMetricManagerSubscriber {
+        MetricKitInstrumentation(configuration: makeHoneycombMetricKitConfiguration())
     }
 #endif

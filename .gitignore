@@ -11,3 +11,4 @@ DerivedData/
 smoke-tests/collector/data-results
 smoke-tests/collector/data.json
 smoke-tests/report.xml
+smoke-tests/mock-server/requests.jsonl

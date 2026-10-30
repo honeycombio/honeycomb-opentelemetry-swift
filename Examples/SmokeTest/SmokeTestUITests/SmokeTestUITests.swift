@@ -25,6 +25,17 @@ extension XCUIApplication {
     }
 }
 
+extension XCUIApplication {
+    /// Passes the passthrough experiment switch through to the app under test.
+    /// Run with `TEST_RUNNER_SMOKE_UPSTREAM=1` to turn on upstream's instrumentation.
+    func launchForSmokeTest() {
+        if ProcessInfo.processInfo.environment["SMOKE_UPSTREAM"] == "1" {
+            launchEnvironment["SMOKE_UPSTREAM"] = "1"
+        }
+        launch()
+    }
+}
+
 final class SmokeTestUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -35,7 +46,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testSimpleSpan() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
 
         app.buttons["Send simple span"].tap()
         app.buttons["Flush"].tap()
@@ -43,7 +54,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testMetricKit() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
 
         app.buttons["Send fake MetricKit data"].tap()
         app.buttons["Flush"].tap()
@@ -51,7 +62,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testErrorLogging() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
 
         app.buttons["Send fake error data"].tap()
         app.buttons["Flush"].tap()
@@ -59,7 +70,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testNetworking() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
         app.buttons["Network"].tap()
         XCTAssert(app.staticTexts["Network Playground"].waitForExistence(timeout: uiUpdateTimeout))
 
@@ -161,9 +172,38 @@ final class SmokeTestUITests: XCTestCase {
         app.buttons["Flush"].tap()
     }
 
+    func testNetworkFailures() throws {
+        let app = XCUIApplication()
+        app.launchForSmokeTest()
+        app.buttons["Network"].tap()
+        XCTAssert(app.staticTexts["Network Playground"].waitForExistence(timeout: uiUpdateTimeout))
+
+        for (button, expected) in [
+            ("Request that gets a 404", "404"),
+            ("Request that is refused", "error"),
+        ] {
+            app.buttons["Clear"].tap()
+            app.buttons[button].tap()
+            let status = app.staticTexts
+                .matching(
+                    NSPredicate(
+                        format: "identifier=%@ && label BEGINSWITH %@",
+                        "responseStatusCode",
+                        expected
+                    )
+                )
+                .firstMatch
+            XCTAssert(status.waitForExistence(timeout: networkRequestTimeout), button)
+        }
+
+        app.buttons["Core"].tap()
+        XCTAssert(app.buttons["Flush"].waitForExistence(timeout: uiUpdateTimeout))
+        app.buttons["Flush"].tap()
+    }
+
     func testUIKitNavigationInstrumentation() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
         app.buttons["UIKit"].tap()
         XCTAssert(app.buttons["Go To UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
 
@@ -174,7 +214,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testUIKitInteractionInstrumentation() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
         app.buttons["UIKit"].tap()
         XCTAssert(app.buttons["Go To UIKit App"].waitForExistence(timeout: uiUpdateTimeout))
         app.buttons["Go To UIKit App"].tap()
@@ -193,7 +233,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testRenderPerformace() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
         app.buttons["View Instrumentation"].tap()
         XCTAssert(app.staticTexts["enable slow render"].waitForExistence(timeout: uiUpdateTimeout))
 
@@ -216,7 +256,7 @@ final class SmokeTestUITests: XCTestCase {
 
     func testNavigations() throws {
         let app = XCUIApplication()
-        app.launch()
+        app.launchForSmokeTest()
         app.buttons["Navigation"].tap()
         XCTAssert(app.buttons["Yosemite"].waitForExistence(timeout: uiUpdateTimeout))
 
