@@ -57,6 +57,32 @@ final class SmokeTestUITests: XCTestCase {
         app.buttons["Flush"].tap()
     }
 
+    /// Sends the requests that smoke-e2e.bats uses to check the URLSession request filter, span
+    /// name provider, and error status.
+    ///
+    /// The responses are the same with or without the callbacks, so this only checks that all three
+    /// requests complete. The spans are checked from the collector's output.
+    func testNetworkFilterNameAndErrorStatus() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        app.buttons["Send filter, name, and error requests"].tap()
+
+        // In order: the filtered request, the renamed one, and the one that answers with a 500.
+        let summary = app.staticTexts
+            .matching(
+                NSPredicate(
+                    format: "identifier=%@ && label=%@",
+                    "filterNameErrorSummary",
+                    "200 200 500"
+                )
+            )
+            .firstMatch
+        XCTAssert(summary.waitForExistence(timeout: networkRequestTimeout))
+
+        app.buttons["Flush"].tap()
+    }
+
     func testNetworking() throws {
         let app = XCUIApplication()
         app.launch()

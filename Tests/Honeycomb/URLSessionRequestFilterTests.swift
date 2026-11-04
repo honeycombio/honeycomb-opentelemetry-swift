@@ -31,9 +31,10 @@ final class URLSessionRequestFilterTests: XCTestCase {
         XCTAssertFalse(filter(sessionReplayRequest))
     }
 
-    func testNoFilterByDefault() throws {
+    func testNoFilterOrSpanNameProviderByDefault() throws {
         let options = try HoneycombOptions.Builder().setAPIKey("test-key").build()
         XCTAssertNil(options.urlSessionRequestFilter)
+        XCTAssertNil(options.urlSessionSpanNameProvider)
     }
 
     func testInstrumentsEverythingWithoutFilter() {

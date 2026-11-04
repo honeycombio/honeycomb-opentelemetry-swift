@@ -275,6 +275,63 @@ mk_diag_attr() {
   assert_equal "$result" '  30 "localhost"'
 }
 
+# Spans from the URLSession scope whose url.full contains a string.
+# Arguments: $1 - string to look for in url.full
+urlsession_spans_with_url_containing() {
+  spans_from_scope_named "io.honeycomb.urlsession" \
+    | jq -s "[.[] | select(any(.attributes[]?; .key == \"url.full\" and (.value.stringValue | contains(\"$1\"))))]"
+}
+
+@test "URLSession request filter leaves out filtered requests" {
+  # The app's filter rejects /filtered-api. The request was made, which the UI test checks.
+  result=$(urlsession_spans_with_url_containing "/filtered-api" | jq length)
+  assert_equal "$result" "0"
+
+  # Requests made at the same time that the filter allows still have spans.
+  result=$(urlsession_spans_with_url_containing "/named-api/42" | jq length)
+  assert_equal "$result" "1"
+  result=$(urlsession_spans_with_url_containing "/error-api" | jq length)
+  assert_equal "$result" "1"
+}
+
+@test "URLSession span name provider names spans" {
+  # The app's provider renames these two paths.
+  result=$(urlsession_spans_with_url_containing "/named-api/42" | jq -r ".[].name")
+  assert_equal "$result" "GET /named-api/:id"
+  result=$(urlsession_spans_with_url_containing "/error-api" | jq -r ".[].name")
+  assert_equal "$result" "GET /error-api"
+
+  # It returns nil for everything else, so those keep the HTTP method as their name.
+  result=$(urlsession_spans_with_url_containing "/simple-api" | jq -c "[.[].name] | unique")
+  assert_equal "$result" '["GET"]'
+}
+
+@test "URLSession error responses have error status" {
+  span=$(urlsession_spans_with_url_containing "/error-api" | jq ".[0]")
+
+  result=$(echo "$span" | jq -r '.attributes[] | select(.key == "http.response.status_code").value.intValue')
+  assert_equal "$result" "500"
+
+  # The collector writes the status code as a number or as its enum name, depending on version.
+  result=$(echo "$span" | jq -r '.status.code')
+  [[ "$result" == "2" || "$result" == "STATUS_CODE_ERROR" ]] || {
+    echo "unexpected status code: $result" >&2
+    return 1
+  }
+  assert_equal "$(echo "$span" | jq -r '.status.message')" "500"
+}
+
+@test "URLSession success responses do not have error status" {
+  # Status is unset for a 200, which the collector leaves out or writes as 0.
+  for path in "/named-api/42" "/simple-api"; do
+    result=$(urlsession_spans_with_url_containing "$path" | jq -r '.[].status.code // 0' | sort -u)
+    [[ "$result" == "0" || "$result" == "STATUS_CODE_UNSET" ]] || {
+      echo "$path has unexpected status code: $result" >&2
+      return 1
+    }
+  done
+}
+
 @test "Render Instrumentation attributes are correct" {
   # we got the spans we expect
   actual=$(span_names_for "io.honeycomb.view" | sort | uniq -c)

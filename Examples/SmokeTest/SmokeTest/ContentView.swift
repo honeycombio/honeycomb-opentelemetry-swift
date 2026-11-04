@@ -73,6 +73,7 @@ struct ContentView: SwiftUI.View {
     @State private var sessionId: String = "🐝💭"
     @State private var sessionStartTime: String = "🐝🕰️"
     @State private var timer: Timer?
+    @State private var filterNameErrorSummary: String = ""
 
     func updateSessionInfo(session: HoneycombSession) {
         sessionId = session.id
@@ -115,6 +116,17 @@ struct ContentView: SwiftUI.View {
                     Text("Send fake error data")
                 }
                 .buttonStyle(.bordered)
+
+                Button(action: {
+                    Task {
+                        filterNameErrorSummary = await doFilterNameAndErrorRequests()
+                    }
+                }) {
+                    Text("Send filter, name, and error requests")
+                }
+                .buttonStyle(.bordered)
+                Text(filterNameErrorSummary)
+                    .accessibilityIdentifier("filterNameErrorSummary")
 
                 Button(action: flush) {
                     Text("Flush")
