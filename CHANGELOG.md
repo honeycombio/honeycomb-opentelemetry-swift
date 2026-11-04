@@ -2,6 +2,10 @@ Honeycomb OpenTelemetry SDK Changelog
 
 ## v.Next
 
+* feat: Add `setURLSessionRequestFilter` to choose which requests Honeycomb's URLSession instrumentation traces, for example to keep a third-party SDK's traffic out of your traces.
+* feat: Add `setURLSessionSpanNameProvider` to name `URLSession` spans something more useful than the HTTP method, such as the route being called.
+* fix: Set the span status to error for `URLSession` responses with a status code of 400 or above, as the OpenTelemetry semantic conventions specify for HTTP clients. Previously only transport-level failures set an error status, so queries and triggers on error status will now count 4xx and 5xx responses.
+
 ## 2.6.0
 
 * maint: update `opentelemetry-swift` and `opentelemetry-swift-core` to 2.5.1. Note that

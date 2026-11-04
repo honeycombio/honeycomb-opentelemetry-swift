@@ -210,6 +210,8 @@ public struct HoneycombOptions {
 
     let metricKitInstrumentationEnabled: Bool
     let urlSessionInstrumentationEnabled: Bool
+    let urlSessionRequestFilter: ((URLRequest) -> Bool)?
+    let urlSessionSpanNameProvider: ((URLRequest) -> String?)?
     let uiKitInstrumentationEnabled: Bool
     let touchInstrumentationEnabled: Bool
     let unhandledExceptionInstrumentationEnabled: Bool
@@ -263,6 +265,8 @@ public struct HoneycombOptions {
 
         private var metricKitInstrumentationEnabled: Bool = true
         private var urlSessionInstrumentationEnabled: Bool = true
+        private var urlSessionRequestFilter: ((URLRequest) -> Bool)? = nil
+        private var urlSessionSpanNameProvider: ((URLRequest) -> String?)? = nil
         private var uiKitInstrumentationEnabled: Bool = true
         private var touchInstrumentationEnabled: Bool = false
         private var unhandledExceptionInstrumentationEnabled: Bool = true
@@ -496,6 +500,46 @@ public struct HoneycombOptions {
             urlSessionInstrumentationEnabled = enabled
             return self
         }
+        /// Sets a filter that decides which URLSession requests are instrumented.
+        ///
+        /// The filter is called with each request when its task starts. Return `true` to create a
+        /// span for the request, or `false` to leave the request out of your traces entirely. By
+        /// default every request is instrumented. Requests made by the Honeycomb SDK itself are
+        /// never instrumented.
+        ///
+        /// The filter runs on whichever thread starts the task, so it should be fast and
+        /// thread-safe.
+        ///
+        /// This only applies to Honeycomb's URLSession instrumentation. It has no effect when
+        /// `setOTELURLSessionInstrumentationEnabled(true)` is used, which has its own
+        /// `shouldInstrument` option in OpenTelemetry's `URLSessionInstrumentationConfiguration`.
+        public func setURLSessionRequestFilter(
+            _ filter: @escaping (URLRequest) -> Bool
+        ) -> Builder {
+            urlSessionRequestFilter = filter
+            return self
+        }
+        /// Sets a function that names the spans for URLSession requests.
+        ///
+        /// By default a span is named after the request's HTTP method, such as `GET`. Use this to
+        /// name spans after something more useful, such as the route being called
+        /// (`GET /products/:id`). Return `nil` to use the default name for a request.
+        ///
+        /// Span names should have a small number of distinct values. Return a route template, not
+        /// a URL with ids in it.
+        ///
+        /// The function runs on whichever thread starts the task, so it should be fast and
+        /// thread-safe.
+        ///
+        /// This only applies to Honeycomb's URLSession instrumentation. It has no effect when
+        /// `setOTELURLSessionInstrumentationEnabled(true)` is used, which has its own `nameSpan`
+        /// option in OpenTelemetry's `URLSessionInstrumentationConfiguration`.
+        public func setURLSessionSpanNameProvider(
+            _ provider: @escaping (URLRequest) -> String?
+        ) -> Builder {
+            urlSessionSpanNameProvider = provider
+            return self
+        }
         @objc public func setOTELURLSessionInstrumentationEnabled(_ enabled: Bool) -> Builder {
             otelUrlSessionInstrumentationEnabled = enabled
             return self
@@ -657,6 +701,8 @@ public struct HoneycombOptions {
                 sessionTimeout: sessionTimeout,
                 metricKitInstrumentationEnabled: metricKitInstrumentationEnabled,
                 urlSessionInstrumentationEnabled: urlSessionInstrumentationEnabled,
+                urlSessionRequestFilter: urlSessionRequestFilter,
+                urlSessionSpanNameProvider: urlSessionSpanNameProvider,
                 uiKitInstrumentationEnabled: uiKitInstrumentationEnabled,
                 touchInstrumentationEnabled: touchInstrumentationEnabled,
                 unhandledExceptionInstrumentationEnabled: unhandledExceptionInstrumentationEnabled,

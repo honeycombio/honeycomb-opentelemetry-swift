@@ -15,12 +15,18 @@ private func isOTLPRequest(_ request: URLRequest) -> Bool {
     return false
 }
 
+/// Returns true if this request should get a span: not one of our own, and allowed by the app's
+/// request filter, if it set one.
+internal func shouldInstrument(_ request: URLRequest) -> Bool {
+    return !isOTLPRequest(request) && (urlSessionRequestFilter?(request) ?? true)
+}
+
 extension URLSessionTask {
     // A replacement for URLSessionTask.resume(), which captures the start of any network request.
     // swift-format-ignore
     @objc func _instrumented_resume() {
         if let request = self.originalRequest {
-            if !isOTLPRequest(request) {
+            if shouldInstrument(request) {
                 let span = createSpan(from: request)
 
                 ProxyURLSessionTaskDelegate.setSpan(span, for: self)
