@@ -234,6 +234,25 @@ private func doNetworkRequest(_ requestSpec: NetworkRequestSpec) async -> String
     }
 }
 
+/// Sends one request each to a path that the request filter rejects, a path that the span name
+/// provider renames, and a path that answers with a 500. Returns their status codes in that order.
+///
+/// See SmokeTestApp for the filter and the name provider, and smoke-e2e.bats for the spans expected.
+func doFilterNameAndErrorRequests() async -> String {
+    let session = createSession(useSessionDelegate: false)
+    var summaries: [String] = []
+    for path in ["filtered-api", "named-api/42", "error-api"] {
+        let url = URL(string: "http://localhost:1080/\(path)")!
+        do {
+            let (_, response) = try await session.data(from: url)
+            summaries.append(summarize(response: response, error: nil))
+        } catch {
+            summaries.append(summarize(response: nil, error: error))
+        }
+    }
+    return summaries.joined(separator: " ")
+}
+
 struct NetworkView: SwiftUI.View {
     @StateObject private var request = NetworkRequestSpec()
     @State private var responseSummary = ""
